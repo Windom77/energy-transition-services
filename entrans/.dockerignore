@@ -1,0 +1,87 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+.env
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Logs
+*.log
+logs/
+simulation.log
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Backup and archive directories
+Archive_v2/
+original_working_backup/
+backup/
+*.backup
+
+# Development artifacts
+migration_artifacts/
+test_*.py
+*_test.py
+*_debug.py
+
+# Large data files (keep essential ones only)
+*.parquet
+*.csv
+# Uncomment below if data files are too large for container
+# data/weather/
+# 2.pysam/results/
+4.testing/
+
+# Documentation
+README.md
+*.md
+docs/
+
+# Docker files (avoid recursion)
+Dockerfile*
+docker-compose*.yml

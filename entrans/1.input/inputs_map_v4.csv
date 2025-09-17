@@ -1,0 +1,93 @@
+SECTION,Subsection,Special Handling,Field Description & Unit,Input type,PySAM Module,PySAM Key,Description,Shared,REopt Key,Handling1,Handling2,Handling3,Default Value
+Project Information,,general_info,Project Owner,Text,,project_owner,Name of entity considering the project,,,Required, max 100 chars,,Consultant 1
+Project Information,,general_info,Project Evaluation Date,Date picker,,project_date_eval,Date of evaluation,,,Required, future dates not allowed,,
+Project Information,,general_info,Project ID,Text,,project_id,Identifying number or reference,,,Alphanumeric, max 20 chars,,123456B
+Project Information,,general_info,Project Description,Text,,project_desc,Brief outline of the project,,,Optional, max 500 chars,,Solar & Battery Project 1
+Project Information,,general_info,Project Lifetime (years),Integer,Cashloan,analysis_period,Length of financial analysis period,,analysis_period,Required, min 1, max 50,25
+Project Information,,general_info,Project Address,address,Site,site.lat,Address search Function & Map (provides latitude & longitude),,latitude,Required, validate coordinates,,
+Project Information,,general_info,Project Timezone,Select,UtilityRate5,tz,AEST; ACST; AWST,,,Required, from predefined list,,AEST
+Project Information,,general_info,Project Evaluator,Text,,project_evaluator,Name of Project Evaluator,,,Optional, max 100 chars,,ETC pty ltd
+Project Information,,general_info,Project Evaluator Contacts,Text,,project_evaluator_contact,Phone and email of Project Evaluator,,,Optional, validate email/phone format,,1234567
+PV Configuration,,,New System Size (kW),Integer,Pvsamv1,system_capacity,Project Solar install,,size_kw,Required, min 0,,1001
+PV Configuration,,,Land area (acres),float,Pvsamv1,land_area,Allocated land area,,land_acres,Optional, min 0,,
+PV Configuration,,,Roof space (m2),float,Pvsamv1,roof_space,Usable roof space,,roof_squarefeet,Optional, min 0,,
+PV Configuration,,,Tilt (degrees),float,Pvsamv1,subarray1_tilt,Tilt angle of PV panels,,tilt,Required, min 0, max 90,20
+PV Configuration,,,Azimuth (degrees),float,Pvsamv1,subarray1_azimuth,Orientation of PV array,,azimuth,Required, min 0, max 359,0
+PV Configuration,,,Inverter Efficiency (%),Percentage,Pvsamv1,inv_snl_eff_cec,Inverter efficiency,,inv_eff,Required, min 70, max 100,98.7
+PV Configuration,,,Degradation Rate (%),Percentage,Pvsamv1,dc_degradation,Annual degradation rate of PV system,,degradation_fraction,Required, min 0, max 5,0.5
+PV Configuration,,,DCWiring Losses (%),Percentage,Pvsamv1,subarray1_dcwiring_loss,DCWiring Losses (%),,,Required, min 0, max 10,2
+Battery Storage,,,Include storage?,Select,Pvsamv1,en_batt,yes; no,,,Required, Yes/No,,
+Battery Storage,,,Battery Energy Capacity (kWh),float,Pvsamv1,batt_computed_bank_capacity,Energy capacity of battery,,storage_attributes.energy_kwh,Conditional required if storage=yes, min 0,,1200
+Battery Storage,,,Maximum Charge Rate (C-rate),float,Pvsamv1,batt_power_charge_max_kwac,Max charge rate relative to capacity,,,Conditional required if storage=yes, min 0,,300
+Battery Storage,,,Maximum Discharge Rate (C-rate),float,Pvsamv1,batt_power_discharge_max_kwac,Max discharge rate relative to capacity,,storage_attributes.power_kw,Conditional required if storage=yes, min 0,,300
+Battery Storage,,,Battery Roundtrip Efficiency (%),Percentage,Pvsamv1,batt_ac_dc_efficiency,Battery roundtrip efficiency,,storage_attributes.rte,Conditional required if storage=yes, min 50, max 100,96
+Battery Storage,,,Battery Depth of Discharge min (%),Percentage,Pvsamv1,batt_minimum_SOC,Usable depth of discharge (max/min SOC limits),,storage_attributes.soc_min,Conditional required if storage=yes, min 0, max 100,30
+Battery Storage,,,Battery Depth of Discharge max (%),Percentage,Pvsamv1,batt_maximum_SOC,Usable depth of discharge (max/min SOC limits),,storage_attributes.soc_max,Conditional required if storage=yes, min 0, max 100,95
+Battery Storage,,,Battery Degradation Model,Select,Pvsamv1,batt_calendar_choice,0=No Calendar Degradation; 1=Lithium Ion Model; 2=Input Loss Table,,,Conditional required if storage=yes, from predefined list,,1
+Battery Storage,,,Battery Dispatch Strategy,Select,Pvsamv1,batt_dispatch_choice,0:Peak Shaving; 4:Smart Energy Trading (Recommended); 5:Self Consumption,,,Conditional required if storage=yes, from predefined list,,4
+Financial Parameters,,,Inflation Rate (%),Percentage,Cashloan,inflation_rate,General inflation rate applied to O&M costs,,inflation_rate,Required, min 0, max 30,2.5
+Financial Parameters,,,Discount Rate (%) (real),Percentage,Cashloan,real_discount_rate,Discount rate for NPV calculations,,offtaker_discount_rate,Required, min 0, max 50,7
+Financial Parameters,,,Tax Rate %,Percentage,Cashloan,federal_tax_rate,Corporate taxation rate,,offtaker_tax_rate,Required, min 0, max 100,25
+Financial Parameters,,,Debt Fraction (%),Percentage,Cashloan,debt_fraction,% of capital financed via debt.,,,Required, min 0, max 100,60
+Financial Parameters,,,Loan Interest Rate (%),Percentage,Cashloan,loan_rate,Annual interest rate on debt.,,,Required, min 0, max 100,10
+Financial Parameters,,,Loan Term (years),Number,Cashloan,loan_term,Loan repayment period.,,,Required, min 1, max 40,25
+Financial Parameters,,,Depreciation Method,Select,Cashloan,macrs_option_years,0=5; 1=7; 2=15 yrs,,,Required, from predefined list,,2
+Financial Parameters,,,Bonus Depreciation (%),Percentage,Cashloan,macrs_bonus_frac,% of asset value depreciated Year 1.,,,Optional, min 0, max 100,
+Financial Parameters,,,Value of Lost Load $/kWh,Currency,Pvsamv1,voll,value of lost load for resilience calcs,,value_of_lost_load_us_dollars_per_kwh,Optional, min 0,,0.35
+Financial Parameters,,,STC Price Avg ($),Currency,Cashloan,incentive_stc,Small scale renewable certificates,,,Optional, min 0,,40
+Financial Parameters,,,LREC Price Avg ($),Currency,Cashloan,incentive_lrec,Large scale renewable certificates,,,Optional, min 0,,45
+Financial Parameters,,,Energy arbitrage Y/N?,Select,Pvsamv1,mp_energy_market_revenue,yes; no,,,Optional, Yes/No,,Yes
+Financial Parameters,FCAS Markets,fcas_config,FCAS Region,select,Enhanced_FCAS,fcas_region,Australian NEM region for FCAS participation,,,auto_detect,validation,required,NSW1
+Financial Parameters,FCAS Markets,fcas_config,FCAS Participation Rate (%),percentage,Enhanced_FCAS,fcas_participation_rate,Expected market participation rate for FCAS services,,,auto_calculate,validation,range:50-95,85
+Financial Parameters,FCAS Markets,fcas_module,Enable Fast Raise (6s),select,Enhanced_FCAS,fcas_enable_fast_raise,yes; no,,,Optional, Yes/No,,Yes
+Financial Parameters,FCAS Markets,fcas_module,Enable Fast Lower (6s),select,Enhanced_FCAS,fcas_enable_fast_lower,yes; no,,,Optional, Yes/No,,Yes
+Financial Parameters,FCAS Markets,fcas_module,Enable Slow Raise (60s),select,Enhanced_FCAS,fcas_enable_slow_raise,yes; no,,,Optional, Yes/No,,Yes
+Financial Parameters,FCAS Markets,fcas_module,Enable Slow Lower (60s),select,Enhanced_FCAS,fcas_enable_slow_lower,yes; no,,,Optional, Yes/No,,Yes
+Financial Parameters,FCAS Markets,fcas_module,Enable Delayed Raise (5min),select,Enhanced_FCAS,fcas_enable_delayed_raise,yes; no,,,Optional, Yes/No,,No
+Financial Parameters,FCAS Markets,fcas_module,Enable Delayed Lower (5min),select,Enhanced_FCAS,fcas_enable_delayed_lower,yes; no,,,Optional, Yes/No,,No
+Financial Parameters,FCAS Markets,fcas_module,Enable Raise Regulation,select,Enhanced_FCAS,fcas_enable_raise_regulation,yes; no,,,Optional, Yes/No,,No
+Financial Parameters,FCAS Markets,fcas_module,Enable Lower Regulation,select,Enhanced_FCAS,fcas_enable_lower_regulation,yes; no,,,Optional, Yes/No,,No
+Financial Parameters,FCAS Markets,fcas_config,FCAS Revenue Forecast Method,select,Enhanced_FCAS,fcas_forecast_method,options:ML|Statistical,,,ml_model,options:ML|Statistical,,ML
+Financial Parameters,FCAS Markets,,Battery FCAS Reserve (%),percentage,Enhanced_FCAS,fcas_battery_reserve,Percentage of battery capacity reserved for FCAS,,,validation,range:10-50,,20
+Financial Parameters,FCAS Markets,,Fast Services Premium ($/MW/5min),currency,Enhanced_FCAS,fcas_fast_premium,Premium for fast response services,,,validation,optional,,0
+Financial Parameters,FCAS Markets,,Regulation Services Premium ($/MW/5min),currency,Enhanced_FCAS,fcas_regulation_premium,Premium for regulation services,,,validation,optional,,0
+Project Costs,PV ($),,Cost per kW ($/kW DC),Currency,Pvsamv1,total_installed_cost,Total installed cost,,installed_cost_per_kw,Required, min 0,,1000
+Project Costs,PV ($),,OM Costs per kW ($/kW/year),Currency,Pvsamv1,om_capacity,Fixed O&M Cost,,om_cost_per_kw,Required, min 0,,21
+Project Costs,PV ($),,OM Costs per kWh ($/kWh),Currency,Pvsamv1,om_production,Variable O&M Cost,,,Optional, min 0,,1.5
+Project Costs,PV ($),extra_capex,Balance of system equipment,Currency,Pvsamv1,bos_pv_cost,Balance of system (PV) costs,,,Optional, min 0,,555
+Project Costs,PV ($),,Inverter Cost ($/W),Currency,Pvsamv1,inverter_cost,Inverter cost installed,,,Optional, min 0,,444
+Project Costs,Battery ($),,Installed Cost ($/kWh),Currency,Cashloan,battery_per_kWh,cost per kwh of storage capacity,,installed_cost_per_kwh,Conditional required if storage=yes, min 0,,470
+Project Costs,Battery ($),,OM Costs per MWh ($MWh),Currency,Pvsamv1,om_batt_variable_cost,Operational cost by volume,,,Conditional required if storage=yes, min 0,,20
+Project Costs,Battery ($),,OM Costs fixed ($/kW-year),Currency,Pvsamv1,om_batt_fixed_cost,Operational cost by capacity,,battery_om_cost_per_kwh,Conditional required if storage=yes, min 0,,10
+Project Costs,Battery ($),,Balance of system equipment,Currency,Pvsamv1,bos_battery_costs,Balance of system (Batt) costs,,,Conditional required if storage=yes, min 0,,666
+Project Costs,Battery ($),,Battery Replacement Cost ($/kWh),Currency,Pvsamv1,om_batt_replacement_cost,Cost per kWh for replacing battery,,,Conditional required if storage=yes, min 0,,1800
+Project Costs,Battery ($),,O&M Cost Fixed ($year),Currency,Cashloan,om_fixed,O&M Costs Fixed,,,Optional, min 0,,50
+Project Costs,Project ($),,Insurance Rate (%),Percentage,Cashloan,insurance_rate,Insurance rate applied on total cost,,,Optonal, min 0,,1
+Project Costs,Project ($),,Land lease cost [$/acre],Currency,Pvsamv1,om_land_lease,Land leasing costs per year,,,Optional, min 0,,
+Project Costs,Project ($),extra_capex,Permitting and environmental studies $,Currency,Pvsamv1,permitting_costs,Project cost grouping - Permitting,,OtherCapitalCosts,Optional, min 0,,10000
+Project Costs,Project ($),extra_capex,Engineering and developer overhead $,Currency,Pvsamv1,engineering_costs,Project cost grouping - Engineering,,OtherCapitalCosts,Optional, min 0,,200000
+Project Costs,Project ($),extra_capex,Grid interconnection ($),Currency,Pvsamv1,grid_interconnection_costs,Project cost grouping - Grid Connection,,OtherCapitalCosts,Optional, min 0,,1002
+Project Costs,Project ($),extra_capex,Metering and CTs installation ($),Currency,Pvsamv1,metering_costs,Project cost groupings - Metering,,OtherCapitalCosts,Optional, min 0,,1003
+Project Costs,Project ($),extra_capex,Overhead Costs ($),Currency,Pvsamv1,overhead_costs,Fixed costs for admin & oversight,,OtherCapitalCosts,Optional, min 0,,1005
+Project Costs,Project ($),extra_capex,Installer margin (%),Percentage,Pvsamv1,installer_margin,Margin applied to overall project,,OtherCapitalCosts,Required, min 0, max 100,5
+Network Configuration,,tariff,Electricity Tariff Type,Select,UtilityRate5,rate_choice,Flat Rate; TOU; Demand,,,Optional, from predefined list,,
+Network Configuration,,tariff,Flat Energy Rate $/kWh,Currency,UtilityRate5,ur_ec_sched_weekday,Show if tariff_type == Flat Rate,,energy_rates,Conditional required if tariff=Flat, min 0,,
+Network Configuration,,tariff,TOU Weekday Schedule,tou_table,UtilityRate5,ur_ec_sched_weekday,Show table editor if tariff_type == TOU,,energyweekdayschedule,Conditional required if tariff=TOU,,,
+Network Configuration,,tariff,TOU Weekend Schedule,tou_table,UtilityRate5,ur_ec_sched_weekend,Show table editor if tariff_type == TOU,,energyweekendschedule,Conditional required if tariff=TOU,,,
+Network Configuration,,tariff,TOU Periods,tou_table,UtilityRate5,periods,"Define up to 6 TOU periods (e.g., Peak, Off-Peak).",,,Conditional required if tariff=TOU,,,
+Network Configuration,,tariff,Energy Rates TOU ($/kWh),tou_table,UtilityRate5,ur_ec_tou_mat,Price matrix ($/kWh),,monthly_energy_rates,Conditional required if tariff=TOU,,,
+Network Configuration,,tariff,TOU Export Rates,Currency,UtilityRate5,ur_ec_export_mat,If TOU applies to exports.,,,Optional, min 0,,
+Network Configuration,,tariff,Demand Weekday Schedule,demand_table,UtilityRate5,ur_dc_sched_weekday,Show table editor if tariff_type == Demand,,demandweekdayschedule,Conditional required if tariff=Demand,,,
+Network Configuration,,tariff,Demand Weekend Schedule,demand_table,UtilityRate5,ur_dc_sched_weekend,Show table editor if tariff_type == Demand,,demandweekendschedule,Conditional required if tariff=Demand,,,
+Network Configuration,,tariff,Flat Demand Charge $/kW,Currency,UtilityRate5,ur_dc_flat_mat,"Demand rates (flat) table [col 0=month, col 1=tier no, col 2=tier peak (kW), col 3=charge ($/kW)]",,,Conditional required if tariff=Demand,,,
+Network Configuration,,tariff,Demand Charge Matrix,demand_table,UtilityRate5,ur_dc_tou_mat,"Demand rates (TOU) table [col 0=period no, col 1=tier no, col 2=tier peak (kW), col 3=charge ($/kW)]",,monthly_demand_rates,Conditional required if tariff=Demand,,,
+Network Configuration,,tariff,Monthly Fixed Charge ($),Currency,UtilityRate5,ur_monthly_fixed_charge,Monthly fixed charge,,,Required, min 0,,35
+Network Configuration,,tariff,Feed-in-Tariff ($/kWh),Currency,UtilityRate5,ur_ec_tou_mat,Flat rate for exported energy.,,,Optional, min 0,,0.05
+Load,,,Enable Grid Interconnection Limit?,Select,grid,enable_interconnection_limit,yes; no,,,Optional, Yes/No,,yes
+Load,,,Grid Interconnection Limit (kW AC),float,grid,grid_interconnection_limit_kwac,Max AC power allowed to/from grid.,,grid_connection_limit_kw,Optional, min 0,,
+Load,,,Electricity load (year 1) [kW],Import Function,grid,load,Load Custom Energy use data,,,Conditional required if no annual energy,,,
+Load,,,Load Escalation [%],Percentage,grid,load_escalation,Annual load escalation [%/year],,,Required, min -10, max 20,2
+Load,,,Annual AC energy in Year 1 [kWh],float,grid,annual_energy,Annual consumption (kWh) to scale the profile.,,,Conditional required if no load profile,,,726208
+Load,,,Monthly AC energy (kWh),sequence,grid,monthly_energy,Monthly consumption (kWh) sequence 1-12,,,Optional,,,
+Load,,,Data Resolution,Select,grid,load_step,1=Hourly; 24=Daily,,"1=Hourly, 24=Daily",Required, from predefined list,,1
+Load,,,Peak Demand (kW),float,grid,load_peak,Max load in profile.,,,Optional,,,

@@ -1,0 +1,1477 @@
+[
+  {
+    "section": "Project Information",
+    "special_handling": "general_info",
+    "key": "project_owner",
+    "type": "text",
+    "label": "Project Owner",
+    "description": "Name of entity considering the project",
+    "default_value": "Consultant 1",
+    "general_info": true,
+    "validation": {
+      "required": "required",
+      "max_length": 100
+    },
+    "is_carrier_field": true
+  },
+  {
+    "section": "Project Information",
+    "special_handling": "general_info",
+    "key": "project_date_eval",
+    "type": "date picker",
+    "label": "Project Evaluation Date",
+    "description": "Date of evaluation",
+    "general_info": true,
+    "validation": {
+      "required": "required",
+      "no_future_dates": true
+    },
+    "is_carrier_field": true
+  },
+  {
+    "section": "Project Information",
+    "special_handling": "general_info",
+    "key": "project_id",
+    "type": "text",
+    "label": "Project ID",
+    "description": "Identifying number or reference",
+    "default_value": "123456B",
+    "general_info": true,
+    "validation": {
+      "alphanumeric": true,
+      "max_length": 20
+    },
+    "is_carrier_field": true
+  },
+  {
+    "section": "Project Information",
+    "special_handling": "general_info",
+    "key": "project_desc",
+    "type": "text",
+    "label": "Project Description",
+    "description": "Brief outline of the project",
+    "default_value": "Solar & Battery Project #1",
+    "general_info": true,
+    "validation": {
+      "required": "optional",
+      "max_length": 500
+    },
+    "is_carrier_field": true
+  },
+  {
+    "section": "Project Information",
+    "special_handling": "general_info",
+    "module": "Cashloan",
+    "key": "analysis_period",
+    "type": "integer",
+    "label": "Project Lifetime (years)",
+    "description": "Length of financial analysis period",
+    "reopt_key": "analysis_period",
+    "default_value": "25",
+    "general_info": false,
+    "validation": {
+      "required": "required",
+      "min": 1.0,
+      "max": 50.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Project Information",
+    "special_handling": "general_info",
+    "module": "Site",
+    "key": "lat",
+    "type": "address",
+    "label": "Project Address",
+    "description": "Address search Function & Map (provides latitude & longitude)",
+    "reopt_key": "latitude",
+    "general_info": false,
+    "validation": {
+      "required": "required",
+      "validation": "coordinates"
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Project Information",
+    "special_handling": "general_info",
+    "module": "UtilityRate5",
+    "key": "tz",
+    "type": "select",
+    "label": "Project Timezone",
+    "description": "AEST; ACST; AWST",
+    "default_value": "AEST",
+    "general_info": false,
+    "validation": {
+      "required": "required",
+      "predefined": true
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Project Information",
+    "special_handling": "general_info",
+    "key": "project_evaluator",
+    "type": "text",
+    "label": "Project Evaluator",
+    "description": "Name of Project Evaluator",
+    "default_value": "ETC pty ltd",
+    "general_info": true,
+    "validation": {
+      "required": "optional",
+      "max_length": 100
+    },
+    "is_carrier_field": true
+  },
+  {
+    "section": "Project Information",
+    "special_handling": "general_info",
+    "key": "project_evaluator_contact",
+    "type": "text",
+    "label": "Project Evaluator Contacts",
+    "description": "Phone and email of Project Evaluator",
+    "default_value": "1234567",
+    "general_info": true,
+    "validation": {
+      "required": "optional",
+      "validation": "email/phone format"
+    },
+    "is_carrier_field": true
+  },
+  {
+    "section": "PV Configuration",
+    "module": "Pvsamv1",
+    "key": "system_capacity",
+    "type": "integer",
+    "label": "New System Size (kW)",
+    "description": "Project Solar install",
+    "reopt_key": "size_kw",
+    "default_value": "1001",
+    "general_info": false,
+    "validation": {
+      "required": "required",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "PV Configuration",
+    "module": "Pvsamv1",
+    "key": "land_area",
+    "type": "float",
+    "label": "Land area (acres)",
+    "description": "Allocated land area",
+    "reopt_key": "land_acres",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "PV Configuration",
+    "module": "Pvsamv1",
+    "key": "roof_space",
+    "type": "float",
+    "label": "Roof space (m2)",
+    "description": "Usable roof space",
+    "reopt_key": "roof_squarefeet",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "PV Configuration",
+    "module": "Pvsamv1",
+    "key": "subarray1_tilt",
+    "type": "float",
+    "label": "Tilt (degrees)",
+    "description": "Tilt angle of PV panels",
+    "reopt_key": "tilt",
+    "default_value": "20",
+    "general_info": false,
+    "validation": {
+      "required": "required",
+      "min": 0.0,
+      "max": 90.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "PV Configuration",
+    "module": "Pvsamv1",
+    "key": "subarray1_azimuth",
+    "type": "float",
+    "label": "Azimuth (degrees)",
+    "description": "Orientation of PV array",
+    "reopt_key": "azimuth",
+    "default_value": "0",
+    "general_info": false,
+    "validation": {
+      "required": "required",
+      "min": 0.0,
+      "max": 359.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "PV Configuration",
+    "module": "Pvsamv1",
+    "key": "inv_snl_eff_cec",
+    "type": "percentage",
+    "label": "Inverter Efficiency (%)",
+    "description": "Inverter efficiency",
+    "reopt_key": "inv_eff",
+    "default_value": "98.7",
+    "general_info": false,
+    "validation": {
+      "required": "required",
+      "min": 70.0,
+      "max": 100.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "PV Configuration",
+    "module": "Pvsamv1",
+    "key": "dc_degradation",
+    "type": "percentage",
+    "label": "Degradation Rate (%)",
+    "description": "Annual degradation rate of PV system",
+    "reopt_key": "degradation_fraction",
+    "default_value": "0.5",
+    "general_info": false,
+    "validation": {
+      "required": "required",
+      "min": 0.0,
+      "max": 5.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "PV Configuration",
+    "module": "Pvsamv1",
+    "key": "subarray1_dcwiring_loss",
+    "type": "percentage",
+    "label": "DCWiring Losses (%)",
+    "description": "DCWiring Losses (%)",
+    "default_value": "2",
+    "general_info": false,
+    "validation": {
+      "required": "required",
+      "min": 0.0,
+      "max": 10.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Battery Storage",
+    "module": "Pvsamv1",
+    "key": "en_batt",
+    "type": "select",
+    "label": "Include storage?",
+    "description": "yes; no",
+    "general_info": false,
+    "validation": {
+      "required": "required",
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Battery Storage",
+    "module": "Pvsamv1",
+    "key": "batt_computed_bank_capacity",
+    "type": "float",
+    "label": "Battery Energy Capacity (kWh)",
+    "description": "Energy capacity of battery",
+    "reopt_key": "storage_attributes.energy_kwh",
+    "default_value": "1200",
+    "general_info": false,
+    "validation": {
+      "required": "conditional required if storage=yes",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Battery Storage",
+    "module": "Pvsamv1",
+    "key": "batt_power_charge_max_kwac",
+    "type": "float",
+    "label": "Maximum Charge Rate (C-rate)",
+    "description": "Max charge rate relative to capacity",
+    "default_value": "300",
+    "general_info": false,
+    "validation": {
+      "required": "conditional required if storage=yes",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Battery Storage",
+    "module": "Pvsamv1",
+    "key": "batt_power_discharge_max_kwac",
+    "type": "float",
+    "label": "Maximum Discharge Rate (C-rate)",
+    "description": "Max discharge rate relative to capacity",
+    "reopt_key": "storage_attributes.power_kw",
+    "default_value": "300",
+    "general_info": false,
+    "validation": {
+      "required": "conditional required if storage=yes",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Battery Storage",
+    "module": "Pvsamv1",
+    "key": "batt_ac_dc_efficiency",
+    "type": "percentage",
+    "label": "Battery Roundtrip Efficiency (%)",
+    "description": "Battery roundtrip efficiency",
+    "reopt_key": "storage_attributes.rte",
+    "default_value": "96",
+    "general_info": false,
+    "validation": {
+      "required": "conditional required if storage=yes",
+      "min": 50.0,
+      "max": 100.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Battery Storage",
+    "module": "Pvsamv1",
+    "key": "batt_minimum_SOC",
+    "type": "percentage",
+    "label": "Battery Depth of Discharge min (%)",
+    "description": "Usable depth of discharge (max/min SOC limits)",
+    "reopt_key": "storage_attributes.soc_min",
+    "default_value": "30",
+    "general_info": false,
+    "validation": {
+      "required": "conditional required if storage=yes",
+      "min": 0.0,
+      "max": 100.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Battery Storage",
+    "module": "Pvsamv1",
+    "key": "batt_maximum_SOC",
+    "type": "percentage",
+    "label": "Battery Depth of Discharge max (%)",
+    "description": "Usable depth of discharge (max/min SOC limits)",
+    "reopt_key": "storage_attributes.soc_max",
+    "default_value": "95",
+    "general_info": false,
+    "validation": {
+      "required": "conditional required if storage=yes",
+      "min": 0.0,
+      "max": 100.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Battery Storage",
+    "module": "Pvsamv1",
+    "key": "batt_calendar_choice",
+    "type": "select",
+    "label": "Battery Degradation Model",
+    "description": "0=No Calendar Degradation; 1=Lithium Ion Model; 2=Input Loss Table",
+    "default_value": "1",
+    "general_info": false,
+    "validation": {
+      "required": "conditional required if storage=yes",
+      "predefined": true
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Battery Storage",
+    "module": "Pvsamv1",
+    "key": "batt_dispatch_choice",
+    "type": "select",
+    "label": "Battery Dispatch Strategy",
+    "description": "0:Peak Shaving; 4:Smart Energy Trading (Recommended); 5:Self Consumption",
+    "default_value": "4",
+    "general_info": false,
+    "validation": {
+      "required": "conditional required if storage=yes",
+      "predefined": true
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Financial Parameters",
+    "module": "Cashloan",
+    "key": "inflation_rate",
+    "type": "percentage",
+    "label": "Inflation Rate (%)",
+    "description": "General inflation rate applied to O&M costs",
+    "reopt_key": "inflation_rate",
+    "default_value": "2.5",
+    "general_info": false,
+    "validation": {
+      "required": "required",
+      "min": 0.0,
+      "max": 30.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Financial Parameters",
+    "module": "Cashloan",
+    "key": "real_discount_rate",
+    "type": "percentage",
+    "label": "Discount Rate (%) (real)",
+    "description": "Discount rate for NPV calculations",
+    "reopt_key": "offtaker_discount_rate",
+    "default_value": "7",
+    "general_info": false,
+    "validation": {
+      "required": "required",
+      "min": 0.0,
+      "max": 50.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Financial Parameters",
+    "module": "Cashloan",
+    "key": "federal_tax_rate",
+    "type": "percentage",
+    "label": "Tax Rate %",
+    "description": "Corporate taxation rate",
+    "reopt_key": "offtaker_tax_rate",
+    "default_value": "25",
+    "general_info": false,
+    "validation": {
+      "required": "required",
+      "min": 0.0,
+      "max": 100.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Financial Parameters",
+    "module": "Cashloan",
+    "key": "debt_fraction",
+    "type": "percentage",
+    "label": "Debt Fraction (%)",
+    "description": "% of capital financed via debt.",
+    "default_value": "60",
+    "general_info": false,
+    "validation": {
+      "required": "required",
+      "min": 0.0,
+      "max": 100.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Financial Parameters",
+    "module": "Cashloan",
+    "key": "loan_rate",
+    "type": "percentage",
+    "label": "Loan Interest Rate (%)",
+    "description": "Annual interest rate on debt.",
+    "default_value": "10",
+    "general_info": false,
+    "validation": {
+      "required": "required",
+      "min": 0.0,
+      "max": 100.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Financial Parameters",
+    "module": "Cashloan",
+    "key": "loan_term",
+    "type": "number",
+    "label": "Loan Term (years)",
+    "description": "Loan repayment period.",
+    "default_value": "25",
+    "general_info": false,
+    "validation": {
+      "required": "required",
+      "min": 1.0,
+      "max": 40.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Financial Parameters",
+    "module": "Cashloan",
+    "key": "macrs_option_years",
+    "type": "select",
+    "label": "Depreciation Method",
+    "description": "0=5; 1=7; 2=15 yrs",
+    "default_value": "2",
+    "general_info": false,
+    "validation": {
+      "required": "required",
+      "predefined": true
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Financial Parameters",
+    "module": "Cashloan",
+    "key": "macrs_bonus_frac",
+    "type": "percentage",
+    "label": "Bonus Depreciation (%)",
+    "description": "% of asset value depreciated Year 1.",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "min": 0.0,
+      "max": 100.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Financial Parameters",
+    "module": "Pvsamv1",
+    "key": "voll",
+    "type": "currency",
+    "label": "Value of Lost Load $/kWh",
+    "description": "value of lost load for resilience calcs",
+    "reopt_key": "value_of_lost_load_us_dollars_per_kwh",
+    "default_value": "0.35",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Financial Parameters",
+    "module": "Cashloan",
+    "key": "incentive_stc",
+    "type": "currency",
+    "label": "STC Price Avg ($)",
+    "description": "Small scale renewable certificates",
+    "default_value": "40",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Financial Parameters",
+    "module": "Cashloan",
+    "key": "incentive_lrec",
+    "type": "currency",
+    "label": "LREC Price Avg ($)",
+    "description": "Large scale renewable certificates",
+    "default_value": "45",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Financial Parameters",
+    "module": "Pvsamv1",
+    "key": "mp_energy_market_revenue",
+    "type": "select",
+    "label": "Energy arbitrage Y/N?",
+    "description": "yes; no",
+    "default_value": "Yes",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Financial Parameters",
+    "subsection": "FCAS Markets",
+    "special_handling": "fcas_config",
+    "module": "Enhanced_FCAS",
+    "key": "fcas_region",
+    "type": "select",
+    "label": "FCAS Region",
+    "description": "Australian NEM region for FCAS participation",
+    "default_value": "NSW1",
+    "general_info": false,
+    "is_carrier_field": false
+  },
+  {
+    "section": "Financial Parameters",
+    "subsection": "FCAS Markets",
+    "special_handling": "fcas_config",
+    "module": "Enhanced_FCAS",
+    "key": "fcas_participation_rate",
+    "type": "percentage",
+    "label": "FCAS Participation Rate (%)",
+    "description": "Expected market participation rate for FCAS services",
+    "default_value": "85",
+    "general_info": false,
+    "is_carrier_field": false
+  },
+  {
+    "section": "Financial Parameters",
+    "subsection": "FCAS Markets",
+    "special_handling": "fcas_module",
+    "module": "Enhanced_FCAS",
+    "key": "fcas_enable_fast_raise",
+    "type": "select",
+    "label": "Enable Fast Raise (6s)",
+    "description": "yes; no",
+    "default_value": "Yes",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Financial Parameters",
+    "subsection": "FCAS Markets",
+    "special_handling": "fcas_module",
+    "module": "Enhanced_FCAS",
+    "key": "fcas_enable_fast_lower",
+    "type": "select",
+    "label": "Enable Fast Lower (6s)",
+    "description": "yes; no",
+    "default_value": "Yes",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Financial Parameters",
+    "subsection": "FCAS Markets",
+    "special_handling": "fcas_module",
+    "module": "Enhanced_FCAS",
+    "key": "fcas_enable_slow_raise",
+    "type": "select",
+    "label": "Enable Slow Raise (60s)",
+    "description": "yes; no",
+    "default_value": "Yes",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Financial Parameters",
+    "subsection": "FCAS Markets",
+    "special_handling": "fcas_module",
+    "module": "Enhanced_FCAS",
+    "key": "fcas_enable_slow_lower",
+    "type": "select",
+    "label": "Enable Slow Lower (60s)",
+    "description": "yes; no",
+    "default_value": "Yes",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Financial Parameters",
+    "subsection": "FCAS Markets",
+    "special_handling": "fcas_module",
+    "module": "Enhanced_FCAS",
+    "key": "fcas_enable_delayed_raise",
+    "type": "select",
+    "label": "Enable Delayed Raise (5min)",
+    "description": "yes; no",
+    "default_value": "No",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Financial Parameters",
+    "subsection": "FCAS Markets",
+    "special_handling": "fcas_module",
+    "module": "Enhanced_FCAS",
+    "key": "fcas_enable_delayed_lower",
+    "type": "select",
+    "label": "Enable Delayed Lower (5min)",
+    "description": "yes; no",
+    "default_value": "No",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Financial Parameters",
+    "subsection": "FCAS Markets",
+    "special_handling": "fcas_module",
+    "module": "Enhanced_FCAS",
+    "key": "fcas_enable_raise_regulation",
+    "type": "select",
+    "label": "Enable Raise Regulation",
+    "description": "yes; no",
+    "default_value": "No",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Financial Parameters",
+    "subsection": "FCAS Markets",
+    "special_handling": "fcas_module",
+    "module": "Enhanced_FCAS",
+    "key": "fcas_enable_lower_regulation",
+    "type": "select",
+    "label": "Enable Lower Regulation",
+    "description": "yes; no",
+    "default_value": "No",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Financial Parameters",
+    "subsection": "FCAS Markets",
+    "special_handling": "fcas_config",
+    "module": "Enhanced_FCAS",
+    "key": "fcas_forecast_method",
+    "type": "select",
+    "label": "FCAS Revenue Forecast Method",
+    "description": "options:ML|Statistical",
+    "default_value": "ML",
+    "general_info": false,
+    "is_carrier_field": false
+  },
+  {
+    "section": "Financial Parameters",
+    "subsection": "FCAS Markets",
+    "module": "Enhanced_FCAS",
+    "key": "fcas_battery_reserve",
+    "type": "percentage",
+    "label": "Battery FCAS Reserve (%)",
+    "description": "Percentage of battery capacity reserved for FCAS",
+    "default_value": "20",
+    "general_info": false,
+    "is_carrier_field": false
+  },
+  {
+    "section": "Financial Parameters",
+    "subsection": "FCAS Markets",
+    "module": "Enhanced_FCAS",
+    "key": "fcas_fast_premium",
+    "type": "currency",
+    "label": "Fast Services Premium ($/MW/5min)",
+    "description": "Premium for fast response services",
+    "default_value": "0",
+    "general_info": false,
+    "is_carrier_field": false
+  },
+  {
+    "section": "Financial Parameters",
+    "subsection": "FCAS Markets",
+    "module": "Enhanced_FCAS",
+    "key": "fcas_regulation_premium",
+    "type": "currency",
+    "label": "Regulation Services Premium ($/MW/5min)",
+    "description": "Premium for regulation services",
+    "default_value": "0",
+    "general_info": false,
+    "is_carrier_field": false
+  },
+  {
+    "section": "Project Costs",
+    "subsection": "PV ($)",
+    "module": "Pvsamv1",
+    "key": "total_installed_cost",
+    "type": "currency",
+    "label": "Cost per kW ($/kW DC)",
+    "description": "Total installed cost",
+    "reopt_key": "installed_cost_per_kw",
+    "default_value": "1000",
+    "general_info": false,
+    "validation": {
+      "required": "required",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Project Costs",
+    "subsection": "PV ($)",
+    "module": "Pvsamv1",
+    "key": "om_capacity",
+    "type": "currency",
+    "label": "OM Costs per kW ($/kW/year)",
+    "description": "Fixed O&M Cost",
+    "reopt_key": "om_cost_per_kw",
+    "default_value": "21",
+    "general_info": false,
+    "validation": {
+      "required": "required",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Project Costs",
+    "subsection": "PV ($)",
+    "module": "Pvsamv1",
+    "key": "om_production",
+    "type": "currency",
+    "label": "OM Costs per kWh ($/kWh)",
+    "description": "Variable O&M Cost",
+    "default_value": "1.5",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Project Costs",
+    "subsection": "PV ($)",
+    "special_handling": "extra_capex",
+    "module": "Pvsamv1",
+    "key": "bos_pv_cost",
+    "type": "currency",
+    "label": "Balance of system equipment",
+    "description": "Balance of system (PV) costs",
+    "default_value": "555",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Project Costs",
+    "subsection": "PV ($)",
+    "module": "Pvsamv1",
+    "key": "inverter_cost",
+    "type": "currency",
+    "label": "Inverter Cost ($/W)",
+    "description": "Inverter cost installed",
+    "default_value": "444",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Project Costs",
+    "subsection": "Battery ($)",
+    "module": "Cashloan",
+    "key": "battery_per_kWh",
+    "type": "currency",
+    "label": "Installed Cost ($/kWh)",
+    "description": "cost per kwh of storage capacity",
+    "reopt_key": "installed_cost_per_kwh",
+    "default_value": "470",
+    "general_info": false,
+    "validation": {
+      "required": "conditional required if storage=yes",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Project Costs",
+    "subsection": "Battery ($)",
+    "module": "Pvsamv1",
+    "key": "om_batt_variable_cost",
+    "type": "currency",
+    "label": "OM Costs per MWh ($MWh)",
+    "description": "Operational cost by volume",
+    "default_value": "20",
+    "general_info": false,
+    "validation": {
+      "required": "conditional required if storage=yes",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Project Costs",
+    "subsection": "Battery ($)",
+    "module": "Pvsamv1",
+    "key": "om_batt_fixed_cost",
+    "type": "currency",
+    "label": "OM Costs fixed ($/kW-year)",
+    "description": "Operational cost by capacity",
+    "reopt_key": "battery_om_cost_per_kwh",
+    "default_value": "10",
+    "general_info": false,
+    "validation": {
+      "required": "conditional required if storage=yes",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Project Costs",
+    "subsection": "Battery ($)",
+    "module": "Pvsamv1",
+    "key": "bos_battery_costs",
+    "type": "currency",
+    "label": "Balance of system equipment",
+    "description": "Balance of system (Batt) costs",
+    "default_value": "666",
+    "general_info": false,
+    "validation": {
+      "required": "conditional required if storage=yes",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Project Costs",
+    "subsection": "Battery ($)",
+    "module": "Pvsamv1",
+    "key": "om_batt_replacement_cost",
+    "type": "currency",
+    "label": "Battery Replacement Cost ($/kWh)",
+    "description": "Cost per kWh for replacing battery",
+    "default_value": "1800",
+    "general_info": false,
+    "validation": {
+      "required": "conditional required if storage=yes",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Project Costs",
+    "subsection": "Battery ($)",
+    "module": "Cashloan",
+    "key": "om_fixed",
+    "type": "currency",
+    "label": "O&M Cost Fixed ($year)",
+    "description": "O&M Costs Fixed",
+    "default_value": "50",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Project Costs",
+    "subsection": "Project ($)",
+    "module": "Cashloan",
+    "key": "insurance_rate",
+    "type": "percentage",
+    "label": "Insurance Rate (%)",
+    "description": "Insurance rate applied on total cost",
+    "default_value": "1",
+    "general_info": false,
+    "validation": {
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Project Costs",
+    "subsection": "Project ($)",
+    "module": "Pvsamv1",
+    "key": "om_land_lease",
+    "type": "currency",
+    "label": "Land lease cost [$/acre]",
+    "description": "Land leasing costs per year",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Project Costs",
+    "subsection": "Project ($)",
+    "special_handling": "extra_capex",
+    "module": "Pvsamv1",
+    "key": "permitting_costs",
+    "type": "currency",
+    "label": "Permitting and environmental studies $",
+    "description": "Project cost grouping - Permitting",
+    "reopt_key": "OtherCapitalCosts",
+    "default_value": "10000",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Project Costs",
+    "subsection": "Project ($)",
+    "special_handling": "extra_capex",
+    "module": "Pvsamv1",
+    "key": "engineering_costs",
+    "type": "currency",
+    "label": "Engineering and developer overhead $",
+    "description": "Project cost grouping - Engineering",
+    "reopt_key": "OtherCapitalCosts",
+    "default_value": "200000",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Project Costs",
+    "subsection": "Project ($)",
+    "special_handling": "extra_capex",
+    "module": "Pvsamv1",
+    "key": "grid_interconnection_costs",
+    "type": "currency",
+    "label": "Grid interconnection ($)",
+    "description": "Project cost grouping - Grid Connection",
+    "reopt_key": "OtherCapitalCosts",
+    "default_value": "1002",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Project Costs",
+    "subsection": "Project ($)",
+    "special_handling": "extra_capex",
+    "module": "Pvsamv1",
+    "key": "metering_costs",
+    "type": "currency",
+    "label": "Metering and CTs installation ($)",
+    "description": "Project cost groupings - Metering",
+    "reopt_key": "OtherCapitalCosts",
+    "default_value": "1003",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Project Costs",
+    "subsection": "Project ($)",
+    "special_handling": "extra_capex",
+    "module": "Pvsamv1",
+    "key": "overhead_costs",
+    "type": "currency",
+    "label": "Overhead Costs ($)",
+    "description": "Fixed costs for admin & oversight",
+    "reopt_key": "OtherCapitalCosts",
+    "default_value": "1005",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Project Costs",
+    "subsection": "Project ($)",
+    "special_handling": "extra_capex",
+    "module": "Pvsamv1",
+    "key": "installer_margin",
+    "type": "percentage",
+    "label": "Installer margin (%)",
+    "description": "Margin applied to overall project",
+    "reopt_key": "OtherCapitalCosts",
+    "default_value": "5",
+    "general_info": false,
+    "validation": {
+      "required": "required",
+      "min": 0.0,
+      "max": 100.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Network Configuration",
+    "special_handling": "tariff",
+    "module": "UtilityRate5",
+    "key": "rate_choice",
+    "type": "select",
+    "label": "Electricity Tariff Type",
+    "description": "Flat Rate; TOU; Demand",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "predefined": true
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Network Configuration",
+    "special_handling": "tariff",
+    "module": "UtilityRate5",
+    "key": "ur_ec_sched_weekday",
+    "type": "currency",
+    "label": "Flat Energy Rate $/kWh",
+    "description": "Show if tariff_type == Flat Rate",
+    "reopt_key": "energy_rates",
+    "general_info": false,
+    "validation": {
+      "required": "conditional required if tariff=flat",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Network Configuration",
+    "special_handling": "tariff",
+    "module": "UtilityRate5",
+    "key": "ur_ec_sched_weekday",
+    "type": "tou_table",
+    "label": "TOU Weekday Schedule",
+    "description": "Show table editor if tariff_type == TOU",
+    "reopt_key": "energyweekdayschedule",
+    "general_info": false,
+    "validation": {
+      "required": "conditional required if tariff=tou"
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Network Configuration",
+    "special_handling": "tariff",
+    "module": "UtilityRate5",
+    "key": "ur_ec_sched_weekend",
+    "type": "tou_table",
+    "label": "TOU Weekend Schedule",
+    "description": "Show table editor if tariff_type == TOU",
+    "reopt_key": "energyweekendschedule",
+    "general_info": false,
+    "validation": {
+      "required": "conditional required if tariff=tou"
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Network Configuration",
+    "special_handling": "tariff",
+    "module": "UtilityRate5",
+    "key": "periods",
+    "type": "tou_table",
+    "label": "TOU Periods",
+    "description": "Define up to 6 TOU periods (e.g., Peak, Off-Peak).",
+    "general_info": false,
+    "validation": {
+      "required": "conditional required if tariff=tou"
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Network Configuration",
+    "special_handling": "tariff",
+    "module": "UtilityRate5",
+    "key": "ur_ec_tou_mat",
+    "type": "tou_table",
+    "label": "Energy Rates TOU ($/kWh)",
+    "description": "Price matrix ($/kWh)",
+    "reopt_key": "monthly_energy_rates",
+    "general_info": false,
+    "validation": {
+      "required": "conditional required if tariff=tou"
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Network Configuration",
+    "special_handling": "tariff",
+    "module": "UtilityRate5",
+    "key": "ur_ec_export_mat",
+    "type": "currency",
+    "label": "TOU Export Rates",
+    "description": "If TOU applies to exports.",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Network Configuration",
+    "special_handling": "tariff",
+    "module": "UtilityRate5",
+    "key": "ur_dc_sched_weekday",
+    "type": "demand_table",
+    "label": "Demand Weekday Schedule",
+    "description": "Show table editor if tariff_type == Demand",
+    "reopt_key": "demandweekdayschedule",
+    "general_info": false,
+    "validation": {
+      "required": "conditional required if tariff=demand"
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Network Configuration",
+    "special_handling": "tariff",
+    "module": "UtilityRate5",
+    "key": "ur_dc_sched_weekend",
+    "type": "demand_table",
+    "label": "Demand Weekend Schedule",
+    "description": "Show table editor if tariff_type == Demand",
+    "reopt_key": "demandweekendschedule",
+    "general_info": false,
+    "validation": {
+      "required": "conditional required if tariff=demand"
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Network Configuration",
+    "special_handling": "tariff",
+    "module": "UtilityRate5",
+    "key": "ur_dc_flat_mat",
+    "type": "currency",
+    "label": "Flat Demand Charge $/kW",
+    "description": "Demand rates (flat) table [col 0=month, col 1=tier no, col 2=tier peak (kW), col 3=charge ($/kW)]",
+    "general_info": false,
+    "validation": {
+      "required": "conditional required if tariff=demand"
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Network Configuration",
+    "special_handling": "tariff",
+    "module": "UtilityRate5",
+    "key": "ur_dc_tou_mat",
+    "type": "demand_table",
+    "label": "Demand Charge Matrix",
+    "description": "Demand rates (TOU) table [col 0=period no, col 1=tier no, col 2=tier peak (kW), col 3=charge ($/kW)]",
+    "reopt_key": "monthly_demand_rates",
+    "general_info": false,
+    "validation": {
+      "required": "conditional required if tariff=demand"
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Network Configuration",
+    "special_handling": "tariff",
+    "module": "UtilityRate5",
+    "key": "ur_monthly_fixed_charge",
+    "type": "currency",
+    "label": "Monthly Fixed Charge ($)",
+    "description": "Monthly fixed charge",
+    "default_value": "35",
+    "general_info": false,
+    "validation": {
+      "required": "required",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Network Configuration",
+    "special_handling": "tariff",
+    "module": "UtilityRate5",
+    "key": "ur_ec_tou_mat",
+    "type": "currency",
+    "label": "Feed-in-Tariff ($/kWh)",
+    "description": "Flat rate for exported energy.",
+    "default_value": "0.05",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Load",
+    "module": "grid",
+    "key": "enable_interconnection_limit",
+    "type": "select",
+    "label": "Enable Grid Interconnection Limit?",
+    "description": "yes; no",
+    "default_value": "yes",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Load",
+    "module": "grid",
+    "key": "grid_interconnection_limit_kwac",
+    "type": "float",
+    "label": "Grid Interconnection Limit (kW AC)",
+    "description": "Max AC power allowed to/from grid.",
+    "reopt_key": "grid_connection_limit_kw",
+    "general_info": false,
+    "validation": {
+      "required": "optional",
+      "min": 0.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Load",
+    "module": "grid",
+    "key": "load",
+    "type": "import function",
+    "label": "Electricity load (year 1) [kW]",
+    "description": "Load Custom Energy use data",
+    "general_info": false,
+    "validation": {
+      "required": "conditional required if no annual energy"
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Load",
+    "module": "grid",
+    "key": "load_escalation",
+    "type": "percentage",
+    "label": "Load Escalation [%]",
+    "description": "Annual load escalation [%/year]",
+    "default_value": "2",
+    "general_info": false,
+    "validation": {
+      "required": "required",
+      "max": 20.0
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Load",
+    "module": "grid",
+    "key": "annual_energy",
+    "type": "float",
+    "label": "Annual AC energy in Year 1 [kWh]",
+    "description": "Annual consumption (kWh) to scale the profile.",
+    "default_value": "726208",
+    "general_info": false,
+    "validation": {
+      "required": "conditional required if no load profile"
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Load",
+    "module": "grid",
+    "key": "monthly_energy",
+    "type": "sequence",
+    "label": "Monthly AC energy (kWh)",
+    "description": "Monthly consumption (kWh) sequence 1-12",
+    "general_info": false,
+    "validation": {
+      "required": "optional"
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Load",
+    "module": "grid",
+    "key": "load_step",
+    "type": "select",
+    "label": "Data Resolution",
+    "description": "1=Hourly; 24=Daily",
+    "reopt_key": "1=Hourly, 24=Daily",
+    "default_value": "1",
+    "general_info": false,
+    "validation": {
+      "required": "required",
+      "predefined": true
+    },
+    "is_carrier_field": false
+  },
+  {
+    "section": "Load",
+    "module": "grid",
+    "key": "load_peak",
+    "type": "float",
+    "label": "Peak Demand (kW)",
+    "description": "Max load in profile.",
+    "general_info": false,
+    "validation": {
+      "required": "optional"
+    },
+    "is_carrier_field": false
+  }
+]

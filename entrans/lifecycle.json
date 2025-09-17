@@ -1,0 +1,20 @@
+{
+  "lifecycle": {
+    "rule": [
+      {
+        "action": {"type": "Delete"},
+        "condition": {
+          "age": 365,
+          "matchesPrefix": ["temp/", "cache/"]
+        }
+      },
+      {
+        "action": {"type": "SetStorageClass", "storageClass": "COLDLINE"},
+        "condition": {
+          "age": 90,
+          "matchesPrefix": ["results/", "historical/"]
+        }
+      }
+    ]
+  }
+}

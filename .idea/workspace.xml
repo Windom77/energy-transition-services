@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="f67fde80-ba5a-4764-92d3-cf307fc83460" name="Changes" comment="Add complete load data integration with PySAM grid parameters" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="308s513nEvgCHLvkQlUVcbK8RFV" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python tests.Python tests in app.py.executor": "Run",
+    "Python tests.Python tests in dashboard_debug.py.executor": "Run",
+    "Python tests.Python tests in test_integration.py.executor": "Run",
+    "Python tests.Python tests in test_new_structure.py.executor": "Run",
+    "Python.PySAM_main_v2.executor": "Run",
+    "Python.app.executor": "Run",
+    "Python.automated_production_fix.executor": "Run",
+    "Python.battery_comparison_analysis.executor": "Run",
+    "Python.clean_debug_message.executor": "Run",
+    "Python.config_stripper.executor": "Run",
+    "Python.dashboard_module.executor": "Run",
+    "Python.diagnostic_check.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.parq_to_csv.executor": "Run",
+    "Python.pysam_form_integration2.executor": "Run",
+    "Python.run_app.executor": "Run",
+    "Python.standalone_pysam_verification.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+    "Shell Script.run_local.sh.executor": "Run",
+    "git-widget-placeholder": "feature/variable-simulation-period",
+    "last_opened_file_path": "/home/hal9000/PycharmProjects/Batt_Alternate"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/data/weather" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/storage/results" />
+      <recent name="$PROJECT_DIR$/2.pysam/results" />
+      <recent name="$PROJECT_DIR$/1.input" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/4.testing" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-53e2683a6804-9cdd278e9d02-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-251.26094.141" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="f67fde80-ba5a-4764-92d3-cf307fc83460" name="Changes" comment="" />
+      <created>1753020347830</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1753020347830</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Add complete load data integration with PySAM grid parameters">
+      <option name="closed" value="true" />
+      <created>1758078856848</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1758078856848</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Add complete load data integration with PySAM grid parameters" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add complete load data integration with PySAM grid parameters" />
+  </component>
+</project>

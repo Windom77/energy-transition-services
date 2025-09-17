@@ -1,0 +1,1212 @@
+[2025-06-16 23:16:15,158] [INFO] 🚀 ENHANCED FCAS MODULE COMPREHENSIVE TEST
+[2025-06-16 23:16:15,159] [INFO] ============================================================
+[2025-06-16 23:16:15,159] [INFO] Test started at: 2025-06-16 23:16:15.159113
+[2025-06-16 23:16:15,159] [INFO] 🧪 TEST 1: Basic Functionality
+[2025-06-16 23:16:15,159] [INFO] --------------------------------------------------
+[2025-06-16 23:16:15,323] [INFO] ✅ Enhanced FCAS Estimator initialized for NSW1
+[2025-06-16 23:16:15,324] [INFO] 📊 Battery: 2.0MW / 0.1MWh
+[2025-06-16 23:16:15,324] [INFO] ✅ Estimator initialization successful
+[2025-06-16 23:16:15,324] [INFO] 📊 Calculated capabilities for 8 services
+[2025-06-16 23:16:15,324] [INFO]    Fast Raise (6s): 1.44 MW
+[2025-06-16 23:16:15,324] [INFO]    Fast Lower (6s): 1.44 MW
+[2025-06-16 23:16:15,324] [INFO]    Slow Raise (60s): 1.12 MW
+[2025-06-16 23:16:15,324] [INFO]    Slow Lower (60s): 1.12 MW
+[2025-06-16 23:16:15,324] [INFO]    Delayed Raise (5min): 0.60 MW
+[2025-06-16 23:16:15,324] [INFO]    Delayed Lower (5min): 0.60 MW
+[2025-06-16 23:16:15,324] [INFO]    Raise Regulation: 0.10 MW
+[2025-06-16 23:16:15,324] [INFO]    Lower Regulation: 0.10 MW
+[2025-06-16 23:16:15,324] [INFO] 📈 Calculated participation rates:
+[2025-06-16 23:16:15,324] [INFO]    raise6sec: 65.0%
+[2025-06-16 23:16:15,324] [INFO]    lower6sec: 70.0%
+[2025-06-16 23:16:15,325] [INFO]    raise60sec: 75.0%
+[2025-06-16 23:16:15,325] [INFO]    lower60sec: 80.0%
+[2025-06-16 23:16:15,325] [INFO]    raise5min: 85.0%
+[2025-06-16 23:16:15,325] [INFO]    lower5min: 85.0%
+[2025-06-16 23:16:15,325] [INFO]    raisereg: 45.0%
+[2025-06-16 23:16:15,325] [INFO]    lowerreg: 50.0%
+[2025-06-16 23:16:15,325] [INFO] ✅ TEST 1 PASSED: Basic functionality working
+[2025-06-16 23:16:15,325] [INFO] 
+🧪 TEST 2: Data Loading and Generation
+[2025-06-16 23:16:15,325] [INFO] --------------------------------------------------
+[2025-06-16 23:16:15,325] [WARNING] ⚠️ No database available, using synthetic historical data
+[2025-06-16 23:16:15,325] [INFO] 🔧 Generating synthetic historical data...
+[2025-06-16 23:16:15,404] [INFO] ✅ Generated 104833 synthetic records
+[2025-06-16 23:16:15,405] [INFO] ⏱️ Data loading took 0.08 seconds
+[2025-06-16 23:16:15,406] [INFO] 📊 Generated 104833 data points
+[2025-06-16 23:16:15,407] [INFO] 📅 Date range: 2023-01-01 00:00:00 to 2023-12-31 00:00:00
+[2025-06-16 23:16:15,407] [INFO] ✅ All FCAS services present in data
+[2025-06-16 23:16:15,407] [INFO] 🔍 Data Quality Check:
+[2025-06-16 23:16:15,410] [INFO]    raise6sec: Mean=$9.67, Std=$6.28, Range=$0.0-$35.0
+[2025-06-16 23:16:15,412] [INFO]    lower6sec: Mean=$8.37, Std=$5.97, Range=$0.0-$35.0
+[2025-06-16 23:16:15,414] [INFO]    raise60sec: Mean=$6.93, Std=$5.61, Range=$0.0-$35.0
+[2025-06-16 23:16:15,416] [INFO]    lower60sec: Mean=$6.04, Std=$5.44, Range=$0.0-$35.0
+[2025-06-16 23:16:15,418] [INFO]    raise5min: Mean=$4.27, Std=$5.08, Range=$0.0-$35.0
+[2025-06-16 23:16:15,420] [INFO]    lower5min: Mean=$3.87, Std=$4.99, Range=$0.0-$35.0
+[2025-06-16 23:16:15,422] [INFO]    raisereg: Mean=$13.48, Std=$7.24, Range=$0.0-$35.0
+[2025-06-16 23:16:15,424] [INFO]    lowerreg: Mean=$12.68, Std=$6.95, Range=$0.0-$35.0
+[2025-06-16 23:16:15,424] [INFO] 🗄️ Real database found - testing database connection...
+[2025-06-16 23:16:15,424] [INFO] ✅ Enhanced FCAS Estimator initialized for NSW1
+[2025-06-16 23:16:15,424] [INFO] 📊 Battery: 2.0MW / 0.1MWh
+[2025-06-16 23:16:15,424] [INFO] 💾 Database: /media/dswhome/Elements/FCAS_data/nem_data_final.db
+[2025-06-16 23:16:15,425] [INFO] 📥 Loading historical data from 2023-01-01 to 2023-03-31
+[2025-06-16 23:16:36,490] [INFO] ✅ Loaded 25632 records from database
+[2025-06-16 23:16:36,491] [INFO] ✅ Database connection successful: 25632 real records
+[2025-06-16 23:16:36,491] [INFO] ✅ TEST 2 PASSED: Data loading and generation working
+[2025-06-16 23:16:36,491] [INFO] 
+🧪 TEST 3: ML Model Training
+[2025-06-16 23:16:36,491] [INFO] --------------------------------------------------
+[2025-06-16 23:16:36,491] [INFO] 🤖 Training ML models for FCAS price forecasting...
+[2025-06-16 23:16:36,553] [INFO] Training model for raise6sec...
+[2025-06-16 23:16:41,640] [INFO] ✅ raise6sec model trained - MAE: $1.64 (44.1%)
+[2025-06-16 23:16:41,641] [INFO] Training model for lower6sec...
+[2025-06-16 23:16:46,891] [INFO] ✅ lower6sec model trained - MAE: $0.46 (26.2%)
+[2025-06-16 23:16:46,892] [INFO] Training model for raise60sec...
+[2025-06-16 23:16:52,083] [INFO] ✅ raise60sec model trained - MAE: $0.98 (44.2%)
+[2025-06-16 23:16:52,084] [INFO] Training model for lower60sec...
+[2025-06-16 23:16:57,920] [INFO] ✅ lower60sec model trained - MAE: $1.63 (27.1%)
+[2025-06-16 23:16:57,920] [INFO] Training model for raise5min...
+[2025-06-16 23:17:03,986] [INFO] ✅ raise5min model trained - MAE: $0.10 (17.6%)
+[2025-06-16 23:17:03,986] [INFO] Training model for lower5min...
+[2025-06-16 23:17:09,760] [INFO] ✅ lower5min model trained - MAE: $1.56 (34.9%)
+[2025-06-16 23:17:09,760] [INFO] Training model for raisereg...
+[2025-06-16 23:17:16,827] [INFO] ✅ raisereg model trained - MAE: $1.09 (7.3%)
+[2025-06-16 23:17:16,828] [INFO] Training model for lowerreg...
+[2025-06-16 23:17:24,319] [INFO] ✅ lowerreg model trained - MAE: $0.63 (4.9%)
+[2025-06-16 23:17:24,320] [INFO] ⏱️ Model training took 47.83 seconds
+[2025-06-16 23:17:24,320] [INFO] 🤖 Trained 8 ML models
+[2025-06-16 23:17:24,320] [INFO] 📊 Model Performance Summary:
+[2025-06-16 23:17:24,321] [INFO]    raise6sec:
+[2025-06-16 23:17:24,321] [INFO]      MAE: $1.64 (44.1%)
+[2025-06-16 23:17:24,321] [INFO]      Top features: ['raise6sec_lag_1', 'raise6sec_lag_2', 'reg_avg']
+[2025-06-16 23:17:24,321] [INFO]    lower6sec:
+[2025-06-16 23:17:24,321] [INFO]      MAE: $0.46 (26.2%)
+[2025-06-16 23:17:24,321] [INFO]      Top features: ['lower6sec_lag_1', 'lower6sec_lag_1d', 'lower6sec_lag_2']
+[2025-06-16 23:17:24,321] [INFO]    raise60sec:
+[2025-06-16 23:17:24,321] [INFO]      MAE: $0.98 (44.2%)
+[2025-06-16 23:17:24,321] [INFO]      Top features: ['raise60sec_lag_1', 'reg_spread', 'raise60sec_lag_2']
+[2025-06-16 23:17:24,322] [INFO]    lower60sec:
+[2025-06-16 23:17:24,322] [INFO]      MAE: $1.63 (27.1%)
+[2025-06-16 23:17:24,322] [INFO]      Top features: ['lower60sec_lag_1', 'lower60sec_lag_3', 'lower60sec_lag_6']
+[2025-06-16 23:17:24,322] [INFO]    raise5min:
+[2025-06-16 23:17:24,322] [INFO]      MAE: $0.10 (17.6%)
+[2025-06-16 23:17:24,322] [INFO]      Top features: ['raise5min_lag_1', 'raise5min_lag_2', 'raise5min_lag_12']
+[2025-06-16 23:17:24,322] [INFO]    lower5min:
+[2025-06-16 23:17:24,322] [INFO]      MAE: $1.56 (34.9%)
+[2025-06-16 23:17:24,322] [INFO]      Top features: ['lower5min_lag_1', 'reg_avg', 'reg_spread']
+[2025-06-16 23:17:24,322] [INFO]    raisereg:
+[2025-06-16 23:17:24,322] [INFO]      MAE: $1.09 (7.3%)
+[2025-06-16 23:17:24,323] [INFO]      Top features: ['reg_avg', 'reg_spread', 'raisereg_lag_1']
+[2025-06-16 23:17:24,323] [INFO]    lowerreg:
+[2025-06-16 23:17:24,323] [INFO]      MAE: $0.63 (4.9%)
+[2025-06-16 23:17:24,323] [INFO]      Top features: ['reg_avg', 'reg_spread', 'lowerreg_lag_1']
+[2025-06-16 23:17:24,323] [INFO] 📈 Average MAE across all services: 25.8%
+[2025-06-16 23:17:24,323] [INFO] 🔮 Testing model predictions...
+[2025-06-16 23:17:24,390] [WARNING] ⚠️ Prediction test failed for raise6sec: raise6sec has unrealistic predictions
+[2025-06-16 23:17:24,395] [WARNING] ⚠️ Prediction test failed for raise60sec: raise60sec has unrealistic predictions
+[2025-06-16 23:17:24,410] [WARNING] ⚠️ Prediction test failed for raisereg: raisereg has unrealistic predictions
+[2025-06-16 23:17:24,414] [INFO] ✅ 5/8 models passed prediction tests
+[2025-06-16 23:17:24,414] [INFO] ✅ TEST 3 PASSED: ML model training successful
+[2025-06-16 23:17:24,414] [INFO] 
+🧪 TEST 4: Forecasting
+[2025-06-16 23:17:24,414] [INFO] --------------------------------------------------
+[2025-06-16 23:17:24,414] [INFO] 📊 Testing statistical forecast...
+[2025-06-16 23:17:24,414] [ERROR] ❌ TEST 4 FAILED: 'EnhancedFCASEstimator' object has no attribute '_generate_statistical_forecast'
+[2025-06-16 23:17:24,414] [ERROR] 💥 TEST SUITE FAILED: 'EnhancedFCASEstimator' object has no attribute '_generate_statistical_forecast'
+[2025-06-16 23:17:24,415] [ERROR] Traceback: Traceback (most recent call last):
+  File "/home/dswhome/PycharmProjects/EnTrans_v2/enhanced_fcas_test.py", line 607, in main
+    forecast = test_forecasting(estimator)
+  File "/home/dswhome/PycharmProjects/EnTrans_v2/enhanced_fcas_test.py", line 236, in test_forecasting
+    stat_forecast = estimator._generate_statistical_forecast(datetime(2024, 1, 1), 5)
+AttributeError: 'EnhancedFCASEstimator' object has no attribute '_generate_statistical_forecast'
+
+[2025-06-16 23:20:02,643] [INFO] 🚀 ENHANCED FCAS MODULE COMPREHENSIVE TEST
+[2025-06-16 23:20:02,643] [INFO] ============================================================
+[2025-06-16 23:20:02,643] [INFO] Test started at: 2025-06-16 23:20:02.643797
+[2025-06-16 23:20:02,643] [INFO] 🧪 TEST 1: Basic Functionality
+[2025-06-16 23:20:02,644] [INFO] --------------------------------------------------
+[2025-06-16 23:20:02,823] [INFO] ✅ Enhanced FCAS Estimator initialized for NSW1
+[2025-06-16 23:20:02,823] [INFO] 📊 Battery: 2.0MW / 0.1MWh
+[2025-06-16 23:20:02,823] [INFO] ✅ Estimator initialization successful
+[2025-06-16 23:20:02,823] [INFO] 📊 Calculated capabilities for 8 services
+[2025-06-16 23:20:02,823] [INFO]    Fast Raise (6s): 1.44 MW
+[2025-06-16 23:20:02,823] [INFO]    Fast Lower (6s): 1.44 MW
+[2025-06-16 23:20:02,823] [INFO]    Slow Raise (60s): 1.12 MW
+[2025-06-16 23:20:02,823] [INFO]    Slow Lower (60s): 1.12 MW
+[2025-06-16 23:20:02,823] [INFO]    Delayed Raise (5min): 0.60 MW
+[2025-06-16 23:20:02,823] [INFO]    Delayed Lower (5min): 0.60 MW
+[2025-06-16 23:20:02,824] [INFO]    Raise Regulation: 0.10 MW
+[2025-06-16 23:20:02,824] [INFO]    Lower Regulation: 0.10 MW
+[2025-06-16 23:20:02,824] [INFO] 📈 Calculated participation rates:
+[2025-06-16 23:20:02,824] [INFO]    raise6sec: 65.0%
+[2025-06-16 23:20:02,824] [INFO]    lower6sec: 70.0%
+[2025-06-16 23:20:02,824] [INFO]    raise60sec: 75.0%
+[2025-06-16 23:20:02,824] [INFO]    lower60sec: 80.0%
+[2025-06-16 23:20:02,824] [INFO]    raise5min: 85.0%
+[2025-06-16 23:20:02,824] [INFO]    lower5min: 85.0%
+[2025-06-16 23:20:02,824] [INFO]    raisereg: 45.0%
+[2025-06-16 23:20:02,824] [INFO]    lowerreg: 50.0%
+[2025-06-16 23:20:02,824] [INFO] ✅ TEST 1 PASSED: Basic functionality working
+[2025-06-16 23:20:02,825] [INFO] 
+🧪 TEST 2: Data Loading and Generation
+[2025-06-16 23:20:02,825] [INFO] --------------------------------------------------
+[2025-06-16 23:20:02,825] [WARNING] ⚠️ No database available, using synthetic historical data
+[2025-06-16 23:20:02,825] [INFO] 🔧 Generating synthetic historical data...
+[2025-06-16 23:20:02,905] [INFO] ✅ Generated 104833 synthetic records
+[2025-06-16 23:20:02,906] [INFO] ⏱️ Data loading took 0.08 seconds
+[2025-06-16 23:20:02,906] [INFO] 📊 Generated 104833 data points
+[2025-06-16 23:20:02,908] [INFO] 📅 Date range: 2023-01-01 00:00:00 to 2023-12-31 00:00:00
+[2025-06-16 23:20:02,908] [INFO] ✅ All FCAS services present in data
+[2025-06-16 23:20:02,908] [INFO] 🔍 Data Quality Check:
+[2025-06-16 23:20:02,911] [INFO]    raise6sec: Mean=$9.69, Std=$6.30, Range=$0.0-$35.0
+[2025-06-16 23:20:02,912] [INFO]    lower6sec: Mean=$8.33, Std=$5.91, Range=$0.0-$35.0
+[2025-06-16 23:20:02,914] [INFO]    raise60sec: Mean=$6.95, Std=$5.70, Range=$0.0-$35.0
+[2025-06-16 23:20:02,917] [INFO]    lower60sec: Mean=$6.05, Std=$5.44, Range=$0.0-$35.0
+[2025-06-16 23:20:02,919] [INFO]    raise5min: Mean=$4.30, Std=$5.13, Range=$0.0-$35.0
+[2025-06-16 23:20:02,920] [INFO]    lower5min: Mean=$3.87, Std=$4.96, Range=$0.0-$35.0
+[2025-06-16 23:20:02,922] [INFO]    raisereg: Mean=$13.52, Std=$7.25, Range=$0.0-$35.0
+[2025-06-16 23:20:02,924] [INFO]    lowerreg: Mean=$12.70, Std=$6.93, Range=$0.0-$35.0
+[2025-06-16 23:20:02,924] [INFO] 🗄️ Real database found - testing database connection...
+[2025-06-16 23:20:02,924] [INFO] ✅ Enhanced FCAS Estimator initialized for NSW1
+[2025-06-16 23:20:02,924] [INFO] 📊 Battery: 2.0MW / 0.1MWh
+[2025-06-16 23:20:02,924] [INFO] 💾 Database: /media/dswhome/Elements/FCAS_data/nem_data_final.db
+[2025-06-16 23:20:02,924] [INFO] 📥 Loading historical data from 2023-01-01 to 2023-03-31
+[2025-06-16 23:20:03,400] [INFO] ✅ Loaded 25632 records from database
+[2025-06-16 23:20:03,401] [INFO] ✅ Database connection successful: 25632 real records
+[2025-06-16 23:20:03,401] [INFO] ✅ TEST 2 PASSED: Data loading and generation working
+[2025-06-16 23:20:03,401] [INFO] 
+🧪 TEST 3: ML Model Training
+[2025-06-16 23:20:03,401] [INFO] --------------------------------------------------
+[2025-06-16 23:20:03,401] [INFO] 🤖 Training ML models for FCAS price forecasting...
+[2025-06-16 23:20:03,463] [INFO] Training model for raise6sec...
+[2025-06-16 23:20:08,377] [INFO] ✅ raise6sec model trained - MAE: $1.64 (44.1%)
+[2025-06-16 23:20:08,378] [INFO] Training model for lower6sec...
+[2025-06-16 23:20:13,380] [INFO] ✅ lower6sec model trained - MAE: $0.46 (26.2%)
+[2025-06-16 23:20:13,381] [INFO] Training model for raise60sec...
+[2025-06-16 23:20:18,619] [INFO] ✅ raise60sec model trained - MAE: $0.98 (44.2%)
+[2025-06-16 23:20:18,619] [INFO] Training model for lower60sec...
+[2025-06-16 23:20:24,019] [INFO] ✅ lower60sec model trained - MAE: $1.63 (27.1%)
+[2025-06-16 23:20:24,019] [INFO] Training model for raise5min...
+[2025-06-16 23:20:29,702] [INFO] ✅ raise5min model trained - MAE: $0.10 (17.6%)
+[2025-06-16 23:20:29,702] [INFO] Training model for lower5min...
+[2025-06-16 23:20:35,144] [INFO] ✅ lower5min model trained - MAE: $1.56 (34.9%)
+[2025-06-16 23:20:35,144] [INFO] Training model for raisereg...
+[2025-06-16 23:20:41,580] [INFO] ✅ raisereg model trained - MAE: $1.09 (7.3%)
+[2025-06-16 23:20:41,580] [INFO] Training model for lowerreg...
+[2025-06-16 23:20:48,284] [INFO] ✅ lowerreg model trained - MAE: $0.63 (4.9%)
+[2025-06-16 23:20:48,285] [INFO] ⏱️ Model training took 44.88 seconds
+[2025-06-16 23:20:48,285] [INFO] 🤖 Trained 8 ML models
+[2025-06-16 23:20:48,285] [INFO] 📊 Model Performance Summary:
+[2025-06-16 23:20:48,285] [INFO]    raise6sec:
+[2025-06-16 23:20:48,285] [INFO]      MAE: $1.64 (44.1%)
+[2025-06-16 23:20:48,285] [INFO]      Top features: ['raise6sec_lag_1', 'raise6sec_lag_2', 'reg_avg']
+[2025-06-16 23:20:48,286] [INFO]    lower6sec:
+[2025-06-16 23:20:48,286] [INFO]      MAE: $0.46 (26.2%)
+[2025-06-16 23:20:48,286] [INFO]      Top features: ['lower6sec_lag_1', 'lower6sec_lag_1d', 'lower6sec_lag_2']
+[2025-06-16 23:20:48,286] [INFO]    raise60sec:
+[2025-06-16 23:20:48,286] [INFO]      MAE: $0.98 (44.2%)
+[2025-06-16 23:20:48,286] [INFO]      Top features: ['raise60sec_lag_1', 'reg_spread', 'raise60sec_lag_2']
+[2025-06-16 23:20:48,286] [INFO]    lower60sec:
+[2025-06-16 23:20:48,286] [INFO]      MAE: $1.63 (27.1%)
+[2025-06-16 23:20:48,287] [INFO]      Top features: ['lower60sec_lag_1', 'lower60sec_lag_3', 'lower60sec_lag_6']
+[2025-06-16 23:20:48,287] [INFO]    raise5min:
+[2025-06-16 23:20:48,287] [INFO]      MAE: $0.10 (17.6%)
+[2025-06-16 23:20:48,287] [INFO]      Top features: ['raise5min_lag_1', 'raise5min_lag_2', 'raise5min_lag_12']
+[2025-06-16 23:20:48,287] [INFO]    lower5min:
+[2025-06-16 23:20:48,287] [INFO]      MAE: $1.56 (34.9%)
+[2025-06-16 23:20:48,287] [INFO]      Top features: ['lower5min_lag_1', 'reg_avg', 'reg_spread']
+[2025-06-16 23:20:48,287] [INFO]    raisereg:
+[2025-06-16 23:20:48,287] [INFO]      MAE: $1.09 (7.3%)
+[2025-06-16 23:20:48,288] [INFO]      Top features: ['reg_avg', 'reg_spread', 'raisereg_lag_1']
+[2025-06-16 23:20:48,288] [INFO]    lowerreg:
+[2025-06-16 23:20:48,288] [INFO]      MAE: $0.63 (4.9%)
+[2025-06-16 23:20:48,288] [INFO]      Top features: ['reg_avg', 'reg_spread', 'lowerreg_lag_1']
+[2025-06-16 23:20:48,288] [INFO] 📈 Average MAE across all services: 25.8%
+[2025-06-16 23:20:48,288] [INFO] 🔮 Testing model predictions...
+[2025-06-16 23:20:48,355] [WARNING] ⚠️ Prediction test failed for raise6sec: raise6sec has unrealistic predictions
+[2025-06-16 23:20:48,360] [WARNING] ⚠️ Prediction test failed for raise60sec: raise60sec has unrealistic predictions
+[2025-06-16 23:20:48,371] [WARNING] ⚠️ Prediction test failed for raisereg: raisereg has unrealistic predictions
+[2025-06-16 23:20:48,374] [INFO] ✅ 5/8 models passed prediction tests
+[2025-06-16 23:20:48,374] [INFO] ✅ TEST 3 PASSED: ML model training successful
+[2025-06-16 23:20:48,374] [INFO] 
+🧪 TEST 4: Forecasting
+[2025-06-16 23:20:48,374] [INFO] --------------------------------------------------
+[2025-06-16 23:20:48,374] [INFO] 📊 Testing statistical forecast...
+[2025-06-16 23:20:48,375] [INFO] 📊 Generating statistical forecast for 5 years from 2024-01-01 00:00:00
+[2025-06-16 23:20:48,375] [ERROR] ❌ TEST 4 FAILED: 'EnhancedFCASEstimator' object has no attribute 'historical_prices'
+[2025-06-16 23:20:48,375] [ERROR] 💥 TEST SUITE FAILED: 'EnhancedFCASEstimator' object has no attribute 'historical_prices'
+[2025-06-16 23:20:48,376] [ERROR] Traceback: Traceback (most recent call last):
+  File "/home/dswhome/PycharmProjects/EnTrans_v2/enhanced_fcas_test.py", line 607, in main
+    forecast = test_forecasting(estimator)
+  File "/home/dswhome/PycharmProjects/EnTrans_v2/enhanced_fcas_test.py", line 236, in test_forecasting
+    stat_forecast = estimator._generate_statistical_forecast(datetime(2024, 1, 1), 5)
+  File "/home/dswhome/PycharmProjects/EnTrans_v2/enhanced_fcas_module.py", line 325, in _generate_statistical_forecast
+    for service, base_price in self.historical_prices.items():
+AttributeError: 'EnhancedFCASEstimator' object has no attribute 'historical_prices'
+
+[2025-06-17 08:53:11,350] [INFO] 🚀 ENHANCED FCAS MODULE COMPREHENSIVE TEST
+[2025-06-17 08:53:11,350] [INFO] ============================================================
+[2025-06-17 08:53:11,350] [INFO] Test started at: 2025-06-17 08:53:11.350626
+[2025-06-17 08:53:11,350] [INFO] 🧪 TEST 1: Basic Functionality
+[2025-06-17 08:53:11,350] [INFO] --------------------------------------------------
+[2025-06-17 08:53:11,526] [INFO] ✅ Enhanced FCAS Estimator initialized for NSW1
+[2025-06-17 08:53:11,526] [INFO] 📊 Battery: 2.0MW / 0.1MWh
+[2025-06-17 08:53:11,526] [INFO] ✅ Estimator initialization successful
+[2025-06-17 08:53:11,526] [INFO] 📊 Calculated capabilities for 8 services
+[2025-06-17 08:53:11,526] [INFO]    Fast Raise (6s): 1.44 MW
+[2025-06-17 08:53:11,526] [INFO]    Fast Lower (6s): 1.44 MW
+[2025-06-17 08:53:11,526] [INFO]    Slow Raise (60s): 1.12 MW
+[2025-06-17 08:53:11,526] [INFO]    Slow Lower (60s): 1.12 MW
+[2025-06-17 08:53:11,526] [INFO]    Delayed Raise (5min): 0.60 MW
+[2025-06-17 08:53:11,527] [INFO]    Delayed Lower (5min): 0.60 MW
+[2025-06-17 08:53:11,527] [INFO]    Raise Regulation: 0.10 MW
+[2025-06-17 08:53:11,527] [INFO]    Lower Regulation: 0.10 MW
+[2025-06-17 08:53:11,527] [INFO] 📈 Calculated participation rates:
+[2025-06-17 08:53:11,527] [INFO]    raise6sec: 65.0%
+[2025-06-17 08:53:11,527] [INFO]    lower6sec: 70.0%
+[2025-06-17 08:53:11,527] [INFO]    raise60sec: 75.0%
+[2025-06-17 08:53:11,527] [INFO]    lower60sec: 80.0%
+[2025-06-17 08:53:11,527] [INFO]    raise5min: 85.0%
+[2025-06-17 08:53:11,527] [INFO]    lower5min: 85.0%
+[2025-06-17 08:53:11,527] [INFO]    raisereg: 45.0%
+[2025-06-17 08:53:11,527] [INFO]    lowerreg: 50.0%
+[2025-06-17 08:53:11,528] [INFO] ✅ TEST 1 PASSED: Basic functionality working
+[2025-06-17 08:53:11,528] [INFO] 
+🧪 TEST 2: Data Loading and Generation
+[2025-06-17 08:53:11,528] [INFO] --------------------------------------------------
+[2025-06-17 08:53:11,528] [WARNING] ⚠️ No database available, using synthetic historical data
+[2025-06-17 08:53:11,528] [INFO] 🔧 Generating synthetic historical data...
+[2025-06-17 08:53:11,595] [INFO] ✅ Generated 104833 synthetic records
+[2025-06-17 08:53:11,596] [INFO] ⏱️ Data loading took 0.07 seconds
+[2025-06-17 08:53:11,596] [INFO] 📊 Generated 104833 data points
+[2025-06-17 08:53:11,597] [INFO] 📅 Date range: 2023-01-01 00:00:00 to 2023-12-31 00:00:00
+[2025-06-17 08:53:11,597] [INFO] ✅ All FCAS services present in data
+[2025-06-17 08:53:11,597] [INFO] 🔍 Data Quality Check:
+[2025-06-17 08:53:11,599] [INFO]    raise6sec: Mean=$9.68, Std=$6.27, Range=$0.0-$35.0
+[2025-06-17 08:53:11,601] [INFO]    lower6sec: Mean=$8.35, Std=$5.97, Range=$0.0-$35.0
+[2025-06-17 08:53:11,603] [INFO]    raise60sec: Mean=$6.99, Std=$5.72, Range=$0.0-$35.0
+[2025-06-17 08:53:11,604] [INFO]    lower60sec: Mean=$6.00, Std=$5.39, Range=$0.0-$35.0
+[2025-06-17 08:53:11,606] [INFO]    raise5min: Mean=$4.31, Std=$5.17, Range=$0.0-$35.0
+[2025-06-17 08:53:11,609] [INFO]    lower5min: Mean=$3.84, Std=$4.91, Range=$0.0-$35.0
+[2025-06-17 08:53:11,611] [INFO]    raisereg: Mean=$13.52, Std=$7.24, Range=$0.0-$35.0
+[2025-06-17 08:53:11,612] [INFO]    lowerreg: Mean=$12.71, Std=$6.94, Range=$0.0-$35.0
+[2025-06-17 08:53:11,613] [INFO] 🗄️ Real database found - testing database connection...
+[2025-06-17 08:53:11,613] [INFO] ✅ Enhanced FCAS Estimator initialized for NSW1
+[2025-06-17 08:53:11,613] [INFO] 📊 Battery: 2.0MW / 0.1MWh
+[2025-06-17 08:53:11,613] [INFO] 💾 Database: /media/dswhome/Elements/FCAS_data/nem_data_final.db
+[2025-06-17 08:53:11,613] [INFO] 📥 Loading historical data from 2023-01-01 to 2023-03-31
+[2025-06-17 08:53:12,090] [INFO] ✅ Loaded 25632 records from database
+[2025-06-17 08:53:12,091] [INFO] ✅ Database connection successful: 25632 real records
+[2025-06-17 08:53:12,091] [INFO] ✅ TEST 2 PASSED: Data loading and generation working
+[2025-06-17 08:53:12,091] [INFO] 
+🧪 TEST 3: ML Model Training
+[2025-06-17 08:53:12,091] [INFO] --------------------------------------------------
+[2025-06-17 08:53:12,091] [INFO] 🤖 Training ML models for FCAS price forecasting...
+[2025-06-17 08:53:12,153] [INFO] Training model for raise6sec...
+[2025-06-17 08:53:17,154] [INFO] ✅ raise6sec model trained - MAE: $1.64 (44.1%)
+[2025-06-17 08:53:17,154] [INFO] Training model for lower6sec...
+[2025-06-17 08:53:22,200] [INFO] ✅ lower6sec model trained - MAE: $0.46 (26.2%)
+[2025-06-17 08:53:22,200] [INFO] Training model for raise60sec...
+[2025-06-17 08:53:28,015] [INFO] ✅ raise60sec model trained - MAE: $0.98 (44.2%)
+[2025-06-17 08:53:28,015] [INFO] Training model for lower60sec...
+[2025-06-17 08:53:33,865] [INFO] ✅ lower60sec model trained - MAE: $1.63 (27.1%)
+[2025-06-17 08:53:33,865] [INFO] Training model for raise5min...
+[2025-06-17 08:53:39,731] [INFO] ✅ raise5min model trained - MAE: $0.10 (17.6%)
+[2025-06-17 08:53:39,732] [INFO] Training model for lower5min...
+[2025-06-17 08:53:45,009] [INFO] ✅ lower5min model trained - MAE: $1.56 (34.9%)
+[2025-06-17 08:53:45,009] [INFO] Training model for raisereg...
+[2025-06-17 08:53:51,362] [INFO] ✅ raisereg model trained - MAE: $1.09 (7.3%)
+[2025-06-17 08:53:51,362] [INFO] Training model for lowerreg...
+[2025-06-17 08:53:58,338] [INFO] ✅ lowerreg model trained - MAE: $0.63 (4.9%)
+[2025-06-17 08:53:58,340] [INFO] ⏱️ Model training took 46.25 seconds
+[2025-06-17 08:53:58,340] [INFO] 🤖 Trained 8 ML models
+[2025-06-17 08:53:58,340] [INFO] 📊 Model Performance Summary:
+[2025-06-17 08:53:58,340] [INFO]    raise6sec:
+[2025-06-17 08:53:58,340] [INFO]      MAE: $1.64 (44.1%)
+[2025-06-17 08:53:58,341] [INFO]      Top features: ['raise6sec_lag_1', 'raise6sec_lag_2', 'reg_avg']
+[2025-06-17 08:53:58,341] [INFO]    lower6sec:
+[2025-06-17 08:53:58,341] [INFO]      MAE: $0.46 (26.2%)
+[2025-06-17 08:53:58,341] [INFO]      Top features: ['lower6sec_lag_1', 'lower6sec_lag_1d', 'lower6sec_lag_2']
+[2025-06-17 08:53:58,341] [INFO]    raise60sec:
+[2025-06-17 08:53:58,341] [INFO]      MAE: $0.98 (44.2%)
+[2025-06-17 08:53:58,341] [INFO]      Top features: ['raise60sec_lag_1', 'reg_spread', 'raise60sec_lag_2']
+[2025-06-17 08:53:58,341] [INFO]    lower60sec:
+[2025-06-17 08:53:58,341] [INFO]      MAE: $1.63 (27.1%)
+[2025-06-17 08:53:58,342] [INFO]      Top features: ['lower60sec_lag_1', 'lower60sec_lag_3', 'lower60sec_lag_6']
+[2025-06-17 08:53:58,342] [INFO]    raise5min:
+[2025-06-17 08:53:58,342] [INFO]      MAE: $0.10 (17.6%)
+[2025-06-17 08:53:58,342] [INFO]      Top features: ['raise5min_lag_1', 'raise5min_lag_2', 'raise5min_lag_12']
+[2025-06-17 08:53:58,342] [INFO]    lower5min:
+[2025-06-17 08:53:58,342] [INFO]      MAE: $1.56 (34.9%)
+[2025-06-17 08:53:58,342] [INFO]      Top features: ['lower5min_lag_1', 'reg_avg', 'reg_spread']
+[2025-06-17 08:53:58,342] [INFO]    raisereg:
+[2025-06-17 08:53:58,342] [INFO]      MAE: $1.09 (7.3%)
+[2025-06-17 08:53:58,343] [INFO]      Top features: ['reg_avg', 'reg_spread', 'raisereg_lag_1']
+[2025-06-17 08:53:58,343] [INFO]    lowerreg:
+[2025-06-17 08:53:58,343] [INFO]      MAE: $0.63 (4.9%)
+[2025-06-17 08:53:58,343] [INFO]      Top features: ['reg_avg', 'reg_spread', 'lowerreg_lag_1']
+[2025-06-17 08:53:58,343] [INFO] 📈 Average MAE across all services: 25.8%
+[2025-06-17 08:53:58,343] [INFO] 🔮 Testing model predictions...
+[2025-06-17 08:53:58,456] [WARNING] ⚠️ Prediction test failed for raise6sec: raise6sec has unrealistic predictions
+[2025-06-17 08:53:58,464] [WARNING] ⚠️ Prediction test failed for raise60sec: raise60sec has unrealistic predictions
+[2025-06-17 08:53:58,479] [WARNING] ⚠️ Prediction test failed for raisereg: raisereg has unrealistic predictions
+[2025-06-17 08:53:58,483] [INFO] ✅ 5/8 models passed prediction tests
+[2025-06-17 08:53:58,483] [INFO] ✅ TEST 3 PASSED: ML model training successful
+[2025-06-17 08:53:58,484] [INFO] 
+🧪 TEST 4: Forecasting
+[2025-06-17 08:53:58,484] [INFO] --------------------------------------------------
+[2025-06-17 08:53:58,484] [INFO] 📊 Testing statistical forecast...
+[2025-06-17 08:53:58,484] [INFO] 📊 Generating statistical forecast for 5 years from 2024-01-01 00:00:00
+[2025-06-17 08:53:58,486] [INFO] ✅ Generated statistical forecast: 5 years
+[2025-06-17 08:53:58,487] [INFO] 💰 Average annual revenue: $3,310,779
+[2025-06-17 08:53:58,487] [INFO] 📅 Statistical forecast: 5 years
+[2025-06-17 08:53:58,487] [INFO] 💰 Total revenue: $16,579,916
+[2025-06-17 08:53:58,487] [INFO] 🤖 Testing ML forecast...
+[2025-06-17 08:53:58,487] [INFO] 🔮 Generating ML forecast for 5 years from 2024-01-01 00:00:00
+[2025-06-17 08:53:58,488] [INFO] 📥 Loading historical data from 2023-12-02 to 2024-01-01
+[2025-06-17 08:53:58,920] [INFO] ✅ Loaded 8640 records from database
+[2025-06-17 08:53:59,042] [INFO] Forecasting raise6sec...
+[2025-06-17 08:54:12,263] [INFO] Forecasting lower6sec...
+[2025-06-17 08:54:23,540] [INFO] Forecasting raise60sec...
+[2025-06-17 08:54:33,877] [INFO] Forecasting lower60sec...
+[2025-06-17 08:54:45,672] [INFO] Forecasting raise5min...
+[2025-06-17 08:54:56,926] [INFO] Forecasting lower5min...
+[2025-06-17 08:55:08,234] [INFO] Forecasting raisereg...
+[2025-06-17 08:55:20,309] [INFO] Forecasting lowerreg...
+[2025-06-17 08:55:31,554] [INFO] ✅ ML forecast complete - 5 years
+[2025-06-17 08:55:31,555] [INFO] 📅 ML forecast: 5 years
+[2025-06-17 08:55:31,556] [INFO] 💰 Total revenue: $0
+[2025-06-17 08:55:31,556] [INFO] 📊 ML vs Statistical difference: 100.0%
+[2025-06-17 08:55:31,556] [ERROR] ❌ TEST 4 FAILED: All ML years should have positive revenue
+[2025-06-17 08:55:31,557] [ERROR] 💥 TEST SUITE FAILED: All ML years should have positive revenue
+[2025-06-17 08:55:31,557] [ERROR] Traceback: Traceback (most recent call last):
+  File "/home/dswhome/PycharmProjects/EnTrans_v2/enhanced_fcas_test.py", line 607, in main
+    forecast = test_forecasting(estimator)
+  File "/home/dswhome/PycharmProjects/EnTrans_v2/enhanced_fcas_test.py", line 268, in test_forecasting
+    assert all(ml_forecast['total_revenue'] > 0), "All ML years should have positive revenue"
+AssertionError: All ML years should have positive revenue
+
+[2025-06-17 08:59:40,155] [INFO] 🚀 ENHANCED FCAS MODULE COMPREHENSIVE TEST
+[2025-06-17 08:59:40,155] [INFO] ============================================================
+[2025-06-17 08:59:40,156] [INFO] Test started at: 2025-06-17 08:59:40.155991
+[2025-06-17 08:59:40,156] [INFO] 🧪 TEST 1: Basic Functionality
+[2025-06-17 08:59:40,156] [INFO] --------------------------------------------------
+[2025-06-17 08:59:40,327] [INFO] ✅ Enhanced FCAS Estimator initialized for NSW1
+[2025-06-17 08:59:40,328] [INFO] 📊 Battery: 2.0MW / 0.1MWh
+[2025-06-17 08:59:40,328] [INFO] ✅ Estimator initialization successful
+[2025-06-17 08:59:40,328] [INFO] 📊 Calculated capabilities for 8 services
+[2025-06-17 08:59:40,328] [INFO]    Fast Raise (6s): 1.44 MW
+[2025-06-17 08:59:40,328] [INFO]    Fast Lower (6s): 1.44 MW
+[2025-06-17 08:59:40,328] [INFO]    Slow Raise (60s): 1.12 MW
+[2025-06-17 08:59:40,328] [INFO]    Slow Lower (60s): 1.12 MW
+[2025-06-17 08:59:40,328] [INFO]    Delayed Raise (5min): 0.60 MW
+[2025-06-17 08:59:40,328] [INFO]    Delayed Lower (5min): 0.60 MW
+[2025-06-17 08:59:40,328] [INFO]    Raise Regulation: 0.10 MW
+[2025-06-17 08:59:40,328] [INFO]    Lower Regulation: 0.10 MW
+[2025-06-17 08:59:40,328] [INFO] 📈 Calculated participation rates:
+[2025-06-17 08:59:40,329] [INFO]    raise6sec: 65.0%
+[2025-06-17 08:59:40,329] [INFO]    lower6sec: 70.0%
+[2025-06-17 08:59:40,329] [INFO]    raise60sec: 75.0%
+[2025-06-17 08:59:40,329] [INFO]    lower60sec: 80.0%
+[2025-06-17 08:59:40,329] [INFO]    raise5min: 85.0%
+[2025-06-17 08:59:40,329] [INFO]    lower5min: 85.0%
+[2025-06-17 08:59:40,329] [INFO]    raisereg: 45.0%
+[2025-06-17 08:59:40,329] [INFO]    lowerreg: 50.0%
+[2025-06-17 08:59:40,329] [INFO] ✅ TEST 1 PASSED: Basic functionality working
+[2025-06-17 08:59:40,329] [INFO] 
+🧪 TEST 2: Data Loading and Generation
+[2025-06-17 08:59:40,329] [INFO] --------------------------------------------------
+[2025-06-17 08:59:40,329] [WARNING] ⚠️ No database available, using synthetic historical data
+[2025-06-17 08:59:40,330] [INFO] 🔧 Generating synthetic historical data...
+[2025-06-17 08:59:40,395] [INFO] ✅ Generated 104833 synthetic records
+[2025-06-17 08:59:40,396] [INFO] ⏱️ Data loading took 0.07 seconds
+[2025-06-17 08:59:40,396] [INFO] 📊 Generated 104833 data points
+[2025-06-17 08:59:40,398] [INFO] 📅 Date range: 2023-01-01 00:00:00 to 2023-12-31 00:00:00
+[2025-06-17 08:59:40,398] [INFO] ✅ All FCAS services present in data
+[2025-06-17 08:59:40,398] [INFO] 🔍 Data Quality Check:
+[2025-06-17 08:59:40,401] [INFO]    raise6sec: Mean=$9.72, Std=$6.32, Range=$0.0-$35.0
+[2025-06-17 08:59:40,403] [INFO]    lower6sec: Mean=$8.36, Std=$5.96, Range=$0.0-$35.0
+[2025-06-17 08:59:40,404] [INFO]    raise60sec: Mean=$6.93, Std=$5.64, Range=$0.0-$35.0
+[2025-06-17 08:59:40,406] [INFO]    lower60sec: Mean=$5.99, Std=$5.37, Range=$0.0-$35.0
+[2025-06-17 08:59:40,407] [INFO]    raise5min: Mean=$4.28, Std=$5.07, Range=$0.0-$35.0
+[2025-06-17 08:59:40,408] [INFO]    lower5min: Mean=$3.88, Std=$5.01, Range=$0.0-$35.0
+[2025-06-17 08:59:40,410] [INFO]    raisereg: Mean=$13.52, Std=$7.25, Range=$0.0-$35.0
+[2025-06-17 08:59:40,411] [INFO]    lowerreg: Mean=$12.73, Std=$6.97, Range=$0.0-$35.0
+[2025-06-17 08:59:40,412] [INFO] 🗄️ Real database found - testing database connection...
+[2025-06-17 08:59:40,412] [INFO] ✅ Enhanced FCAS Estimator initialized for NSW1
+[2025-06-17 08:59:40,412] [INFO] 📊 Battery: 2.0MW / 0.1MWh
+[2025-06-17 08:59:40,412] [INFO] 💾 Database: /media/dswhome/Elements/FCAS_data/nem_data_final.db
+[2025-06-17 08:59:40,412] [INFO] 📥 Loading historical data from 2023-01-01 to 2023-03-31
+[2025-06-17 08:59:40,849] [INFO] ✅ Loaded 25632 records from database
+[2025-06-17 08:59:40,849] [INFO] ✅ Database connection successful: 25632 real records
+[2025-06-17 08:59:40,850] [INFO] ✅ TEST 2 PASSED: Data loading and generation working
+[2025-06-17 08:59:40,850] [INFO] 
+🧪 TEST 3: ML Model Training
+[2025-06-17 08:59:40,850] [INFO] --------------------------------------------------
+[2025-06-17 08:59:40,850] [INFO] 🤖 Training ML models for FCAS price forecasting...
+[2025-06-17 08:59:40,911] [INFO] Training model for raise6sec...
+[2025-06-17 08:59:45,773] [INFO] ✅ raise6sec model trained - MAE: $1.64 (44.1%)
+[2025-06-17 08:59:45,773] [INFO] Training model for lower6sec...
+[2025-06-17 08:59:50,539] [INFO] ✅ lower6sec model trained - MAE: $0.46 (26.2%)
+[2025-06-17 08:59:50,539] [INFO] Training model for raise60sec...
+[2025-06-17 08:59:55,436] [INFO] ✅ raise60sec model trained - MAE: $0.98 (44.2%)
+[2025-06-17 08:59:55,437] [INFO] Training model for lower60sec...
+[2025-06-17 09:00:00,663] [INFO] ✅ lower60sec model trained - MAE: $1.63 (27.1%)
+[2025-06-17 09:00:00,663] [INFO] Training model for raise5min...
+[2025-06-17 09:00:06,050] [INFO] ✅ raise5min model trained - MAE: $0.10 (17.6%)
+[2025-06-17 09:00:06,051] [INFO] Training model for lower5min...
+[2025-06-17 09:00:11,169] [INFO] ✅ lower5min model trained - MAE: $1.56 (34.9%)
+[2025-06-17 09:00:11,169] [INFO] Training model for raisereg...
+[2025-06-17 09:00:18,281] [INFO] ✅ raisereg model trained - MAE: $1.09 (7.3%)
+[2025-06-17 09:00:18,281] [INFO] Training model for lowerreg...
+[2025-06-17 09:00:26,976] [INFO] ✅ lowerreg model trained - MAE: $0.63 (4.9%)
+[2025-06-17 09:00:26,977] [INFO] ⏱️ Model training took 46.13 seconds
+[2025-06-17 09:00:26,978] [INFO] 🤖 Trained 8 ML models
+[2025-06-17 09:00:26,978] [INFO] 📊 Model Performance Summary:
+[2025-06-17 09:00:26,978] [INFO]    raise6sec:
+[2025-06-17 09:00:26,978] [INFO]      MAE: $1.64 (44.1%)
+[2025-06-17 09:00:26,978] [INFO]      Top features: ['raise6sec_lag_1', 'raise6sec_lag_2', 'reg_avg']
+[2025-06-17 09:00:26,978] [INFO]    lower6sec:
+[2025-06-17 09:00:26,978] [INFO]      MAE: $0.46 (26.2%)
+[2025-06-17 09:00:26,978] [INFO]      Top features: ['lower6sec_lag_1', 'lower6sec_lag_1d', 'lower6sec_lag_2']
+[2025-06-17 09:00:26,978] [INFO]    raise60sec:
+[2025-06-17 09:00:26,978] [INFO]      MAE: $0.98 (44.2%)
+[2025-06-17 09:00:26,978] [INFO]      Top features: ['raise60sec_lag_1', 'reg_spread', 'raise60sec_lag_2']
+[2025-06-17 09:00:26,978] [INFO]    lower60sec:
+[2025-06-17 09:00:26,979] [INFO]      MAE: $1.63 (27.1%)
+[2025-06-17 09:00:26,979] [INFO]      Top features: ['lower60sec_lag_1', 'lower60sec_lag_3', 'lower60sec_lag_6']
+[2025-06-17 09:00:26,979] [INFO]    raise5min:
+[2025-06-17 09:00:26,979] [INFO]      MAE: $0.10 (17.6%)
+[2025-06-17 09:00:26,979] [INFO]      Top features: ['raise5min_lag_1', 'raise5min_lag_2', 'raise5min_lag_12']
+[2025-06-17 09:00:26,979] [INFO]    lower5min:
+[2025-06-17 09:00:26,979] [INFO]      MAE: $1.56 (34.9%)
+[2025-06-17 09:00:26,979] [INFO]      Top features: ['lower5min_lag_1', 'reg_avg', 'reg_spread']
+[2025-06-17 09:00:26,979] [INFO]    raisereg:
+[2025-06-17 09:00:26,979] [INFO]      MAE: $1.09 (7.3%)
+[2025-06-17 09:00:26,979] [INFO]      Top features: ['reg_avg', 'reg_spread', 'raisereg_lag_1']
+[2025-06-17 09:00:26,980] [INFO]    lowerreg:
+[2025-06-17 09:00:26,980] [INFO]      MAE: $0.63 (4.9%)
+[2025-06-17 09:00:26,980] [INFO]      Top features: ['reg_avg', 'reg_spread', 'lowerreg_lag_1']
+[2025-06-17 09:00:26,980] [INFO] 📈 Average MAE across all services: 25.8%
+[2025-06-17 09:00:26,980] [INFO] 🔮 Testing model predictions...
+[2025-06-17 09:00:27,057] [WARNING] ⚠️ Prediction test failed for raise6sec: raise6sec has extremely high predictions
+[2025-06-17 09:00:27,061] [INFO] ✅ lower6sec: 100.0% predictions in reasonable range
+[2025-06-17 09:00:27,065] [INFO] ✅ raise60sec: 97.0% predictions in reasonable range
+[2025-06-17 09:00:27,068] [INFO] ✅ lower60sec: 100.0% predictions in reasonable range
+[2025-06-17 09:00:27,073] [INFO] ✅ raise5min: 100.0% predictions in reasonable range
+[2025-06-17 09:00:27,075] [INFO] ✅ lower5min: 100.0% predictions in reasonable range
+[2025-06-17 09:00:27,079] [WARNING] ⚠️ Prediction test failed for raisereg: raisereg has extremely high predictions
+[2025-06-17 09:00:27,083] [INFO] ✅ lowerreg: 100.0% predictions in reasonable range
+[2025-06-17 09:00:27,084] [INFO] ✅ 6/8 models passed prediction tests
+[2025-06-17 09:00:27,084] [INFO] ✅ TEST 3 PASSED: ML model training successful
+[2025-06-17 09:00:27,084] [INFO] 
+🧪 TEST 4: Forecasting
+[2025-06-17 09:00:27,084] [INFO] --------------------------------------------------
+[2025-06-17 09:00:27,084] [INFO] 📊 Testing statistical forecast...
+[2025-06-17 09:00:27,084] [INFO] 📊 Generating statistical forecast for 5 years from 2024-01-01 00:00:00
+[2025-06-17 09:00:27,086] [INFO] ✅ Generated statistical forecast: 5 years
+[2025-06-17 09:00:27,087] [INFO] 💰 Average annual revenue: $3,310,779
+[2025-06-17 09:00:27,087] [INFO] 📅 Statistical forecast: 5 years
+[2025-06-17 09:00:27,087] [INFO] 💰 Total revenue: $16,579,916
+[2025-06-17 09:00:27,087] [INFO] 🤖 Testing ML forecast...
+[2025-06-17 09:00:27,087] [INFO] 🔮 Generating ML forecast for 5 years from 2024-01-01 00:00:00
+[2025-06-17 09:00:27,088] [INFO] 📥 Loading historical data from 2023-12-02 to 2024-01-01
+[2025-06-17 09:00:27,534] [INFO] ✅ Loaded 8640 records from database
+[2025-06-17 09:00:27,610] [INFO] Forecasting raise6sec...
+[2025-06-17 09:00:27,631] [ERROR] ❌ TEST 4 FAILED: local variable 'service_stats' referenced before assignment
+[2025-06-17 09:00:27,631] [ERROR] 💥 TEST SUITE FAILED: local variable 'service_stats' referenced before assignment
+[2025-06-17 09:00:27,632] [ERROR] Traceback: Traceback (most recent call last):
+  File "/home/dswhome/PycharmProjects/EnTrans_v2/enhanced_fcas_test.py", line 626, in main
+    forecast = test_forecasting(estimator)
+  File "/home/dswhome/PycharmProjects/EnTrans_v2/enhanced_fcas_test.py", line 261, in test_forecasting
+    ml_forecast = estimator.generate_ml_forecast(datetime(2024, 1, 1), 5)
+  File "/home/dswhome/PycharmProjects/EnTrans_v2/enhanced_fcas_module.py", line 464, in generate_ml_forecast
+    extended_df.loc[extended_df.index[i], service] = service_stats['mean']
+UnboundLocalError: local variable 'service_stats' referenced before assignment
+
+[2025-06-17 09:02:33,127] [INFO] 🚀 ENHANCED FCAS MODULE COMPREHENSIVE TEST
+[2025-06-17 09:02:33,128] [INFO] ============================================================
+[2025-06-17 09:02:33,128] [INFO] Test started at: 2025-06-17 09:02:33.128775
+[2025-06-17 09:02:33,128] [INFO] 🧪 TEST 1: Basic Functionality
+[2025-06-17 09:02:33,129] [INFO] --------------------------------------------------
+[2025-06-17 09:02:33,430] [INFO] ✅ Enhanced FCAS Estimator initialized for NSW1
+[2025-06-17 09:02:33,430] [INFO] 📊 Battery: 2.0MW / 0.1MWh
+[2025-06-17 09:02:33,430] [INFO] ✅ Estimator initialization successful
+[2025-06-17 09:02:33,430] [INFO] 📊 Calculated capabilities for 8 services
+[2025-06-17 09:02:33,430] [INFO]    Fast Raise (6s): 1.44 MW
+[2025-06-17 09:02:33,430] [INFO]    Fast Lower (6s): 1.44 MW
+[2025-06-17 09:02:33,430] [INFO]    Slow Raise (60s): 1.12 MW
+[2025-06-17 09:02:33,430] [INFO]    Slow Lower (60s): 1.12 MW
+[2025-06-17 09:02:33,430] [INFO]    Delayed Raise (5min): 0.60 MW
+[2025-06-17 09:02:33,431] [INFO]    Delayed Lower (5min): 0.60 MW
+[2025-06-17 09:02:33,431] [INFO]    Raise Regulation: 0.10 MW
+[2025-06-17 09:02:33,431] [INFO]    Lower Regulation: 0.10 MW
+[2025-06-17 09:02:33,431] [INFO] 📈 Calculated participation rates:
+[2025-06-17 09:02:33,431] [INFO]    raise6sec: 65.0%
+[2025-06-17 09:02:33,431] [INFO]    lower6sec: 70.0%
+[2025-06-17 09:02:33,431] [INFO]    raise60sec: 75.0%
+[2025-06-17 09:02:33,431] [INFO]    lower60sec: 80.0%
+[2025-06-17 09:02:33,431] [INFO]    raise5min: 85.0%
+[2025-06-17 09:02:33,433] [INFO]    lower5min: 85.0%
+[2025-06-17 09:02:33,433] [INFO]    raisereg: 45.0%
+[2025-06-17 09:02:33,433] [INFO]    lowerreg: 50.0%
+[2025-06-17 09:02:33,434] [INFO] ✅ TEST 1 PASSED: Basic functionality working
+[2025-06-17 09:02:33,434] [INFO] 
+🧪 TEST 2: Data Loading and Generation
+[2025-06-17 09:02:33,434] [INFO] --------------------------------------------------
+[2025-06-17 09:02:33,434] [WARNING] ⚠️ No database available, using synthetic historical data
+[2025-06-17 09:02:33,434] [INFO] 🔧 Generating synthetic historical data...
+[2025-06-17 09:02:33,552] [INFO] ✅ Generated 104833 synthetic records
+[2025-06-17 09:02:33,554] [INFO] ⏱️ Data loading took 0.12 seconds
+[2025-06-17 09:02:33,554] [INFO] 📊 Generated 104833 data points
+[2025-06-17 09:02:33,556] [INFO] 📅 Date range: 2023-01-01 00:00:00 to 2023-12-31 00:00:00
+[2025-06-17 09:02:33,557] [INFO] ✅ All FCAS services present in data
+[2025-06-17 09:02:33,557] [INFO] 🔍 Data Quality Check:
+[2025-06-17 09:02:33,562] [INFO]    raise6sec: Mean=$9.67, Std=$6.28, Range=$0.0-$35.0
+[2025-06-17 09:02:33,564] [INFO]    lower6sec: Mean=$8.38, Std=$5.98, Range=$0.0-$35.0
+[2025-06-17 09:02:33,568] [INFO]    raise60sec: Mean=$6.93, Std=$5.64, Range=$0.0-$35.0
+[2025-06-17 09:02:33,570] [INFO]    lower60sec: Mean=$6.01, Std=$5.43, Range=$0.0-$35.0
+[2025-06-17 09:02:33,572] [INFO]    raise5min: Mean=$4.28, Std=$5.09, Range=$0.0-$35.0
+[2025-06-17 09:02:33,575] [INFO]    lower5min: Mean=$3.87, Std=$4.98, Range=$0.0-$35.0
+[2025-06-17 09:02:33,578] [INFO]    raisereg: Mean=$13.58, Std=$7.28, Range=$0.0-$35.0
+[2025-06-17 09:02:33,581] [INFO]    lowerreg: Mean=$12.69, Std=$6.93, Range=$0.0-$35.0
+[2025-06-17 09:02:33,581] [INFO] 🗄️ Real database found - testing database connection...
+[2025-06-17 09:02:33,581] [INFO] ✅ Enhanced FCAS Estimator initialized for NSW1
+[2025-06-17 09:02:33,581] [INFO] 📊 Battery: 2.0MW / 0.1MWh
+[2025-06-17 09:02:33,581] [INFO] 💾 Database: /media/dswhome/Elements/FCAS_data/nem_data_final.db
+[2025-06-17 09:02:33,582] [INFO] 📥 Loading historical data from 2023-01-01 to 2023-03-31
+[2025-06-17 09:02:34,413] [INFO] ✅ Loaded 25632 records from database
+[2025-06-17 09:02:34,414] [INFO] ✅ Database connection successful: 25632 real records
+[2025-06-17 09:02:34,415] [INFO] ✅ TEST 2 PASSED: Data loading and generation working
+[2025-06-17 09:02:34,415] [INFO] 
+🧪 TEST 3: ML Model Training
+[2025-06-17 09:02:34,415] [INFO] --------------------------------------------------
+[2025-06-17 09:02:34,416] [INFO] 🤖 Training ML models for FCAS price forecasting...
+[2025-06-17 09:02:34,552] [INFO] Training model for raise6sec...
+[2025-06-17 09:02:44,820] [INFO] ✅ raise6sec model trained - MAE: $1.64 (44.1%)
+[2025-06-17 09:02:44,820] [INFO] Training model for lower6sec...
+[2025-06-17 09:02:50,530] [INFO] ✅ lower6sec model trained - MAE: $0.46 (26.2%)
+[2025-06-17 09:02:50,530] [INFO] Training model for raise60sec...
+[2025-06-17 09:02:56,078] [INFO] ✅ raise60sec model trained - MAE: $0.98 (44.2%)
+[2025-06-17 09:02:56,078] [INFO] Training model for lower60sec...
+[2025-06-17 09:03:01,721] [INFO] ✅ lower60sec model trained - MAE: $1.63 (27.1%)
+[2025-06-17 09:03:01,721] [INFO] Training model for raise5min...
+[2025-06-17 09:03:07,484] [INFO] ✅ raise5min model trained - MAE: $0.10 (17.6%)
+[2025-06-17 09:03:07,484] [INFO] Training model for lower5min...
+[2025-06-17 09:03:12,704] [INFO] ✅ lower5min model trained - MAE: $1.56 (34.9%)
+[2025-06-17 09:03:12,704] [INFO] Training model for raisereg...
+[2025-06-17 09:03:19,270] [INFO] ✅ raisereg model trained - MAE: $1.09 (7.3%)
+[2025-06-17 09:03:19,270] [INFO] Training model for lowerreg...
+[2025-06-17 09:03:25,853] [INFO] ✅ lowerreg model trained - MAE: $0.63 (4.9%)
+[2025-06-17 09:03:25,854] [INFO] ⏱️ Model training took 51.44 seconds
+[2025-06-17 09:03:25,854] [INFO] 🤖 Trained 8 ML models
+[2025-06-17 09:03:25,854] [INFO] 📊 Model Performance Summary:
+[2025-06-17 09:03:25,854] [INFO]    raise6sec:
+[2025-06-17 09:03:25,854] [INFO]      MAE: $1.64 (44.1%)
+[2025-06-17 09:03:25,854] [INFO]      Top features: ['raise6sec_lag_1', 'raise6sec_lag_2', 'reg_avg']
+[2025-06-17 09:03:25,854] [INFO]    lower6sec:
+[2025-06-17 09:03:25,855] [INFO]      MAE: $0.46 (26.2%)
+[2025-06-17 09:03:25,855] [INFO]      Top features: ['lower6sec_lag_1', 'lower6sec_lag_1d', 'lower6sec_lag_2']
+[2025-06-17 09:03:25,855] [INFO]    raise60sec:
+[2025-06-17 09:03:25,855] [INFO]      MAE: $0.98 (44.2%)
+[2025-06-17 09:03:25,855] [INFO]      Top features: ['raise60sec_lag_1', 'reg_spread', 'raise60sec_lag_2']
+[2025-06-17 09:03:25,855] [INFO]    lower60sec:
+[2025-06-17 09:03:25,855] [INFO]      MAE: $1.63 (27.1%)
+[2025-06-17 09:03:25,855] [INFO]      Top features: ['lower60sec_lag_1', 'lower60sec_lag_3', 'lower60sec_lag_6']
+[2025-06-17 09:03:25,855] [INFO]    raise5min:
+[2025-06-17 09:03:25,855] [INFO]      MAE: $0.10 (17.6%)
+[2025-06-17 09:03:25,856] [INFO]      Top features: ['raise5min_lag_1', 'raise5min_lag_2', 'raise5min_lag_12']
+[2025-06-17 09:03:25,856] [INFO]    lower5min:
+[2025-06-17 09:03:25,856] [INFO]      MAE: $1.56 (34.9%)
+[2025-06-17 09:03:25,856] [INFO]      Top features: ['lower5min_lag_1', 'reg_avg', 'reg_spread']
+[2025-06-17 09:03:25,856] [INFO]    raisereg:
+[2025-06-17 09:03:25,856] [INFO]      MAE: $1.09 (7.3%)
+[2025-06-17 09:03:25,856] [INFO]      Top features: ['reg_avg', 'reg_spread', 'raisereg_lag_1']
+[2025-06-17 09:03:25,856] [INFO]    lowerreg:
+[2025-06-17 09:03:25,856] [INFO]      MAE: $0.63 (4.9%)
+[2025-06-17 09:03:25,857] [INFO]      Top features: ['reg_avg', 'reg_spread', 'lowerreg_lag_1']
+[2025-06-17 09:03:25,857] [INFO] 📈 Average MAE across all services: 25.8%
+[2025-06-17 09:03:25,857] [INFO] 🔮 Testing model predictions...
+[2025-06-17 09:03:25,919] [WARNING] ⚠️ Prediction test failed for raise6sec: raise6sec has extremely high predictions
+[2025-06-17 09:03:25,922] [INFO] ✅ lower6sec: 100.0% predictions in reasonable range
+[2025-06-17 09:03:25,925] [INFO] ✅ raise60sec: 97.0% predictions in reasonable range
+[2025-06-17 09:03:25,929] [INFO] ✅ lower60sec: 100.0% predictions in reasonable range
+[2025-06-17 09:03:25,933] [INFO] ✅ raise5min: 100.0% predictions in reasonable range
+[2025-06-17 09:03:25,936] [INFO] ✅ lower5min: 100.0% predictions in reasonable range
+[2025-06-17 09:03:25,940] [WARNING] ⚠️ Prediction test failed for raisereg: raisereg has extremely high predictions
+[2025-06-17 09:03:25,944] [INFO] ✅ lowerreg: 100.0% predictions in reasonable range
+[2025-06-17 09:03:25,944] [INFO] ✅ 6/8 models passed prediction tests
+[2025-06-17 09:03:25,944] [INFO] ✅ TEST 3 PASSED: ML model training successful
+[2025-06-17 09:03:25,945] [INFO] 
+🧪 TEST 4: Forecasting
+[2025-06-17 09:03:25,945] [INFO] --------------------------------------------------
+[2025-06-17 09:03:25,945] [INFO] 📊 Testing statistical forecast...
+[2025-06-17 09:03:25,945] [INFO] 📊 Generating statistical forecast for 5 years from 2024-01-01 00:00:00
+[2025-06-17 09:03:25,946] [INFO] ✅ Generated statistical forecast: 5 years
+[2025-06-17 09:03:25,947] [INFO] 💰 Average annual revenue: $3,310,779
+[2025-06-17 09:03:25,947] [INFO] 📅 Statistical forecast: 5 years
+[2025-06-17 09:03:25,947] [INFO] 💰 Total revenue: $16,579,916
+[2025-06-17 09:03:25,947] [INFO] 🤖 Testing ML forecast...
+[2025-06-17 09:03:25,947] [INFO] 🔮 Generating ML forecast for 5 years from 2024-01-01 00:00:00
+[2025-06-17 09:03:25,947] [INFO] 📥 Loading historical data from 2023-12-02 to 2024-01-01
+[2025-06-17 09:03:26,379] [INFO] ✅ Loaded 8640 records from database
+[2025-06-17 09:03:26,470] [INFO] Forecasting raise6sec...
+[2025-06-17 09:03:41,234] [INFO] Forecasting lower6sec...
+[2025-06-17 09:03:55,503] [INFO] Forecasting raise60sec...
+[2025-06-17 09:04:10,003] [INFO] Forecasting lower60sec...
+[2025-06-17 09:04:24,408] [INFO] Forecasting raise5min...
+[2025-06-17 09:04:38,259] [INFO] Forecasting lower5min...
+[2025-06-17 09:04:52,555] [INFO] Forecasting raisereg...
+[2025-06-17 09:05:07,098] [INFO] Forecasting lowerreg...
+[2025-06-17 09:05:21,759] [INFO] ✅ ML forecast complete - 5 years
+[2025-06-17 09:05:21,761] [INFO] 📅 ML forecast: 5 years
+[2025-06-17 09:05:21,761] [INFO] 💰 Total revenue: $15,097,075
+[2025-06-17 09:05:21,762] [INFO] 📊 ML vs Statistical difference: 8.9%
+[2025-06-17 09:05:21,762] [INFO] ✅ Using ML forecast for subsequent tests
+[2025-06-17 09:05:21,762] [INFO] 🔍 Forecast Service Breakdown:
+[2025-06-17 09:05:21,762] [INFO]    raise6sec: $4,181,674 total, $836,335/year
+[2025-06-17 09:05:21,762] [INFO]    lower6sec: $3,814,595 total, $762,919/year
+[2025-06-17 09:05:21,763] [INFO]    raise60sec: $2,560,723 total, $512,145/year
+[2025-06-17 09:05:21,763] [INFO]    lower60sec: $2,307,594 total, $461,519/year
+[2025-06-17 09:05:21,763] [INFO]    raise5min: $857,779 total, $171,556/year
+[2025-06-17 09:05:21,763] [INFO]    lower5min: $750,557 total, $150,111/year
+[2025-06-17 09:05:21,763] [INFO]    raisereg: $293,285 total, $58,657/year
+[2025-06-17 09:05:21,763] [INFO]    lowerreg: $304,848 total, $60,970/year
+[2025-06-17 09:05:21,763] [INFO] ✅ TEST 4 PASSED: Forecasting working correctly
+[2025-06-17 09:05:21,764] [INFO] 
+🧪 TEST 5: Backtesting
+[2025-06-17 09:05:21,764] [INFO] --------------------------------------------------
+[2025-06-17 09:05:21,764] [INFO] 🔄 Running backtest...
+[2025-06-17 09:05:21,764] [INFO] 🔄 Running backtest from 2023-01-01 for 6 months
+[2025-06-17 09:05:21,765] [INFO] 📥 Loading historical data from 2022-01-01 to 2023-06-30
+[2025-06-17 09:05:22,705] [INFO] ✅ Loaded 156960 records from database
+[2025-06-17 09:05:22,709] [INFO] 🤖 Training ML models for FCAS price forecasting...
+[2025-06-17 09:05:22,866] [INFO] Training model for raise6sec...
+[2025-06-17 09:05:34,173] [INFO] ✅ raise6sec model trained - MAE: $6.59 (84.0%)
+[2025-06-17 09:05:34,173] [INFO] Training model for lower6sec...
+[2025-06-17 09:05:46,328] [INFO] ✅ lower6sec model trained - MAE: $0.81 (71.0%)
+[2025-06-17 09:05:46,328] [INFO] Training model for raise60sec...
+[2025-06-17 09:05:58,864] [INFO] ✅ raise60sec model trained - MAE: $2.67 (62.9%)
+[2025-06-17 09:05:58,864] [INFO] Training model for lower60sec...
+[2025-06-17 09:06:11,604] [INFO] ✅ lower60sec model trained - MAE: $1.86 (46.7%)
+[2025-06-17 09:06:11,604] [INFO] Training model for raise5min...
+[2025-06-17 09:06:24,157] [INFO] ✅ raise5min model trained - MAE: $0.33 (48.0%)
+[2025-06-17 09:06:24,157] [INFO] Training model for lower5min...
+[2025-06-17 09:06:37,209] [INFO] ✅ lower5min model trained - MAE: $0.83 (76.1%)
+[2025-06-17 09:06:37,209] [INFO] Training model for raisereg...
+[2025-06-17 09:06:51,257] [INFO] ✅ raisereg model trained - MAE: $4.59 (19.4%)
+[2025-06-17 09:06:51,257] [INFO] Training model for lowerreg...
+[2025-06-17 09:07:06,135] [INFO] ✅ lowerreg model trained - MAE: $1.14 (8.2%)
+[2025-06-17 09:07:06,396] [INFO] 📊 2023-01: Actual=$171,227, Predicted=$16,608, Error=-90.3%
+[2025-06-17 09:07:06,630] [INFO] 📊 2023-01: Actual=$143,375, Predicted=$16,608, Error=-88.4%
+[2025-06-17 09:07:06,862] [INFO] 📊 2023-03: Actual=$129,795, Predicted=$15,337, Error=-88.2%
+[2025-06-17 09:07:07,100] [INFO] 📊 2023-04: Actual=$161,567, Predicted=$16,732, Error=-89.6%
+[2025-06-17 09:07:07,358] [INFO] 📊 2023-05: Actual=$201,225, Predicted=$45,068, Error=-77.6%
+[2025-06-17 09:07:07,612] [INFO] 📊 2023-05: Actual=$81,763, Predicted=$16,883, Error=-79.4%
+[2025-06-17 09:07:07,612] [INFO] ✅ Backtest complete - Average error: -85.6%, MAE: $126,953
+[2025-06-17 09:07:07,612] [INFO] 📊 Backtest completed: 6 periods
+[2025-06-17 09:07:07,613] [INFO] 🎯 Backtest Performance:
+[2025-06-17 09:07:07,613] [INFO]    Average error: -85.6%
+[2025-06-17 09:07:07,613] [INFO]    Error std dev: 5.1%
+[2025-06-17 09:07:07,613] [INFO]    Mean absolute error: $126,953
+[2025-06-17 09:07:07,613] [INFO] 📅 Period-by-period results:
+[2025-06-17 09:07:07,613] [INFO]    2023-01: Actual=$171,227, Predicted=$16,608, Error=-90.3%
+[2025-06-17 09:07:07,613] [INFO]    2023-01: Actual=$143,375, Predicted=$16,608, Error=-88.4%
+[2025-06-17 09:07:07,613] [INFO]    2023-03: Actual=$129,795, Predicted=$15,337, Error=-88.2%
+[2025-06-17 09:07:07,613] [INFO]    2023-04: Actual=$161,567, Predicted=$16,732, Error=-89.6%
+[2025-06-17 09:07:07,613] [INFO]    2023-05: Actual=$201,225, Predicted=$45,068, Error=-77.6%
+[2025-06-17 09:07:07,613] [INFO]    2023-05: Actual=$81,763, Predicted=$16,883, Error=-79.4%
+[2025-06-17 09:07:07,614] [ERROR] ❌ TEST 5 FAILED: Average error should be reasonable
+[2025-06-17 09:07:07,614] [WARNING] ⚠️ Backtesting test had issues: Average error should be reasonable
+[2025-06-17 09:07:07,614] [INFO] 
+🧪 TEST 6: Sensitivity Analysis
+[2025-06-17 09:07:07,614] [INFO] --------------------------------------------------
+[2025-06-17 09:07:07,614] [INFO] 📈 Testing sensitivity to: ['power_mw', 'energy_mwh', 'efficiency', 'participation_rate']
+[2025-06-17 09:07:07,614] [INFO] 📈 Running sensitivity analysis with ±20% variation
+[2025-06-17 09:07:07,614] [INFO] 🔮 Generating ML forecast for 25 years from 2024-01-01 00:00:00
+[2025-06-17 09:07:07,614] [INFO] 📥 Loading historical data from 2023-12-02 to 2024-01-01
+[2025-06-17 09:07:08,052] [INFO] ✅ Loaded 8640 records from database
+[2025-06-17 09:07:08,421] [INFO] Forecasting raise6sec...
+[2025-06-17 09:08:19,329] [INFO] Forecasting lower6sec...
+[2025-06-17 09:09:30,205] [INFO] Forecasting raise60sec...
+[2025-06-17 09:10:40,509] [INFO] Forecasting lower60sec...
+[2025-06-17 09:11:52,436] [INFO] Forecasting raise5min...
+[2025-06-17 09:13:04,352] [INFO] Forecasting lower5min...
+[2025-06-17 09:14:15,744] [INFO] Forecasting raisereg...
+[2025-06-17 09:15:27,212] [INFO] Forecasting lowerreg...
+[2025-06-17 09:16:38,842] [INFO] ✅ ML forecast complete - 25 years
+[2025-06-17 09:16:38,849] [INFO] Testing sensitivity to power_mw...
+[2025-06-17 09:16:38,849] [INFO] ✅ Enhanced FCAS Estimator initialized for NSW1
+[2025-06-17 09:16:38,849] [INFO] 📊 Battery: 2.4MW / 0.1MWh
+[2025-06-17 09:16:38,849] [INFO] 🔮 Generating ML forecast for 25 years from 2024-01-01 00:00:00
+[2025-06-17 09:16:38,850] [WARNING] ⚠️ No database available, using synthetic historical data
+[2025-06-17 09:16:38,850] [INFO] 🔧 Generating synthetic historical data...
+[2025-06-17 09:16:38,855] [INFO] ✅ Generated 8641 synthetic records
+[2025-06-17 09:16:39,131] [INFO] Forecasting raise6sec...
+[2025-06-17 09:17:50,683] [INFO] Forecasting lower6sec...
+[2025-06-17 09:19:00,232] [INFO] Forecasting raise60sec...
+[2025-06-17 09:20:12,985] [INFO] Forecasting lower60sec...
+[2025-06-17 09:21:24,505] [INFO] Forecasting raise5min...
+[2025-06-17 09:22:33,877] [INFO] Forecasting lower5min...
+[2025-06-17 09:23:55,994] [INFO] Forecasting raisereg...
+[2025-06-17 09:25:10,594] [INFO] Forecasting lowerreg...
+[2025-06-17 09:26:35,412] [INFO] ✅ ML forecast complete - 25 years
+[2025-06-17 09:26:35,420] [INFO] ✅ power_mw: 0.64% revenue change per 1% parameter change
+[2025-06-17 09:26:35,420] [INFO] Testing sensitivity to energy_mwh...
+[2025-06-17 09:26:35,420] [INFO] ✅ Enhanced FCAS Estimator initialized for NSW1
+[2025-06-17 09:26:35,420] [INFO] 📊 Battery: 2.0MW / 0.12MWh
+[2025-06-17 09:26:35,420] [INFO] 🔮 Generating ML forecast for 25 years from 2024-01-01 00:00:00
+[2025-06-17 09:26:35,420] [WARNING] ⚠️ No database available, using synthetic historical data
+[2025-06-17 09:26:35,420] [INFO] 🔧 Generating synthetic historical data...
+[2025-06-17 09:26:35,429] [INFO] ✅ Generated 8641 synthetic records
+[2025-06-17 09:26:35,811] [INFO] Forecasting raise6sec...
+[2025-06-17 09:27:49,238] [INFO] Forecasting lower6sec...
+[2025-06-17 09:29:02,453] [INFO] Forecasting raise60sec...
+[2025-06-17 09:30:17,186] [INFO] Forecasting lower60sec...
+[2025-06-17 09:31:34,312] [INFO] Forecasting raise5min...
+[2025-06-17 09:32:46,089] [INFO] Forecasting lower5min...
+[2025-06-17 09:33:56,172] [INFO] Forecasting raisereg...
+[2025-06-17 09:35:05,346] [INFO] Forecasting lowerreg...
+[2025-06-17 09:36:15,822] [INFO] ✅ ML forecast complete - 25 years
+[2025-06-17 09:36:15,829] [INFO] ✅ energy_mwh: 0.15% revenue change per 1% parameter change
+[2025-06-17 09:36:15,829] [INFO] Testing sensitivity to efficiency...
+[2025-06-17 09:36:15,829] [INFO] ✅ Enhanced FCAS Estimator initialized for NSW1
+[2025-06-17 09:36:15,829] [INFO] 📊 Battery: 2.0MW / 0.1MWh
+[2025-06-17 09:36:15,829] [INFO] 🔮 Generating ML forecast for 25 years from 2024-01-01 00:00:00
+[2025-06-17 09:36:15,829] [WARNING] ⚠️ No database available, using synthetic historical data
+[2025-06-17 09:36:15,829] [INFO] 🔧 Generating synthetic historical data...
+[2025-06-17 09:36:15,838] [INFO] ✅ Generated 8641 synthetic records
+[2025-06-17 09:36:16,112] [INFO] Forecasting raise6sec...
+[2025-06-17 09:37:28,415] [INFO] Forecasting lower6sec...
+[2025-06-17 09:38:40,857] [INFO] Forecasting raise60sec...
+[2025-06-17 09:39:56,320] [INFO] Forecasting lower60sec...
+[2025-06-17 09:41:09,888] [INFO] Forecasting raise5min...
+[2025-06-17 09:42:25,139] [INFO] Forecasting lower5min...
+[2025-06-17 09:43:39,303] [INFO] Forecasting raisereg...
+[2025-06-17 09:44:57,766] [INFO] Forecasting lowerreg...
+[2025-06-17 09:46:11,457] [INFO] ✅ ML forecast complete - 25 years
+[2025-06-17 09:46:11,464] [INFO] ✅ efficiency: 0.00% revenue change per 1% parameter change
+[2025-06-17 09:46:11,464] [INFO] Testing sensitivity to participation_rate...
+[2025-06-17 09:46:11,464] [INFO] ✅ Enhanced FCAS Estimator initialized for NSW1
+[2025-06-17 09:46:11,464] [INFO] 📊 Battery: 2.0MW / 0.1MWh
+[2025-06-17 09:46:11,464] [INFO] 🔮 Generating ML forecast for 25 years from 2024-01-01 00:00:00
+[2025-06-17 09:46:11,464] [WARNING] ⚠️ No database available, using synthetic historical data
+[2025-06-17 09:46:11,464] [INFO] 🔧 Generating synthetic historical data...
+[2025-06-17 09:46:11,470] [INFO] ✅ Generated 8641 synthetic records
+[2025-06-17 09:46:11,754] [INFO] Forecasting raise6sec...
+[2025-06-17 09:47:25,992] [INFO] Forecasting lower6sec...
+[2025-06-17 09:48:41,233] [INFO] Forecasting raise60sec...
+[2025-06-17 09:50:03,267] [INFO] Forecasting lower60sec...
+[2025-06-17 09:51:23,686] [INFO] Forecasting raise5min...
+[2025-06-17 09:52:45,830] [INFO] Forecasting lower5min...
+[2025-06-17 09:54:18,326] [INFO] Forecasting raisereg...
+[2025-06-17 09:56:01,838] [INFO] Forecasting lowerreg...
+[2025-06-17 09:57:17,485] [INFO] ✅ ML forecast complete - 25 years
+[2025-06-17 09:57:17,493] [INFO] ✅ participation_rate: 0.00% revenue change per 1% parameter change
+[2025-06-17 09:57:17,493] [INFO] 📊 Sensitivity analysis completed: 4 parameters
+[2025-06-17 09:57:17,493] [INFO] 🎯 Sensitivity Results (sorted by impact):
+[2025-06-17 09:57:17,493] [INFO]    power_mw:
+[2025-06-17 09:57:17,493] [INFO]      Base value: 2.0
+[2025-06-17 09:57:17,493] [INFO]      Test value: 2.4
+[2025-06-17 09:57:17,493] [INFO]      Revenue change: 0.64%/% parameter change
+[2025-06-17 09:57:17,494] [INFO]      Absolute impact: $9,734,953
+[2025-06-17 09:57:17,494] [INFO]    energy_mwh:
+[2025-06-17 09:57:17,494] [INFO]      Base value: 0.1
+[2025-06-17 09:57:17,494] [INFO]      Test value: 0.12
+[2025-06-17 09:57:17,494] [INFO]      Revenue change: 0.15%/% parameter change
+[2025-06-17 09:57:17,494] [INFO]      Absolute impact: $2,206,469
+[2025-06-17 09:57:17,494] [INFO]    efficiency:
+[2025-06-17 09:57:17,494] [INFO]      Base value: 0.9
+[2025-06-17 09:57:17,494] [INFO]      Test value: 1.08
+[2025-06-17 09:57:17,494] [INFO]      Revenue change: 0.00%/% parameter change
+[2025-06-17 09:57:17,495] [INFO]      Absolute impact: $0
+[2025-06-17 09:57:17,495] [INFO]    participation_rate:
+[2025-06-17 09:57:17,495] [INFO]      Base value: 0.85
+[2025-06-17 09:57:17,495] [INFO]      Test value: 1.02
+[2025-06-17 09:57:17,495] [INFO]      Revenue change: 0.00%/% parameter change
+[2025-06-17 09:57:17,495] [INFO]      Absolute impact: $0
+[2025-06-17 09:57:17,495] [INFO] 🔥 Most sensitive parameter: power_mw (0.64%/%)
+[2025-06-17 09:57:17,495] [INFO] ✅ TEST 6 PASSED: Sensitivity analysis working correctly
+[2025-06-17 09:57:17,495] [INFO] 
+🧪 TEST 7: PySAM Integration
+[2025-06-17 09:57:17,495] [INFO] --------------------------------------------------
+[2025-06-17 09:57:17,495] [INFO] 🔗 Creating PySAM cashflow arrays...
+[2025-06-17 09:57:17,496] [INFO] 🔗 Creating PySAM cashflow arrays...
+[2025-06-17 09:57:17,496] [INFO] ✅ Created PySAM cashflow with 11 arrays
+[2025-06-17 09:57:17,496] [INFO] 📊 Created 11 cashflow arrays
+[2025-06-17 09:57:17,496] [INFO] 🔍 Validating PySAM format:
+[2025-06-17 09:57:17,496] [INFO]    ✅ cf_ancillary_services_total: 6 periods, sum=$15,097,075
+[2025-06-17 09:57:17,496] [INFO]    ✅ cf_ancillary_services_1_revenue: 6 periods, sum=$4,181,674
+[2025-06-17 09:57:17,496] [INFO]    ✅ cf_ancillary_services_2_revenue: 6 periods, sum=$3,814,595
+[2025-06-17 09:57:17,496] [INFO]    ✅ cf_ancillary_services_3_revenue: 6 periods, sum=$2,560,723
+[2025-06-17 09:57:17,497] [INFO]    ✅ cf_ancillary_services_4_revenue: 6 periods, sum=$2,307,594
+[2025-06-17 09:57:17,497] [INFO]    ✅ cf_ancillary_services_5_revenue: 6 periods, sum=$857,779
+[2025-06-17 09:57:17,497] [INFO]    ✅ cf_ancillary_services_6_revenue: 6 periods, sum=$750,557
+[2025-06-17 09:57:17,497] [INFO]    ✅ cf_ancillary_services_7_revenue: 6 periods, sum=$293,285
+[2025-06-17 09:57:17,497] [INFO]    ✅ cf_ancillary_services_8_revenue: 6 periods, sum=$304,848
+[2025-06-17 09:57:17,497] [INFO]    ✅ cf_rec_revenue: 6 periods, sum=$26,020
+[2025-06-17 09:57:17,497] [INFO] 🧪 Testing with mock PySAM config...
+[2025-06-17 09:57:17,497] [INFO] 🇦🇺 Setting up Enhanced FCAS ancillary services calculation
+[2025-06-17 09:57:17,497] [INFO] 📊 Enhanced FCAS config: 2.0MW / 0.1MWh
+[2025-06-17 09:57:17,498] [INFO] 🚀 Starting comprehensive FCAS analysis...
+[2025-06-17 09:57:17,498] [INFO] ✅ Enhanced FCAS Estimator initialized for NSW1
+[2025-06-17 09:57:17,498] [INFO] 📊 Battery: 2.001MW / 0.1MWh
+[2025-06-17 09:57:17,498] [WARNING] ⚠️ No database available, using synthetic historical data
+[2025-06-17 09:57:17,498] [INFO] 🔧 Generating synthetic historical data...
+[2025-06-17 09:57:17,865] [INFO] ✅ Generated 525889 synthetic records
+[2025-06-17 09:57:17,865] [INFO] 🤖 Training ML models...
+[2025-06-17 09:57:17,865] [INFO] 🤖 Training ML models for FCAS price forecasting...
+[2025-06-17 09:57:18,459] [INFO] Training model for raise6sec...
+[2025-06-17 09:58:26,995] [INFO] ✅ raise6sec model trained - MAE: $4.02 (41.6%)
+[2025-06-17 09:58:26,995] [INFO] Training model for lower6sec...
+[2025-06-17 09:59:29,925] [INFO] ✅ lower6sec model trained - MAE: $3.67 (43.8%)
+[2025-06-17 09:59:29,926] [INFO] Training model for raise60sec...
+[2025-06-17 10:00:30,892] [INFO] ✅ raise60sec model trained - MAE: $3.28 (47.1%)
+[2025-06-17 10:00:30,892] [INFO] Training model for lower60sec...
+[2025-06-17 10:01:26,943] [INFO] ✅ lower60sec model trained - MAE: $2.96 (49.2%)
+[2025-06-17 10:01:26,943] [INFO] Training model for raise5min...
+[2025-06-17 10:02:22,103] [INFO] ✅ raise5min model trained - MAE: $2.50 (58.4%)
+[2025-06-17 10:02:22,104] [INFO] Training model for lower5min...
+[2025-06-17 10:03:17,252] [INFO] ✅ lower5min model trained - MAE: $2.39 (62.0%)
+[2025-06-17 10:03:17,252] [INFO] Training model for raisereg...
+[2025-06-17 10:04:33,061] [INFO] ✅ raisereg model trained - MAE: $0.09 (0.7%)
+[2025-06-17 10:04:33,061] [INFO] Training model for lowerreg...
+[2025-06-17 10:05:49,866] [INFO] ✅ lowerreg model trained - MAE: $0.09 (0.7%)
+[2025-06-17 10:05:49,867] [INFO] 🔮 Generating ML forecast for 25 years from 2024-01-01 00:00:00
+[2025-06-17 10:05:49,867] [WARNING] ⚠️ No database available, using synthetic historical data
+[2025-06-17 10:05:49,867] [INFO] 🔧 Generating synthetic historical data...
+[2025-06-17 10:05:49,873] [INFO] ✅ Generated 8641 synthetic records
+[2025-06-17 10:05:50,190] [INFO] Forecasting raise6sec...
+[2025-06-17 10:07:02,254] [INFO] Forecasting lower6sec...
+[2025-06-17 10:08:16,618] [INFO] Forecasting raise60sec...
+[2025-06-17 10:09:26,328] [INFO] Forecasting lower60sec...
+[2025-06-17 10:10:37,875] [INFO] Forecasting raise5min...
+[2025-06-17 10:11:50,062] [INFO] Forecasting lower5min...
+[2025-06-17 10:13:01,553] [INFO] Forecasting raisereg...
+[2025-06-17 10:14:12,614] [INFO] Forecasting lowerreg...
+[2025-06-17 10:15:22,674] [INFO] ✅ ML forecast complete - 25 years
+[2025-06-17 10:15:22,681] [INFO] 🔄 Running backtest from 2023-01-01 for 12 months
+[2025-06-17 10:15:22,681] [WARNING] ⚠️ No database available, using synthetic historical data
+[2025-06-17 10:15:22,682] [INFO] 🔧 Generating synthetic historical data...
+[2025-06-17 10:15:22,792] [INFO] ✅ Generated 208801 synthetic records
+[2025-06-17 10:15:22,797] [INFO] 🤖 Training ML models for FCAS price forecasting...
+[2025-06-17 10:15:22,903] [INFO] Training model for raise6sec...
+[2025-06-17 10:15:36,989] [INFO] ✅ raise6sec model trained - MAE: $4.20 (47.3%)
+[2025-06-17 10:15:36,989] [INFO] Training model for lower6sec...
+[2025-06-17 10:15:51,567] [INFO] ✅ lower6sec model trained - MAE: $3.81 (49.5%)
+[2025-06-17 10:15:51,568] [INFO] Training model for raise60sec...
+[2025-06-17 10:16:07,033] [INFO] ✅ raise60sec model trained - MAE: $3.52 (54.7%)
+[2025-06-17 10:16:07,033] [INFO] Training model for lower60sec...
+[2025-06-17 10:16:22,242] [INFO] ✅ lower60sec model trained - MAE: $3.14 (56.5%)
+[2025-06-17 10:16:22,242] [INFO] Training model for raise5min...
+[2025-06-17 10:16:37,418] [INFO] ✅ raise5min model trained - MAE: $2.72 (67.9%)
+[2025-06-17 10:16:37,418] [INFO] Training model for lower5min...
+[2025-06-17 10:16:54,171] [INFO] ✅ lower5min model trained - MAE: $2.52 (69.9%)
+[2025-06-17 10:16:54,171] [INFO] Training model for raisereg...
+[2025-06-17 10:17:14,027] [INFO] ✅ raisereg model trained - MAE: $0.12 (1.0%)
+[2025-06-17 10:17:14,028] [INFO] Training model for lowerreg...
+[2025-06-17 10:17:32,933] [INFO] ✅ lowerreg model trained - MAE: $0.12 (1.0%)
+[2025-06-17 10:17:33,170] [INFO] 📊 2023-01: Actual=$308,899, Predicted=$671,858, Error=117.5%
+[2025-06-17 10:17:33,401] [INFO] 📊 2023-01: Actual=$333,261, Predicted=$667,006, Error=100.1%
+[2025-06-17 10:17:33,640] [INFO] 📊 2023-03: Actual=$350,763, Predicted=$703,211, Error=100.5%
+[2025-06-17 10:17:33,860] [INFO] 📊 2023-04: Actual=$355,056, Predicted=$693,115, Error=95.2%
+[2025-06-17 10:17:34,097] [INFO] 📊 2023-05: Actual=$346,605, Predicted=$672,972, Error=94.2%
+[2025-06-17 10:17:34,340] [INFO] 📊 2023-05: Actual=$330,772, Predicted=$686,755, Error=107.6%
+[2025-06-17 10:17:34,574] [INFO] 📊 2023-06: Actual=$309,558, Predicted=$705,631, Error=127.9%
+[2025-06-17 10:17:34,798] [INFO] 📊 2023-07: Actual=$293,278, Predicted=$675,837, Error=130.4%
+[2025-06-17 10:17:35,013] [INFO] 📊 2023-08: Actual=$286,347, Predicted=$659,671, Error=130.4%
+[2025-06-17 10:17:35,254] [INFO] 📊 2023-09: Actual=$285,046, Predicted=$667,378, Error=134.1%
+[2025-06-17 10:17:35,500] [INFO] 📊 2023-10: Actual=$303,292, Predicted=$662,184, Error=118.3%
+[2025-06-17 10:17:35,726] [INFO] 📊 2023-11: Actual=$323,095, Predicted=$715,890, Error=121.6%
+[2025-06-17 10:17:35,727] [INFO] ✅ Backtest complete - Average error: 114.8%, MAE: $362,961
+[2025-06-17 10:17:35,727] [INFO] 📈 Running sensitivity analysis with ±20% variation
+[2025-06-17 10:17:35,727] [INFO] 🔮 Generating ML forecast for 25 years from 2024-01-01 00:00:00
+[2025-06-17 10:17:35,727] [WARNING] ⚠️ No database available, using synthetic historical data
+[2025-06-17 10:17:35,727] [INFO] 🔧 Generating synthetic historical data...
+[2025-06-17 10:17:35,737] [INFO] ✅ Generated 8641 synthetic records
+[2025-06-17 10:17:36,009] [INFO] Forecasting raise6sec...
+[2025-06-17 10:18:46,482] [INFO] Forecasting lower6sec...
+[2025-06-17 10:19:59,944] [INFO] Forecasting raise60sec...
+[2025-06-17 10:21:12,959] [INFO] Forecasting lower60sec...
+[2025-06-17 10:22:24,671] [INFO] Forecasting raise5min...
+[2025-06-17 10:23:35,452] [INFO] Forecasting lower5min...
+[2025-06-17 10:24:47,540] [INFO] Forecasting raisereg...
+[2025-06-17 10:25:57,696] [INFO] Forecasting lowerreg...
+[2025-06-17 10:27:09,382] [INFO] ✅ ML forecast complete - 25 years
+[2025-06-17 10:27:09,389] [INFO] Testing sensitivity to power_mw...
+[2025-06-17 10:27:09,389] [INFO] ✅ Enhanced FCAS Estimator initialized for NSW1
+[2025-06-17 10:27:09,389] [INFO] 📊 Battery: 2.4012MW / 0.1MWh
+[2025-06-17 10:27:09,389] [INFO] 🔮 Generating ML forecast for 25 years from 2024-01-01 00:00:00
+[2025-06-17 10:27:09,389] [WARNING] ⚠️ No database available, using synthetic historical data
+[2025-06-17 10:27:09,389] [INFO] 🔧 Generating synthetic historical data...
+[2025-06-17 10:27:09,395] [INFO] ✅ Generated 8641 synthetic records
+[2025-06-17 10:27:09,709] [INFO] Forecasting raise6sec...
+[2025-06-17 10:28:20,329] [INFO] Forecasting lower6sec...
+[2025-06-17 10:29:30,949] [INFO] Forecasting raise60sec...
+[2025-06-17 10:30:41,532] [INFO] Forecasting lower60sec...
+[2025-06-17 10:31:51,322] [INFO] Forecasting raise5min...
+[2025-06-17 10:33:02,093] [INFO] Forecasting lower5min...
+[2025-06-17 10:34:13,533] [INFO] Forecasting raisereg...
+[2025-06-17 10:35:24,660] [INFO] Forecasting lowerreg...
+[2025-06-17 10:36:34,865] [INFO] ✅ ML forecast complete - 25 years
+[2025-06-17 10:36:34,871] [INFO] ✅ power_mw: 0.64% revenue change per 1% parameter change
+[2025-06-17 10:36:34,871] [INFO] Testing sensitivity to energy_mwh...
+[2025-06-17 10:36:34,871] [INFO] ✅ Enhanced FCAS Estimator initialized for NSW1
+[2025-06-17 10:36:34,871] [INFO] 📊 Battery: 2.001MW / 0.12MWh
+[2025-06-17 10:36:34,871] [INFO] 🔮 Generating ML forecast for 25 years from 2024-01-01 00:00:00
+[2025-06-17 10:36:34,871] [WARNING] ⚠️ No database available, using synthetic historical data
+[2025-06-17 10:36:34,871] [INFO] 🔧 Generating synthetic historical data...
+[2025-06-17 10:36:34,877] [INFO] ✅ Generated 8641 synthetic records
+[2025-06-17 10:36:35,189] [INFO] Forecasting raise6sec...
+[2025-06-17 10:37:46,045] [INFO] Forecasting lower6sec...
+[2025-06-17 10:38:59,798] [INFO] Forecasting raise60sec...
+[2025-06-17 10:40:09,673] [INFO] Forecasting lower60sec...
+[2025-06-17 10:41:19,911] [INFO] Forecasting raise5min...
+[2025-06-17 10:42:29,942] [INFO] Forecasting lower5min...
+[2025-06-17 10:43:40,593] [INFO] Forecasting raisereg...
+[2025-06-17 10:44:49,924] [INFO] Forecasting lowerreg...
+[2025-06-17 10:46:00,661] [INFO] ✅ ML forecast complete - 25 years
+[2025-06-17 10:46:00,668] [INFO] ✅ energy_mwh: 0.15% revenue change per 1% parameter change
+[2025-06-17 10:46:00,668] [INFO] Testing sensitivity to efficiency...
+[2025-06-17 10:46:00,668] [INFO] ✅ Enhanced FCAS Estimator initialized for NSW1
+[2025-06-17 10:46:00,668] [INFO] 📊 Battery: 2.001MW / 0.1MWh
+[2025-06-17 10:46:00,668] [INFO] 🔮 Generating ML forecast for 25 years from 2024-01-01 00:00:00
+[2025-06-17 10:46:00,668] [WARNING] ⚠️ No database available, using synthetic historical data
+[2025-06-17 10:46:00,668] [INFO] 🔧 Generating synthetic historical data...
+[2025-06-17 10:46:00,674] [INFO] ✅ Generated 8641 synthetic records
+[2025-06-17 10:46:00,985] [INFO] Forecasting raise6sec...
+[2025-06-17 10:47:11,885] [INFO] Forecasting lower6sec...
+[2025-06-17 10:48:22,683] [INFO] Forecasting raise60sec...
+[2025-06-17 10:49:33,768] [INFO] Forecasting lower60sec...
+[2025-06-17 10:50:43,261] [INFO] Forecasting raise5min...
+[2025-06-17 10:51:52,853] [INFO] Forecasting lower5min...
+[2025-06-17 10:53:04,336] [INFO] Forecasting raisereg...
+[2025-06-17 11:43:04,566] [INFO] Forecasting lowerreg...
+[2025-06-17 11:44:18,720] [INFO] ✅ ML forecast complete - 25 years
+[2025-06-17 11:44:18,730] [INFO] ✅ efficiency: 0.00% revenue change per 1% parameter change
+[2025-06-17 11:44:18,730] [INFO] Testing sensitivity to participation_rate...
+[2025-06-17 11:44:18,730] [INFO] ✅ Enhanced FCAS Estimator initialized for NSW1
+[2025-06-17 11:44:18,730] [INFO] 📊 Battery: 2.001MW / 0.1MWh
+[2025-06-17 11:44:18,731] [INFO] 🔮 Generating ML forecast for 25 years from 2024-01-01 00:00:00
+[2025-06-17 11:44:18,731] [WARNING] ⚠️ No database available, using synthetic historical data
+[2025-06-17 11:44:18,731] [INFO] 🔧 Generating synthetic historical data...
+[2025-06-17 11:44:18,737] [INFO] ✅ Generated 8641 synthetic records
+[2025-06-17 11:44:19,009] [INFO] Forecasting raise6sec...
+[2025-06-17 11:45:30,252] [INFO] Forecasting lower6sec...
+[2025-06-17 11:46:43,342] [INFO] Forecasting raise60sec...
+[2025-06-17 11:47:53,570] [INFO] Forecasting lower60sec...
+[2025-06-17 11:49:02,475] [INFO] Forecasting raise5min...
+[2025-06-17 11:50:11,039] [INFO] Forecasting lower5min...
+[2025-06-17 11:51:22,526] [INFO] Forecasting raisereg...
+[2025-06-17 11:52:33,887] [INFO] Forecasting lowerreg...
+[2025-06-17 11:53:47,406] [INFO] ✅ ML forecast complete - 25 years
+[2025-06-17 11:53:47,416] [INFO] ✅ participation_rate: 0.00% revenue change per 1% parameter change
+[2025-06-17 11:53:47,416] [INFO] ✅ Using ML-based forecast
+[2025-06-17 11:53:47,417] [INFO] 🔗 Creating PySAM cashflow arrays...
+[2025-06-17 11:53:47,417] [INFO] ✅ Created PySAM cashflow with 11 arrays
+[2025-06-17 11:53:47,418] [INFO] 🤖 ML Model Performance:
+[2025-06-17 11:53:47,418] [INFO]    raise6sec: MAE=4.02 (41.6%)
+[2025-06-17 11:53:47,418] [INFO]    lower6sec: MAE=3.67 (43.8%)
+[2025-06-17 11:53:47,418] [INFO]    raise60sec: MAE=3.28 (47.1%)
+[2025-06-17 11:53:47,418] [INFO]    lower60sec: MAE=2.96 (49.2%)
+[2025-06-17 11:53:47,418] [INFO]    raise5min: MAE=2.50 (58.4%)
+[2025-06-17 11:53:47,418] [INFO]    lower5min: MAE=2.39 (62.0%)
+[2025-06-17 11:53:47,418] [INFO]    raisereg: MAE=0.09 (0.7%)
+[2025-06-17 11:53:47,418] [INFO]    lowerreg: MAE=0.09 (0.7%)
+[2025-06-17 11:53:47,419] [INFO] 🔄 Backtest: Average prediction error = 114.8%
+[2025-06-17 11:53:47,419] [INFO] 📈 Top Sensitivities:
+[2025-06-17 11:53:47,419] [INFO]    power_mw: 0.64%/% change
+[2025-06-17 11:53:47,419] [INFO]    energy_mwh: 0.15%/% change
+[2025-06-17 11:53:47,419] [INFO]    efficiency: 0.00%/% change
+[2025-06-17 11:53:47,419] [INFO] 💰 Enhanced FCAS Revenue Summary:
+[2025-06-17 11:53:47,419] [INFO]    Fast Raise (6s): $20,918,822
+[2025-06-17 11:53:47,419] [INFO]    Fast Lower (6s): $19,082,509
+[2025-06-17 11:53:47,419] [INFO]    Slow Raise (60s): $12,810,018
+[2025-06-17 11:53:47,419] [INFO]    Slow Lower (60s): $11,543,740
+[2025-06-17 11:53:47,419] [INFO]    Delayed Raise (5min): $4,288,896
+[2025-06-17 11:53:47,419] [INFO]    Delayed Lower (5min): $3,752,784
+[2025-06-17 11:53:47,420] [INFO]    Lower Regulation: $1,524,240
+[2025-06-17 11:53:47,420] [INFO]    Raise Regulation: $1,466,424
+[2025-06-17 11:53:47,420] [INFO] 🎯 Total FCAS Revenue: $75,547,585
+[2025-06-17 11:53:47,420] [INFO] 📈 Average Annual: $3,021,903
+[2025-06-17 11:53:47,420] [INFO] ⚡ Revenue per MW: $37,754,915
+[2025-06-17 11:53:47,427] [INFO] 💰 Mock PySAM integration revenue: $75,547,585
+[2025-06-17 11:53:47,428] [INFO] ✅ TEST 7 PASSED: PySAM integration working correctly
+[2025-06-17 11:53:47,428] [INFO] 
+🧪 TEST 8: Comprehensive Analysis
+[2025-06-17 11:53:47,428] [INFO] --------------------------------------------------
+[2025-06-17 11:53:47,428] [INFO] 🚀 Running comprehensive FCAS analysis...
+[2025-06-17 11:53:47,428] [INFO] 🚀 Starting comprehensive FCAS analysis...
+[2025-06-17 11:53:47,428] [INFO] ✅ Enhanced FCAS Estimator initialized for NSW1
+[2025-06-17 11:53:47,428] [INFO] 📊 Battery: 2.0MW / 0.1MWh
+[2025-06-17 11:53:47,428] [WARNING] ⚠️ No database available, using synthetic historical data
+[2025-06-17 11:53:47,428] [INFO] 🔧 Generating synthetic historical data...
+[2025-06-17 11:53:47,810] [INFO] ✅ Generated 525889 synthetic records
+[2025-06-17 11:53:47,810] [INFO] 🤖 Training ML models...
+[2025-06-17 11:53:47,810] [INFO] 🤖 Training ML models for FCAS price forecasting...
+[2025-06-17 11:53:48,289] [INFO] Training model for raise6sec...
+[2025-06-17 11:54:43,609] [INFO] ✅ raise6sec model trained - MAE: $4.03 (41.5%)
+[2025-06-17 11:54:43,609] [INFO] Training model for lower6sec...
+[2025-06-17 11:55:39,435] [INFO] ✅ lower6sec model trained - MAE: $3.69 (44.0%)
+[2025-06-17 11:55:39,435] [INFO] Training model for raise60sec...
+[2025-06-17 11:56:33,889] [INFO] ✅ raise60sec model trained - MAE: $3.29 (47.2%)
+[2025-06-17 11:56:33,889] [INFO] Training model for lower60sec...
+[2025-06-17 11:57:36,487] [INFO] ✅ lower60sec model trained - MAE: $2.98 (49.4%)
+[2025-06-17 11:57:36,487] [INFO] Training model for raise5min...
+[2025-06-17 11:58:49,413] [INFO] ✅ raise5min model trained - MAE: $2.53 (58.8%)
+[2025-06-17 11:58:49,413] [INFO] Training model for lower5min...
+[2025-06-17 11:59:53,844] [INFO] ✅ lower5min model trained - MAE: $2.38 (61.8%)
+[2025-06-17 11:59:53,844] [INFO] Training model for raisereg...
+[2025-06-17 12:01:23,531] [INFO] ✅ raisereg model trained - MAE: $0.09 (0.7%)
+[2025-06-17 12:01:23,531] [INFO] Training model for lowerreg...
+[2025-06-17 12:03:00,299] [INFO] ✅ lowerreg model trained - MAE: $0.09 (0.7%)
+[2025-06-17 12:03:00,302] [INFO] 🔮 Generating ML forecast for 25 years from 2024-01-01 00:00:00
+[2025-06-17 12:03:00,302] [WARNING] ⚠️ No database available, using synthetic historical data
+[2025-06-17 12:03:00,303] [INFO] 🔧 Generating synthetic historical data...
+[2025-06-17 12:03:00,317] [INFO] ✅ Generated 8641 synthetic records
+[2025-06-17 12:03:00,851] [INFO] Forecasting raise6sec...
+[2025-06-17 12:04:49,107] [INFO] Forecasting lower6sec...
+[2025-06-17 12:06:06,251] [INFO] Forecasting raise60sec...
+[2025-06-17 12:07:23,492] [INFO] Forecasting lower60sec...
+[2025-06-17 12:08:38,073] [INFO] Forecasting raise5min...
+[2025-06-17 12:09:48,147] [INFO] Forecasting lower5min...
+[2025-06-17 12:11:00,904] [INFO] Forecasting raisereg...
+[2025-06-17 12:12:10,615] [INFO] Forecasting lowerreg...
+[2025-06-17 12:13:24,793] [INFO] ✅ ML forecast complete - 25 years
+[2025-06-17 12:13:24,800] [INFO] 🔄 Running backtest from 2023-01-01 for 12 months
+[2025-06-17 12:13:24,800] [WARNING] ⚠️ No database available, using synthetic historical data
+[2025-06-17 12:13:24,800] [INFO] 🔧 Generating synthetic historical data...
+[2025-06-17 12:13:24,942] [INFO] ✅ Generated 208801 synthetic records
+[2025-06-17 12:13:24,948] [INFO] 🤖 Training ML models for FCAS price forecasting...
+[2025-06-17 12:13:25,073] [INFO] Training model for raise6sec...
+[2025-06-17 12:13:45,302] [INFO] ✅ raise6sec model trained - MAE: $4.19 (47.1%)
+[2025-06-17 12:13:45,302] [INFO] Training model for lower6sec...
+[2025-06-17 12:14:03,957] [INFO] ✅ lower6sec model trained - MAE: $3.88 (50.4%)
+[2025-06-17 12:14:03,957] [INFO] Training model for raise60sec...
+[2025-06-17 12:14:21,484] [INFO] ✅ raise60sec model trained - MAE: $3.54 (55.0%)
+[2025-06-17 12:14:21,484] [INFO] Training model for lower60sec...
+[2025-06-17 12:14:39,079] [INFO] ✅ lower60sec model trained - MAE: $3.13 (56.4%)
+[2025-06-17 12:14:39,079] [INFO] Training model for raise5min...
+[2025-06-17 12:14:56,780] [INFO] ✅ raise5min model trained - MAE: $2.74 (68.1%)
+[2025-06-17 12:14:56,780] [INFO] Training model for lower5min...
+[2025-06-17 12:15:15,363] [INFO] ✅ lower5min model trained - MAE: $2.64 (73.3%)
+[2025-06-17 12:15:15,363] [INFO] Training model for raisereg...
+[2025-06-17 12:15:35,635] [INFO] ✅ raisereg model trained - MAE: $0.12 (0.9%)
+[2025-06-17 12:15:35,635] [INFO] Training model for lowerreg...
+[2025-06-17 12:16:04,223] [INFO] ✅ lowerreg model trained - MAE: $0.11 (1.0%)
+[2025-06-17 12:16:04,521] [INFO] 📊 2023-01: Actual=$307,902, Predicted=$666,230, Error=116.4%
+[2025-06-17 12:16:04,815] [INFO] 📊 2023-01: Actual=$332,255, Predicted=$667,483, Error=100.9%
+[2025-06-17 12:16:05,128] [INFO] 📊 2023-03: Actual=$349,253, Predicted=$694,544, Error=98.9%
+[2025-06-17 12:16:05,432] [INFO] 📊 2023-04: Actual=$352,981, Predicted=$670,524, Error=90.0%
+[2025-06-17 12:16:05,714] [INFO] 📊 2023-05: Actual=$346,305, Predicted=$704,987, Error=103.6%
+[2025-06-17 12:16:05,987] [INFO] 📊 2023-05: Actual=$330,079, Predicted=$650,901, Error=97.2%
+[2025-06-17 12:16:06,273] [INFO] 📊 2023-06: Actual=$309,653, Predicted=$659,028, Error=112.8%
+[2025-06-17 12:16:06,582] [INFO] 📊 2023-07: Actual=$292,735, Predicted=$662,962, Error=126.5%
+[2025-06-17 12:16:06,864] [INFO] 📊 2023-08: Actual=$283,416, Predicted=$669,371, Error=136.2%
+[2025-06-17 12:16:07,159] [INFO] 📊 2023-09: Actual=$286,282, Predicted=$668,510, Error=133.5%
+[2025-06-17 12:16:07,452] [INFO] 📊 2023-10: Actual=$300,184, Predicted=$654,476, Error=118.0%
+[2025-06-17 12:16:07,768] [INFO] 📊 2023-11: Actual=$322,618, Predicted=$654,127, Error=102.8%
+[2025-06-17 12:16:07,769] [INFO] ✅ Backtest complete - Average error: 111.4%, MAE: $350,790
+[2025-06-17 12:16:07,769] [INFO] 📈 Running sensitivity analysis with ±20% variation
+[2025-06-17 12:16:07,769] [INFO] 🔮 Generating ML forecast for 25 years from 2024-01-01 00:00:00
+[2025-06-17 12:16:07,769] [WARNING] ⚠️ No database available, using synthetic historical data
+[2025-06-17 12:16:07,769] [INFO] 🔧 Generating synthetic historical data...
+[2025-06-17 12:16:07,775] [INFO] ✅ Generated 8641 synthetic records
+[2025-06-17 12:16:08,130] [INFO] Forecasting raise6sec...
+[2025-06-17 12:17:29,144] [INFO] Forecasting lower6sec...
+[2025-06-17 12:18:51,558] [INFO] Forecasting raise60sec...
+[2025-06-17 12:20:04,055] [INFO] Forecasting lower60sec...
+[2025-06-17 12:21:15,541] [INFO] Forecasting raise5min...
+[2025-06-17 12:22:33,439] [INFO] Forecasting lower5min...
+[2025-06-17 12:23:49,979] [INFO] Forecasting raisereg...
+[2025-06-17 12:25:03,507] [INFO] Forecasting lowerreg...
+[2025-06-17 12:26:20,314] [INFO] ✅ ML forecast complete - 25 years
+[2025-06-17 12:26:20,320] [INFO] Testing sensitivity to power_mw...
+[2025-06-17 12:26:20,320] [INFO] ✅ Enhanced FCAS Estimator initialized for NSW1
+[2025-06-17 12:26:20,320] [INFO] 📊 Battery: 2.4MW / 0.1MWh
+[2025-06-17 12:26:20,320] [INFO] 🔮 Generating ML forecast for 25 years from 2024-01-01 00:00:00
+[2025-06-17 12:26:20,320] [WARNING] ⚠️ No database available, using synthetic historical data
+[2025-06-17 12:26:20,321] [INFO] 🔧 Generating synthetic historical data...
+[2025-06-17 12:26:20,326] [INFO] ✅ Generated 8641 synthetic records
+[2025-06-17 12:26:20,603] [INFO] Forecasting raise6sec...
+[2025-06-17 12:27:36,146] [INFO] Forecasting lower6sec...
+[2025-06-17 12:28:48,885] [INFO] Forecasting raise60sec...
+[2025-06-17 12:30:01,238] [INFO] Forecasting lower60sec...
+[2025-06-17 12:31:12,213] [INFO] Forecasting raise5min...
+[2025-06-17 12:32:23,788] [INFO] Forecasting lower5min...
+[2025-06-17 12:33:37,633] [INFO] Forecasting raisereg...
+[2025-06-17 12:34:47,331] [INFO] Forecasting lowerreg...
+[2025-06-17 12:35:59,012] [INFO] ✅ ML forecast complete - 25 years
+[2025-06-17 12:35:59,018] [INFO] ✅ power_mw: 0.64% revenue change per 1% parameter change
+[2025-06-17 12:35:59,018] [INFO] Testing sensitivity to energy_mwh...
+[2025-06-17 12:35:59,019] [INFO] ✅ Enhanced FCAS Estimator initialized for NSW1
+[2025-06-17 12:35:59,019] [INFO] 📊 Battery: 2.0MW / 0.12MWh
+[2025-06-17 12:35:59,019] [INFO] 🔮 Generating ML forecast for 25 years from 2024-01-01 00:00:00
+[2025-06-17 12:35:59,019] [WARNING] ⚠️ No database available, using synthetic historical data
+[2025-06-17 12:35:59,019] [INFO] 🔧 Generating synthetic historical data...
+[2025-06-17 12:35:59,024] [INFO] ✅ Generated 8641 synthetic records
+[2025-06-17 12:35:59,308] [INFO] Forecasting raise6sec...
+[2025-06-17 12:37:09,771] [INFO] Forecasting lower6sec...
+[2025-06-17 12:38:20,682] [INFO] Forecasting raise60sec...
+[2025-06-17 12:39:30,703] [INFO] Forecasting lower60sec...
+[2025-06-17 12:40:44,887] [INFO] Forecasting raise5min...
+[2025-06-17 12:41:57,848] [INFO] Forecasting lower5min...
+[2025-06-17 12:43:16,187] [INFO] Forecasting raisereg...
+[2025-06-17 12:44:34,126] [INFO] Forecasting lowerreg...
+[2025-06-17 12:45:52,367] [INFO] ✅ ML forecast complete - 25 years
+[2025-06-17 12:45:52,373] [INFO] ✅ energy_mwh: 0.15% revenue change per 1% parameter change
+[2025-06-17 12:45:52,373] [INFO] Testing sensitivity to efficiency...
+[2025-06-17 12:45:52,374] [INFO] ✅ Enhanced FCAS Estimator initialized for NSW1
+[2025-06-17 12:45:52,374] [INFO] 📊 Battery: 2.0MW / 0.1MWh
+[2025-06-17 12:45:52,374] [INFO] 🔮 Generating ML forecast for 25 years from 2024-01-01 00:00:00
+[2025-06-17 12:45:52,374] [WARNING] ⚠️ No database available, using synthetic historical data
+[2025-06-17 12:45:52,374] [INFO] 🔧 Generating synthetic historical data...
+[2025-06-17 12:45:52,384] [INFO] ✅ Generated 8641 synthetic records
+[2025-06-17 12:45:52,746] [INFO] Forecasting raise6sec...
+[2025-06-17 12:47:09,627] [INFO] Forecasting lower6sec...
+[2025-06-17 12:48:26,784] [INFO] Forecasting raise60sec...
+[2025-06-17 12:49:41,346] [INFO] Forecasting lower60sec...
+[2025-06-17 12:50:53,054] [INFO] Forecasting raise5min...
+[2025-06-17 12:52:04,050] [INFO] Forecasting lower5min...
+[2025-06-17 12:53:14,304] [INFO] Forecasting raisereg...
+[2025-06-17 12:54:25,316] [INFO] Forecasting lowerreg...
+[2025-06-17 12:55:35,489] [INFO] ✅ ML forecast complete - 25 years
+[2025-06-17 12:55:35,498] [INFO] ✅ efficiency: 0.00% revenue change per 1% parameter change
+[2025-06-17 12:55:35,498] [INFO] Testing sensitivity to participation_rate...
+[2025-06-17 12:55:35,498] [INFO] ✅ Enhanced FCAS Estimator initialized for NSW1
+[2025-06-17 12:55:35,498] [INFO] 📊 Battery: 2.0MW / 0.1MWh
+[2025-06-17 12:55:35,498] [INFO] 🔮 Generating ML forecast for 25 years from 2024-01-01 00:00:00
+[2025-06-17 12:55:35,498] [WARNING] ⚠️ No database available, using synthetic historical data
+[2025-06-17 12:55:35,498] [INFO] 🔧 Generating synthetic historical data...
+[2025-06-17 12:55:35,505] [INFO] ✅ Generated 8641 synthetic records
+[2025-06-17 12:55:35,786] [INFO] Forecasting raise6sec...
+[2025-06-17 12:56:46,247] [INFO] Forecasting lower6sec...
+[2025-06-17 12:57:57,297] [INFO] Forecasting raise60sec...
+[2025-06-17 12:59:07,964] [INFO] Forecasting lower60sec...
+[2025-06-17 13:00:18,548] [INFO] Forecasting raise5min...
+[2025-06-17 13:01:29,324] [INFO] Forecasting lower5min...
+[2025-06-17 13:02:40,472] [INFO] Forecasting raisereg...
+[2025-06-17 13:03:51,296] [INFO] Forecasting lowerreg...
+[2025-06-17 13:05:02,311] [INFO] ✅ ML forecast complete - 25 years
+[2025-06-17 13:05:02,318] [INFO] ✅ participation_rate: 0.00% revenue change per 1% parameter change
+[2025-06-17 13:05:02,318] [INFO] ✅ ML forecast generated in comprehensive analysis
+[2025-06-17 13:05:02,318] [INFO] 💰 Comprehensive analysis total revenue: $75,515,423
+[2025-06-17 13:05:02,318] [INFO] ✅ TEST 8 PASSED: Comprehensive analysis working correctly
+[2025-06-17 13:05:02,318] [INFO] 
+📊 GENERATING TEST REPORT
+[2025-06-17 13:05:02,318] [INFO] ============================================================
+[2025-06-17 13:05:02,318] [INFO] 🎯 TEST SUMMARY:
+[2025-06-17 13:05:02,319] [INFO]    Tests run: 8
+[2025-06-17 13:05:02,319] [INFO]    Tests passed: 7
+[2025-06-17 13:05:02,319] [INFO]    Success rate: 87.5%
+[2025-06-17 13:05:02,319] [INFO] 💾 Test report saved to enhanced_fcas_test_report.json
+[2025-06-17 13:05:02,319] [INFO] 
+============================================================
+[2025-06-17 13:05:02,319] [INFO] ⚠️ 7/8 tests passed
+[2025-06-17 13:05:02,319] [INFO] 🔧 Some features may need attention before production use
+[2025-06-17 13:05:02,319] [INFO] ============================================================
+[2025-06-17 13:05:02,319] [INFO] 📋 NEXT STEPS:
+[2025-06-17 13:05:02,319] [INFO] 1. Review the test log for any warnings
+[2025-06-17 13:05:02,319] [INFO] 2. Test with your real FCAS database if available
+[2025-06-17 13:05:02,320] [INFO] 3. Integrate with your PySAM hybrid simulation
+[2025-06-17 13:05:02,320] [INFO] 4. Run sensitivity analysis on your specific battery config
+[2025-06-17 13:05:02,320] [INFO] ============================================================
