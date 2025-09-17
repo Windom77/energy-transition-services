@@ -1,0 +1,11 @@
+{
+  "rules": [{
+    "name": "keep-recent-production",
+    "action": {"type": "Keep"},
+    "mostRecentVersions": {"keepCount": 5}
+  }, {
+    "name": "delete-old-builds",
+    "action": {"type": "Delete"},
+    "olderThan": "30d"
+  }]
+}

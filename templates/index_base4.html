@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EnTrans Input Form - Enhanced with FCAS Integration & Dashboard</title>
+
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="data:,">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+
+    <style>
+        /* Enhanced custom styles with restoration support */
+        .hero-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Tab content animation */
+        .tab-pane {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .tab-pane.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Dashboard integration styles */
+        .dashboard-badge {
+            background: linear-gradient(45deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dashboard-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+        .dashboard-badge.disabled {
+            background: #6b7280;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Form restoration indicator */
+        .restoration-badge {
+            background: linear-gradient(45deg, #f59e0b, #d97706);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Analysis progress indicator */
+        .analysis-progress {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 10px;
+            padding: 1rem;
+            color: white;
+            margin: 1rem 0;
+            display: none;
+        }
+
+        .analysis-progress.show {
+            display: block;
+        }
+
+        /* Success notification with dashboard link */
+        .success-with-dashboard {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        /* Form validation styles */
+        .was-validated .form-control:valid {
+            border-color: #10b981;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2310b981' d='m2.3 6.73.5-.4 1.4-1.4c.2-.2.5-.2.7 0s.2.5 0 .7l-2 2c-.2.2-.5.2-.7 0l-1-1c-.2-.2-.2-.5 0-.7s.5-.2.7 0l.4.4z'/%3e%3c/svg%3e");
+        }
+
+        .was-validated .form-control:invalid {
+            border-color: #ef4444;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23ef4444'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='m5.8 4.6 2.4 2.4m0-2.4L5.8 7'/%3e%3c/svg%3e");
+        }
+
+        /* FCAS indicator styles */
+        .fcas-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .fcas-status.enabled {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .fcas-status.disabled {
+            background-color: #f3f4f6;
+            color: #6b7280;
+        }
+
+        /* Revenue display animation */
+        .revenue-counter {
+            transition: all 0.5s ease;
+        }
+
+        .revenue-counter.updating {
+            opacity: 0.6;
+            transform: scale(0.95);
+        }
+
+        /* Load Data specific styles */
+        .load-section {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 1px solid #f59e0b;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .load-method-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .load-method-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .load-method-card.selected {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+        }
+
+        .load-method-card .method-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            background: #f9fafb;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area.drag-over {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .upload-progress {
+            background: #f3f4f6;
+            border-radius: 4px;
+            height: 8px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .upload-progress-bar {
+            background: linear-gradient(90deg, #10b981, #059669);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .monthly-input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .month-input-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 1rem;
+        }
+
+        .load-validation-result {
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .load-validation-result.success {
+            background: #ecfdf5;
+            border: 1px solid #10b981;
+            color: #065f46;
+        }
+
+        .load-validation-result.error {
+            background: #fef2f2;
+            border: 1px solid #ef4444;
+            color: #991b1b;
+        }
+
+        .load-chart-container {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            height: 300px;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <!-- Enhanced Header with FCAS Status, Dashboard Link, and Restoration Support -->
+    <header class="hero-gradient shadow-sm">
+        <div class="container py-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="text-white mb-2 fw-bold">
+                        <i class="fas fa-solar-panel me-3"></i>
+                        EnTrans Input Form
+                        {% if is_restoration %}
+                        <span class="restoration-badge ms-2">
+                            <i class="fas fa-history me-1"></i>Restored
+                        </span>
+                        {% endif %}
+                    </h1>
+                    <p class="text-white-50 mb-0 fs-6">
+                        {% if is_restoration %}
+                        <i class="fas fa-check-circle me-2"></i>
+                        Form values restored from previous analysis - {{ restored_values|length if restored_values else 0 }} fields restored
+                        {% else %}
+                        Enhanced Interface with ML-Based FCAS Revenue Forecasting
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-end align-items-center flex-wrap gap-2">
+                        {% if is_restoration %}
+                        <a href="/" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-plus me-1"></i>New Analysis
+                        </a>
+                        {% endif %}
+
+                        <!-- Dashboard Navigation Badge -->
+                        <a href="/dashboard/" class="dashboard-badge" id="dashboard-link">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Results Dashboard</span>
+                        </a>
+
+                        <div class="fcas-status disabled" id="header-fcas-status">
+                            <i class="fas fa-bolt me-1"></i>
+                            <span>FCAS Disabled</span>
+                        </div>
+                        <div class="text-white-50 small">
+                            <i class="fas fa-shield-alt me-1"></i>
+                            Secure
+                        </div>
+                        <div class="text-white-50 small">
+                            <i class="fas fa-clock me-1"></i>
+                            Auto-Save
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Form Restoration Success Alert -->
+    {% if is_restoration and restored_values %}
+    <div class="container mt-3">
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle me-2"></i>
+            <strong>Form Successfully Restored!</strong>
+            {{ restored_values|length }} form values have been restored from your previous analysis.
+            All tabs and functionality are now active.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- SIMPLIFIED Analysis Progress Indicator - NO PERCENTAGES -->
+    <div class="container">
+        <div class="analysis-progress" id="analysis-progress">
+            <div class="d-flex align-items-center">
+                <div class="loading-spinner me-3"></div>
+                <div class="flex-grow-1">
+                    <div class="fw-bold" id="progress-title">Running Analysis...</div>
+                    <div class="small opacity-75" id="progress-message">Please wait while we process your configuration</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container my-5">
+        <!-- Form Container -->
+        <form id="analysis-form" method="POST" action="/run-analysis" class="needs-validation" novalidate>
+
+            <!-- Dynamic Form Root - Tabs will be injected here -->
+            <div id="dynamic-form-root" class="mb-5">
+                <!-- Loading state -->
+                <div class="text-center py-5" id="form-loading">
+                    <div class="loading-spinner me-2"></div>
+                    <span class="text-muted">Loading form configuration...</span>
+                </div>
+            </div>
+
+            <!-- Form Actions with FCAS Revenue Display and Dashboard Integration -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center p-4 bg-white rounded-3 shadow-sm">
+                        <!-- SIMPLIFIED Form Status - NO PERCENTAGES -->
+                        <div class="d-flex align-items-center">
+                            <div class="me-3">
+                                <i class="fas fa-tasks text-primary me-2"></i>
+                                <span class="text-muted small">Form Status</span>
+                            </div>
+                            <span class="text-muted small">Ready</span>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-2">
+                            {% if is_restoration %}
+                            <a href="/" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                            {% else %}
+                            <button type="button"
+                                    class="btn btn-outline-secondary"
+                                    id="save-draft-btn">
+                                <i class="fas fa-save me-2"></i>
+                                Save Draft
+                            </button>
+
+                            <button type="button"
+                                    class="btn btn-outline-primary"
+                                    id="validate-form-btn">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Validate
+                            </button>
+
+                            <div class="dropdown">
+                                <button class="btn btn-outline-info dropdown-toggle" type="button"
+                                        id="previewDropdown" data-bs-toggle="dropdown">
+                                    <i class="fas fa-eye me-2"></i>Preview
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" id="preview-config">
+                                        <i class="fas fa-cog me-2"></i>Configuration Summary
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="#" id="preview-fcas">
+                                        <i class="fas fa-bolt me-2"></i>FCAS Settings
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="#" id="preview-tariff">
+                                        <i class="fas fa-plug me-2"></i>Tariff Settings
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="#" id="preview-load">
+                                        <i class="fas fa-chart-line me-2"></i>Load Profile
+                                    </a></li>
+                                </ul>
+                            </div>
+                            {% endif %}
+
+                            <button type="submit"
+                                    class="btn btn-primary px-4"
+                                    id="run-analysis-btn">
+                                <i class="fas fa-play-circle me-2"></i>
+                                {% if is_restoration %}Run New Analysis{% else %}Run Analysis{% endif %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- Analysis Success Notification with Dashboard Link -->
+        <div class="success-with-dashboard" id="analysis-success-banner" style="display: none;">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5 class="mb-2">
+                        <i class="fas fa-check-circle me-2"></i>
+                        Analysis Completed Successfully!
+                    </h5>
+                    <p class="mb-0">
+                        Your energy system analysis has been completed with enhanced FCAS revenue forecasting.
+                        <span id="success-fcas-summary"></span>
+                    </p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="/dashboard/" class="btn btn-light btn-lg">
+                        <i class="fas fa-chart-line me-2"></i>
+                        View Results Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Configuration Preview Modal -->
+    <div class="modal fade" id="configPreviewModal" tabindex="-1" aria-labelledby="configPreviewTitle" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="configPreviewTitle">
+                        <i class="fas fa-eye me-2"></i>
+                        Configuration Preview
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="configPreviewContent">
+                        <!-- Content will be populated by JavaScript -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Close
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="exportConfiguration()">
+                        <i class="fas fa-download me-2"></i>Export Configuration
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Data Upload Modal -->
+    <div class="modal fade" id="loadUploadModal" tabindex="-1" aria-labelledby="loadUploadTitle" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loadUploadTitle">
+                        <i class="fas fa-upload me-2"></i>Upload Load Data
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="load-upload-content">
+                        <!-- Content will be populated by JavaScript -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" id="confirm-load-upload" disabled>
+                        <i class="fas fa-check me-2"></i>Use This Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notification-container" class="position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+        <!-- Notifications will be inserted here -->
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-top py-4 mt-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-leaf text-success me-2"></i>
+                        <span class="text-muted">Powered by EnTrans Energy Solutions</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-end text-muted small">
+                        <span class="me-3">
+                            <i class="fas fa-brain me-1"></i>
+                            ML-Enhanced FCAS Forecasting
+                        </span>
+                        <span class="me-3">
+                            <i class="fas fa-lock me-1"></i>
+                            Secure & Confidential
+                        </span>
+                        <span>
+                            <i class="fas fa-clock me-1"></i>
+                            Session: <span id="session-timer">--:--</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <!-- Bootstrap 5.3 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+
+    <!-- Chart.js for load visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Enhanced Form Script with FCAS Integration -->
+    <script src="{{ url_for('static', filename='js/tariff_v4.js') }}"></script>
+
+    <!-- PRODUCTION-READY: Core Application JavaScript -->
+    <script>
+        // Global configuration and state management
+        const restoredValues = {{ restored_values | tojson | safe if restored_values else '{}' }};
+        const isRestoration = {{ 'true' if is_restoration else 'false' }};
+
+        // Application state
+        let autoPollingInterval;
+        let isAutoPolling = false;
+        let sessionStart = Date.now();
+        let submissionTimeout;
+
+        // DOM element cache for performance
+        const domCache = {
+            form: null,
+            submitBtn: null,
+            progressDiv: null,
+
+            init() {
+                this.form = document.getElementById('analysis-form');
+                this.submitBtn = document.getElementById('run-analysis-btn');
+                this.progressDiv = document.getElementById('analysis-progress');
+            }
+        };
+
+        // ========== PRODUCTION: FORM DATA PERSISTENCE (PRESERVED) ==========
+        function persistFormValuesToHTML() {
+            const form = domCache.form || document.getElementById('analysis-form');
+            if (!form) {
+                console.error('Form not found for persistence');
+                return false;
+            }
+
+            try {
+                let persistedCount = 0;
+                const allElements = form.querySelectorAll('input, select, textarea');
+
+                allElements.forEach(element => {
+                    try {
+                        const elementType = element.type || element.tagName.toLowerCase();
+
+                        if (elementType === 'checkbox') {
+                            if (element.checked) {
+                                element.setAttribute('checked', 'checked');
+                            } else {
+                                element.removeAttribute('checked');
+                            }
+                            persistedCount++;
+
+                        } else if (elementType === 'radio') {
+                            if (element.checked) {
+                                element.setAttribute('checked', 'checked');
+                            } else {
+                                element.removeAttribute('checked');
+                            }
+                            persistedCount++;
+
+                        } else if (element.tagName.toLowerCase() === 'select') {
+                            const currentValue = element.value;
+                            element.setAttribute('value', currentValue);
+
+                            Array.from(element.options).forEach(option => {
+                                if (option.value === currentValue) {
+                                    option.setAttribute('selected', 'selected');
+                                } else {
+                                    option.removeAttribute('selected');
+                                }
+                            });
+                            persistedCount++;
+
+                        } else {
+                            const currentValue = element.value;
+                            element.setAttribute('value', currentValue);
+                            persistedCount++;
+                        }
+
+                    } catch (error) {
+                        // Continue processing other elements
+                    }
+                });
+
+                return persistedCount > 0;
+            } catch (error) {
+                console.error('Form persistence failed:', error.message);
+                return false;
+            }
+        }
+
+        // ========== PRODUCTION: FORM DATA COLLECTION (PRESERVED) ==========
+        function collectFormData() {
+            const formData = {};
+            const form = domCache.form || document.getElementById('analysis-form');
+
+            if (!form) {
+                console.error('Form not found for data collection');
+                return formData;
+            }
+
+            try {
+                // Method 1: Get all form elements with names
+                const namedElements = form.querySelectorAll('[name]');
+                namedElements.forEach(element => {
+                    const name = element.getAttribute('name');
+                    if (name) {
+                        if (element.type === 'checkbox') {
+                            formData[name] = element.checked;
+                        } else if (element.type === 'radio') {
+                            if (element.checked) {
+                                formData[name] = element.value;
+                            }
+                        } else {
+                            formData[name] = element.value;
+                        }
+                    }
+                });
+
+                // Method 2: Get all elements with data-pysam-key attributes
+                const pysamElements = form.querySelectorAll('[data-pysam-key]');
+                pysamElements.forEach(element => {
+                    const key = element.getAttribute('data-pysam-key');
+                    if (key) {
+                        if (element.type === 'checkbox') {
+                            formData[key] = element.checked;
+                        } else if (element.type === 'radio') {
+                            if (element.checked) {
+                                formData[key] = element.value;
+                            }
+                        } else {
+                            formData[key] = element.value;
+                        }
+                    }
+                });
+
+                // Method 3: Get all input, select, textarea elements by ID
+                const allInputs = form.querySelectorAll('input, select, textarea');
+                allInputs.forEach(element => {
+                    if (element.id) {
+                        if (element.type === 'checkbox') {
+                            formData[element.id] = element.checked;
+                        } else if (element.type === 'radio') {
+                            if (element.checked) {
+                                formData[element.id] = element.value;
+                            }
+                        } else if (element.value !== '') {
+                            formData[element.id] = element.value;
+                        }
+                    }
+                });
+
+                // Method 4: Collect load configuration data
+                if (window.loadDataManager && window.loadDataManager.getFormData) {
+                    const loadData = window.loadDataManager.getFormData();
+                    Object.assign(formData, loadData);
+                }
+
+                return formData;
+            } catch (error) {
+                console.error('Form data collection failed:', error.message);
+                return {};
+            }
+        }
+
+        // ========== PRODUCTION: ENHANCED FORM SUBMISSION WITH CACHE CLEARING ==========
+        function handleFormSubmission(e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('run-analysis-btn');
+            if (!submitBtn || submitBtn.disabled) return false;
+
+            // Disable submit button
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+
+            try {
+                // Persist form values
+                const persistSuccess = persistFormValuesToHTML();
+                if (!persistSuccess) {
+                    throw new Error('Failed to persist form values');
+                }
+
+                // Collect and submit form data
+                const formData = collectFormData();
+                const submitData = {
+                    form_html: document.documentElement.outerHTML,
+                    form_data: formData
+                };
+
+                fetch('/run-analysis', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(submitData)
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.status === 'started') {
+                        showNotification('Analysis started successfully', 'success');
+                        setTimeout(() => startAutoPolling(), 2000);
+                    } else {
+                        throw new Error(result.error || 'Analysis failed to start');
+                    }
+                })
+                .catch(error => {
+                    showNotification('Unable to submit analysis. Please try again.', 'error');
+                    resetSubmitButton();
+                });
+
+            } catch (error) {
+                showNotification('Submission failed. Please try again.', 'error');
+                resetSubmitButton();
+            }
+        }
+
+        // Update the autoPollingFunction to use cache-busted requests
+        function autoPollingFunction() {
+            fetch('/analysis-status')
+                .then(r => {
+                    if (!r.ok) throw new Error(`Status check failed: ${r.status}`);
+                    return r.json();
+                })
+                .then(data => {
+                    updateSimpleStatus(data);
+
+                    if (!data.running || data.stage === 'completed') {
+                        stopAutoPolling();
+                        showCompletionUI(data);
+                    } else if (data.stage === 'failed') {
+                        stopAutoPolling();
+                        showFailureUI(data);
+                    }
+                })
+                .catch(err => {
+                    // Continue polling on network errors
+                });
+        }
+
+        // ========== PRODUCTION: UTILITY FUNCTIONS ==========
+        function resetSubmitButton() {
+            const submitBtn = domCache.submitBtn || document.getElementById('run-analysis-btn');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-play-circle me-2"></i>Run Analysis';
+            }
+        }
+
+        function validateEnvironment() {
+            if (typeof fetch === 'undefined') {
+                console.error('Fetch API not supported');
+                showNotification('Your browser is not supported. Please update or use a modern browser.', 'error');
+                return false;
+            }
+            return true;
+        }
+
+        // ========== PRODUCTION: SIMPLIFIED PROGRESS TRACKING ==========
+        function startAutoPolling() {
+            if (isAutoPolling) return;
+
+            isAutoPolling = true;
+            let pollCount = 0;
+            const maxPolls = 200; // 10 minutes at 3-second intervals
+
+            const progressDiv = domCache.progressDiv || document.getElementById('analysis-progress');
+            if (progressDiv) progressDiv.classList.add('show');
+
+            autoPollingInterval = setInterval(() => {
+                pollCount++;
+
+                if (pollCount > maxPolls) {
+                    console.error('Analysis polling timeout');
+                    stopAutoPolling();
+                    showNotification('Analysis is taking longer than expected. Please check the dashboard.', 'warning');
+                    return;
+                }
+
+                autoPollingFunction();
+            }, 3000);
+
+            autoPollingFunction();
+        }
+
+        function updateSimpleStatus(data) {
+            const progressMsg = document.getElementById('progress-message');
+            const progressTitle = document.getElementById('progress-title');
+
+            if (progressMsg) {
+                progressMsg.textContent = data.message || 'Processing...';
+            }
+
+            if (progressTitle) {
+                const titles = {
+                    'initializing': 'Starting...',
+                    'form_integration': 'Processing...',
+                    'pysam_simulation': 'Running Simulation...',
+                    'results_compilation': 'Finalizing...',
+                    'completed': 'Complete!',
+                    'failed': 'Failed'
+                };
+                progressTitle.textContent = titles[data.stage] || 'Processing...';
+            }
+        }
+
+        function stopAutoPolling() {
+            isAutoPolling = false;
+            if (autoPollingInterval) {
+                clearInterval(autoPollingInterval);
+                autoPollingInterval = null;
+            }
+        }
+
+        function showCompletionUI(data) {
+            const progressDiv = domCache.progressDiv || document.getElementById('analysis-progress');
+            if (progressDiv) progressDiv.classList.remove('show');
+
+            const successBanner = document.getElementById('analysis-success-banner');
+            if (successBanner) successBanner.style.display = 'block';
+
+            showNotification('Analysis completed! Redirecting to dashboard...', 'success');
+
+            setTimeout(() => {
+                window.location.href = '/dashboard/';
+            }, 3000);
+        }
+
+        function showFailureUI(data) {
+            const progressDiv = domCache.progressDiv || document.getElementById('analysis-progress');
+            if (progressDiv) progressDiv.classList.remove('show');
+
+            const errorMessage = data.error || 'Analysis failed. Please try again.';
+            showNotification(`Analysis failed: ${errorMessage}`, 'error');
+            resetSubmitButton();
+        }
+
+        function checkForRunningAnalysis() {
+            fetch('/analysis-status')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.running) {
+                        startAutoPolling();
+                    }
+                })
+                .catch(() => {
+                    // No analysis running
+                });
+        }
+
+        // ========== PRODUCTION: INITIALIZATION ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!validateEnvironment()) return;
+
+            // Initialize DOM cache
+            domCache.init();
+
+            // Initialize form restoration if needed
+            if (isRestoration && Object.keys(restoredValues).length > 0) {
+                setTimeout(() => {
+                    restoreFormValues(restoredValues);
+                }, 1000);
+            }
+
+            // Initialize event listeners and functionality
+            initializeEventListeners();
+            initializeSessionTimer();
+
+            // Hide loading state and initialize components
+            setTimeout(() => {
+                const loading = document.getElementById('form-loading');
+                if (loading) loading.style.display = 'none';
+                updateDashboardLink();
+                initializeFCAS();
+            }, 500);
+
+            // Check for running analysis on page load
+            setTimeout(checkForRunningAnalysis, 1000);
+        });
+
+        // ========== PRODUCTION: EVENT LISTENERS ==========
+        function initializeEventListeners() {
+            const form = domCache.form || document.getElementById('analysis-form');
+            if (form) {
+                form.addEventListener('submit', handleFormSubmission);
+            }
+
+            // Configuration preview handlers
+            const previewHandlers = [
+                { id: 'preview-config', type: 'full' },
+                { id: 'preview-fcas', type: 'fcas' },
+                { id: 'preview-tariff', type: 'tariff' },
+                { id: 'preview-load', type: 'load' }
+            ];
+
+            previewHandlers.forEach(handler => {
+                const element = document.getElementById(handler.id);
+                if (element) {
+                    element.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        showConfigurationPreview(handler.type);
+                    });
+                }
+            });
+
+            // Form validation handler
+            const validateBtn = document.getElementById('validate-form-btn');
+            if (validateBtn) {
+                validateBtn.addEventListener('click', validateForm);
+            }
+
+            // Save draft handler (only for new forms)
+            if (!isRestoration) {
+                const saveDraftBtn = document.getElementById('save-draft-btn');
+                if (saveDraftBtn) {
+                    saveDraftBtn.addEventListener('click', saveDraft);
+                }
+                loadSavedDraft();
+            }
+        }
+
+        // ========== PRODUCTION: SIMPLIFIED FORM PROGRESS ==========
+        function updateFormProgress() {
+            // Simplified - no calculations needed for production
+        }
+
+        // ========== PRODUCTION: FCAS INTEGRATION (PRESERVED) ==========
+        function updateFCASIndicators() {
+            const fcasEnabled = document.getElementById('fcas-enable')?.checked || false;
+            const headerStatus = document.getElementById('header-fcas-status');
+
+            if (headerStatus) {
+                if (fcasEnabled) {
+                    headerStatus.className = 'fcas-status enabled';
+                    headerStatus.innerHTML = '<i class="fas fa-bolt me-1"></i><span>FCAS Active</span>';
+                } else {
+                    headerStatus.className = 'fcas-status disabled';
+                    headerStatus.innerHTML = '<i class="fas fa-bolt me-1"></i><span>FCAS Disabled</span>';
+                }
+            }
+        }
+
+        function initializeFCAS() {
+            const fcasEnableCheckbox = document.getElementById('fcas-enable');
+            if (fcasEnableCheckbox) {
+                fcasEnableCheckbox.addEventListener('change', function(e) {
+                    updateFCASIndicators();
+                });
+            }
+            updateFCASIndicators();
+        }
+
+        // ========== PRODUCTION: FORM RESTORATION (PRESERVED) ==========
+        function restoreFormValues(values) {
+            Object.entries(values).forEach(([key, value]) => {
+                const element = document.getElementById(key) || document.querySelector(`[name="${key}"]`);
+
+                if (element) {
+                    if (element.type === 'checkbox') {
+                        element.checked = value === true || value === 'true' || value === 'on';
+                    } else if (element.type === 'radio') {
+                        if (element.value === value) {
+                            element.checked = true;
+                        }
+                    } else if (element.tagName === 'SELECT') {
+                        const option = element.querySelector(`option[value="${value}"]`);
+                        if (option) {
+                            element.value = value;
+                        }
+                    } else {
+                        element.value = value;
+                    }
+
+                    element.dispatchEvent(new Event('change', { bubbles: true }));
+                    element.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+            });
+
+            // Special handling for FCAS configuration
+            if (values['fcas-enable'] || values['fcas_enable']) {
+                setTimeout(() => {
+                    if (typeof updateFCASIndicators === 'function') {
+                        updateFCASIndicators();
+                    }
+                }, 500);
+            }
+        }
+
+        // ========== PRODUCTION: CONFIGURATION PREVIEW ==========
+        function showConfigurationPreview(type) {
+            const modal = new bootstrap.Modal(document.getElementById('configPreviewModal'));
+            const content = document.getElementById('configPreviewContent');
+            const title = document.getElementById('configPreviewTitle');
+
+            let previewHTML = '';
+
+            switch(type) {
+                case 'fcas':
+                    title.innerHTML = '<i class="fas fa-bolt me-2"></i>FCAS Configuration Preview';
+                    previewHTML = generateFCASPreview();
+                    break;
+                case 'tariff':
+                    title.innerHTML = '<i class="fas fa-plug me-2"></i>Tariff Configuration Preview';
+                    previewHTML = generateTariffPreview();
+                    break;
+                case 'load':
+                    title.innerHTML = '<i class="fas fa-chart-line me-2"></i>Load Profile Preview';
+                    previewHTML = generateLoadPreview();
+                    break;
+                default:
+                    title.innerHTML = '<i class="fas fa-eye me-2"></i>Full Configuration Preview';
+                    previewHTML = generateFullPreview();
+            }
+
+            content.innerHTML = previewHTML;
+            modal.show();
+        }
+
+        function generateFCASPreview() {
+            const fcasEnabled = document.getElementById('fcas-enable')?.checked || false;
+
+            return `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>FCAS Configuration</h6>
+                        <table class="table table-sm">
+                            <tr><td><strong>Status:</strong></td><td>${fcasEnabled ? 'Enabled' : 'Disabled'}</td></tr>
+                            <tr><td><strong>Note:</strong></td><td>Configure FCAS settings in Financial Parameters tab</td></tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            FCAS configuration is handled in the Financial Parameters section of the form.
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateTariffPreview() {
+            const tariffType = document.getElementById('tariff-type-select')?.value || 'Flat';
+            const fixedCharge = document.getElementById('monthly-fixed-charge')?.value || '10.00';
+            const feedInTariff = document.getElementById('feed-in-tariff')?.value || '0.05';
+
+            return `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Tariff Configuration</h6>
+                        <table class="table table-sm">
+                            <tr><td><strong>Tariff Type:</strong></td><td>${tariffType}</td></tr>
+                            <tr><td><strong>Monthly Fixed Charge:</strong></td><td>${fixedCharge}</td></tr>
+                            <tr><td><strong>Feed-in Tariff:</strong></td><td>${feedInTariff}/kWh</td></tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Rate Details</h6>
+                        ${tariffType === 'Flat' ?
+                            `<p>Flat Rate: ${document.getElementById('flat-rate')?.value || '0.12'}/kWh</p>` :
+                            '<p>Time-of-Use rates configured</p>'
+                        }
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateLoadPreview() {
+            const loadMethod = window.loadDataManager?.getCurrentMethod() || 'auto';
+            const loadSummary = window.loadDataManager?.getSummary() || 'No load data configured';
+
+            return `
+                <div class="row">
+                    <div class="col-md-12">
+                        <h6>Load Configuration</h6>
+                        <table class="table table-sm">
+                            <tr><td><strong>Method:</strong></td><td>${loadMethod}</td></tr>
+                            <tr><td><strong>Summary:</strong></td><td>${loadSummary}</td></tr>
+                        </table>
+                        ${window.loadDataManager?.hasChart() ?
+                            '<div class="mt-3"><canvas id="preview-load-chart" width="400" height="200"></canvas></div>' :
+                            '<div class="alert alert-info mt-3">No load chart available</div>'
+                        }
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateFullPreview() {
+            return `
+                <div class="row">
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Full configuration preview includes form data, FCAS settings, tariff configuration, and load profile.
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    ${generateFCASPreview()}
+                                </div>
+                                <div class="col-md-4">
+                                    ${generateTariffPreview()}
+                                </div>
+                                <div class="col-md-4">
+                                    ${generateLoadPreview()}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function exportConfiguration() {
+            showNotification('Export functionality ready - configuration will be downloaded.', 'info');
+        }
+
+        // ========== PRODUCTION: FORM VALIDATION & DRAFT MANAGEMENT ==========
+        function validateForm() {
+            const form = domCache.form || document.getElementById('analysis-form');
+
+            if (form.checkValidity()) {
+                showNotification('Form validation passed! All required fields are completed.', 'success');
+            } else {
+                form.classList.add('was-validated');
+                showNotification('Please complete all required fields before proceeding.', 'warning');
+
+                const firstInvalid = form.querySelector(':invalid');
+                if (firstInvalid) {
+                    firstInvalid.focus();
+                    firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }
+
+        function saveDraft() {
+            try {
+                const formData = new FormData(domCache.form || document.getElementById('analysis-form'));
+                const draftData = Object.fromEntries(formData);
+
+                localStorage.setItem('entrans_form_draft', JSON.stringify(draftData));
+                showNotification('Draft saved successfully!', 'success');
+            } catch (error) {
+                showNotification('Failed to save draft', 'error');
+            }
+        }
+
+        function loadSavedDraft() {
+            try {
+                const savedDraft = localStorage.getItem('entrans_form_draft');
+                if (savedDraft) {
+                    const draftData = JSON.parse(savedDraft);
+                    showNotification('Previous draft found. Would you like to restore it?', 'info', true);
+                }
+            } catch (error) {
+                // Ignore invalid draft data
+            }
+        }
+
+        // ========== PRODUCTION: UTILITY FUNCTIONS ==========
+        function updateDashboardLink() {
+            const dashboardLink = document.getElementById('dashboard-link');
+            if (dashboardLink) {
+                dashboardLink.classList.remove('disabled');
+            }
+        }
+
+        function initializeSessionTimer() {
+            setInterval(() => {
+                const elapsed = Math.floor((Date.now() - sessionStart) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                const timer = document.getElementById('session-timer');
+                if (timer) {
+                    timer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+            }, 1000);
+        }
+
+        function showNotification(message, type = 'info', persistent = false) {
+            let container = document.getElementById('notification-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'notification-container';
+                container.className = 'position-fixed top-0 end-0 p-3';
+                container.style.zIndex = '9999';
+                document.body.appendChild(container);
+            }
+
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show`;
+            notification.style.cssText = 'min-width: 300px; margin-bottom: 0.5rem;';
+
+            const icon = {
+                'success': 'fas fa-check-circle',
+                'warning': 'fas fa-exclamation-triangle',
+                'error': 'fas fa-times-circle',
+                'info': 'fas fa-info-circle'
+            }[type] || 'fas fa-info-circle';
+
+            notification.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <i class="${icon} me-2"></i>
+                    <div class="flex-grow-1">${message}</div>
+                    ${!persistent ? '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>' : ''}
+                </div>
+            `;
+
+            container.appendChild(notification);
+
+            if (!persistent) {
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 5000);
+            }
+        }
+
+        // ========== PRODUCTION: GLOBAL FUNCTION EXPORTS ==========
+        // Essential functions for external scripts
+        window.updateFCASIndicators = updateFCASIndicators;
+        window.updateFormProgress = updateFormProgress;
+        window.showNotification = showNotification;
+        window.exportConfiguration = exportConfiguration;
+        window.persistFormValuesToHTML = persistFormValuesToHTML;
+        window.collectFormData = collectFormData;
+    </script>
+</body>
+</html>
