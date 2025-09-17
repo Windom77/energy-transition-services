@@ -1,0 +1,7 @@
+# Large test files and results
+entrans/4.testing/
+*.csv
+__pycache__/
+*.pyc
+.venv/
+*.parquet
