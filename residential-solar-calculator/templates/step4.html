@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+{% block title %}Step 4: Battery Analysis{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="progress-bar">
+        <div class="step completed">1. Energy Profile</div>
+        <div class="step completed">2. Electricity Tariffs</div>
+        <div class="step completed">3. Solar System</div>
+        <div class="step active">4. Battery Analysis</div>
+    </div>
+
+    <h1>Step 4: Battery Storage Analysis</h1>
+    <p class="subtitle">Analyze different battery dispatch strategies to maximize your savings</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Solar System Summary -->
+    <div class="summary-card">
+        <h3>Your Solar System Configuration</h3>
+        <div class="summary-grid">
+            <div class="summary-item">
+                <span class="summary-label">System Size:</span>
+                <span class="summary-value">{{ "{:.1f}".format(solar_data.system_size) }} kW</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Annual Generation:</span>
+                <span class="summary-value">{{ "{:,.0f}".format(solar_data.generation_data.annual_kwh) }} kWh</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Feed-in Rate:</span>
+                <span class="summary-value">{{ solar_data.feed_in_tariff }}c/kWh</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Coverage:</span>
+                <span class="summary-value">{{ "{:.0f}".format((solar_data.generation_data.annual_kwh / profile_data.annual_usage) * 100) }}%</span>
+            </div>
+        </div>
+    </div>
+
+    <form method="POST" action="/step4" id="batteryForm">
+        
+        <!-- Battery Decision -->
+        <div class="form-section card">
+            <h3>🔋 Battery Storage</h3>
+            
+            <div class="radio-group">
+                <label class="radio-option">
+                    <input type="radio" name="include_battery" value="no" checked>
+                    <span class="radio-custom"></span>
+                    <div class="radio-content">
+                        <strong>No Battery</strong>
+                        <small>Solar only - compare scenarios without storage</small>
+                    </div>
+                </label>
+                
+                <label class="radio-option">
+                    <input type="radio" name="include_battery" value="yes">
+                    <span class="radio-custom"></span>
+                    <div class="radio-content">
+                        <strong>Include Battery Storage</strong>
+                        <small>Analyze battery benefits with different dispatch strategies</small>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <!-- Battery Configuration -->
+        <div id="battery-config" class="form-section card" style="display: none;">
+            <h3>⚡ Battery System</h3>
+            
+            <div class="recommendation-box">
+                <h4>Our Recommendation</h4>
+                <div class="rec-highlight">
+                    {{ "{:.1f}".format(recommendation.recommended_size_kwh) }} kWh Battery
+                </div>
+                <p>{{ recommendation.rationale }}</p>
+                <div class="rec-details">
+                    <small>Avg evening load: {{ "{:.1f}".format(recommendation.avg_evening_load) }} kWh | 
+                           Avg excess solar: {{ "{:.1f}".format(recommendation.avg_excess_solar) }} kWh</small>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="battery_size">Battery Size (kWh):</label>
+                <input type="number" id="battery_size" name="battery_size" 
+                       step="0.5" min="0" max="100" 
+                       value="{{ "{:.1f}".format(recommendation.recommended_size_kwh) }}">
+                <small>Usable battery capacity</small>
+            </div>
+            
+            <div class="size-buttons">
+                <button type="button" class="size-btn" onclick="setBatterySize(5)">5 kWh</button>
+                <button type="button" class="size-btn" onclick="setBatterySize(10)">10 kWh</button>
+                <button type="button" class="size-btn" onclick="setBatterySize(13.5)">13.5 kWh</button>
+                <button type="button" class="size-btn" onclick="setBatterySize(20)">20 kWh</button>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group col-half">
+                    <label for="battery_cost">Battery System Cost ($):</label>
+                    <input type="number" id="battery_cost" name="battery_cost" 
+                           step="100" min="0" placeholder="e.g. 12000">
+                    <small>Including installation. Typical: $800-1500/kWh</small>
+                </div>
+                
+                <div class="form-group col-half">
+                    <label for="battery_life">Expected Life (years):</label>
+                    <select id="battery_life" name="battery_life">
+                        <option value="8">8 years</option>
+                        <option value="10" selected>10 years</option>
+                        <option value="12">12 years</option>
+                        <option value="15">15 years</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dispatch Strategy Preview -->
+        <div class="form-section card">
+            <h3>📋 Dispatch Strategies to Compare</h3>
+            <div class="strategy-grid">
+                <div class="strategy-card">
+                    <h4>Solar Only</h4>
+                    <p>Direct solar consumption with grid export of excess energy</p>
+                    <ul>
+                        <li>No battery costs</li>
+                        <li>Immediate solar savings</li>
+                        <li>Export income from excess</li>
+                    </ul>
+                </div>
+                
+                <div class="strategy-card">
+                    <h4>TOU Arbitrage</h4>
+                    <p>Charge battery during off-peak, discharge during peak periods</p>
+                    <ul>
+                        <li>Maximize rate differential</li>
+                        <li>Grid charging when beneficial</li>
+                        <li>Peak period offset</li>
+                    </ul>
+                </div>
+                
+                <div class="strategy-card">
+                    <h4>Smart Hybrid</h4>
+                    <p>Solar priority with intelligent TOU optimization</p>
+                    <ul>
+                        <li>Solar self-consumption first</li>
+                        <li>Strategic grid charging</li>
+                        <li>Peak period coverage</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="form-navigation">
+            <button type="button" onclick="window.location.href='/step3'" class="btn btn-secondary">
+                ← Back
+            </button>
+            <button type="submit" class="btn btn-primary">
+                Calculate Results →
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const batteryRadios = document.querySelectorAll('input[name="include_battery"]');
+    const batteryConfig = document.getElementById('battery-config');
+    const batterySizeInput = document.getElementById('battery_size');
+    const batteryCostInput = document.getElementById('battery_cost');
+    
+    function toggleBattery() {
+        const includeBattery = document.querySelector('input[name="include_battery"]:checked').value === 'yes';
+        
+        batteryConfig.style.display = includeBattery ? 'block' : 'none';
+        
+        if (includeBattery) {
+            batterySizeInput.required = true;
+            batteryCostInput.required = true;
+            updateBatteryCost();
+        } else {
+            batterySizeInput.required = false;
+            batteryCostInput.required = false;
+        }
+    }
+    
+    function updateBatteryCost() {
+        const size = parseFloat(batterySizeInput.value) || 0;
+        if (size > 0 && !batteryCostInput.value) {
+            // Estimate cost at $1200/kWh
+            const estimatedCost = size * 1200;
+            batteryCostInput.placeholder = `e.g. ${estimatedCost.toLocaleString()}`;
+        }
+    }
+    
+    // Global functions
+    window.setBatterySize = function(size) {
+        batterySizeInput.value = size;
+        updateBatteryCost();
+    };
+    
+    // Event listeners
+    batteryRadios.forEach(radio => {
+        radio.addEventListener('change', toggleBattery);
+    });
+    
+    batterySizeInput.addEventListener('input', updateBatteryCost);
+    
+    // Initialize
+    toggleBattery();
+});
+</script>
+
+{% endblock %}

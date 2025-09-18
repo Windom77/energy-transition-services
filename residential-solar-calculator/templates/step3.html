@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+{% block title %}Step 3: Solar System{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="progress-bar">
+        <div class="step completed">1. Energy Profile</div>
+        <div class="step completed">2. Electricity Tariffs</div>
+        <div class="step active">3. Solar System</div>
+        <div class="step">4. Battery Analysis</div>
+    </div>
+
+    <h1>Step 3: Solar System Configuration</h1>
+    <p class="subtitle">Configure your solar PV system to estimate generation and savings</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Location & Conditions -->
+    <div class="summary-card">
+        <h3>Solar Conditions for {{ profile_data.postcode }}</h3>
+        <div class="summary-grid">
+            <div class="summary-item">
+                <span class="summary-label">Location:</span>
+                <span class="summary-value">{{ coordinates.lat|round(2) }}°S, {{ coordinates.lon|round(2) }}°E</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Estimated Yield:</span>
+                <span class="summary-value">{{ "{:.0f}".format(recommendation.kwh_per_kw) }} kWh/kW/year</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Your Usage:</span>
+                <span class="summary-value">{{ "{:,.0f}".format(profile_data.annual_usage) }} kWh/year</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Current Bill:</span>
+                <span class="summary-value">${{ "{:,.0f}".format(tariff_data.current_bill.total_cost) }}/year</span>
+            </div>
+        </div>
+    </div>
+
+    <form method="POST" action="/step3" id="solarForm">
+
+        <!-- Solar Status -->
+        <div class="form-section card">
+            <h3>🔆 Solar System Status</h3>
+
+            <div class="radio-group">
+                <label class="radio-option">
+                    <input type="radio" name="solar_status" value="none" checked>
+                    <span class="radio-custom"></span>
+                    <div class="radio-content">
+                        <strong>No Solar System</strong>
+                        <small>I want to see what solar could save me</small>
+                    </div>
+                </label>
+
+                <label class="radio-option">
+                    <input type="radio" name="solar_status" value="planning">
+                    <span class="radio-custom"></span>
+                    <div class="radio-content">
+                        <strong>Planning to Install</strong>
+                        <small>I'm considering installing a solar system</small>
+                    </div>
+                </label>
+
+                <label class="radio-option">
+                    <input type="radio" name="solar_status" value="existing">
+                    <span class="radio-custom"></span>
+                    <div class="radio-content">
+                        <strong>Already Have Solar</strong>
+                        <small>I want to add batteries or optimize my system</small>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <!-- System Size Configuration -->
+        <div class="form-section card">
+            <h3>⚡ System Size</h3>
+
+            <div class="recommendation-box">
+                <h4>Our Recommendation</h4>
+                <div class="rec-highlight">
+                    {{ "{:.1f}".format(recommendation.recommended_size_kw) }} kW System
+                </div>
+                <p>Would generate {{ "{:,.0f}".format(recommendation.estimated_annual_generation) }} kWh/year
+                   ({{ "{:.0f}".format(recommendation.generation_ratio * 100) }}% of your usage)</p>
+            </div>
+
+            <div class="form-group">
+                <label for="system_size">System Size (kW):</label>
+                <input type="number" id="system_size" name="system_size"
+                       step="0.1" min="0" max="50"
+                       value="{{ recommendation.recommended_size_kw|round(1) }}" required>
+                <small>Enter 0 for no solar system</small>
+            </div>
+
+            <div class="size-buttons">
+                <button type="button" class="size-btn" onclick="setSystemSize(3)">3 kW</button>
+                <button type="button" class="size-btn" onclick="setSystemSize(5)">5 kW</button>
+                <button type="button" class="size-btn" onclick="setSystemSize(6.6)">6.6 kW</button>
+                <button type="button" class="size-btn" onclick="setSystemSize(10)">10 kW</button>
+                <button type="button" class="size-btn" onclick="setSystemSize(13)">13 kW</button>
+            </div>
+
+            <!-- Live Generation Preview -->
+            <div id="generation-preview" class="generation-preview">
+                <div class="gen-item">
+                    <span>Annual Generation:</span>
+                    <span id="gen-annual">0 kWh</span>
+                </div>
+                <div class="gen-item">
+                    <span>Daily Average:</span>
+                    <span id="gen-daily">0 kWh</span>
+                </div>
+                <div class="gen-item">
+                    <span>Coverage:</span>
+                    <span id="gen-coverage">0%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Installation Cost (conditional) -->
+        <div id="installation-section" class="form-section card">
+            <h3>💰 Installation Cost</h3>
+            <div class="form-group">
+                <label for="installation_cost">Total Installation Cost ($):</label>
+                <input type="number" id="installation_cost" name="installation_cost"
+                       step="100" min="0" placeholder="e.g. 8000">
+                <small>Include panels, inverter, installation. Typical: $1,200-1,800 per kW</small>
+            </div>
+
+            <div class="cost-guide">
+                <h4>Cost Guidelines</h4>
+                <ul>
+                    <li><strong>Budget systems:</strong> $1,200-1,400/kW</li>
+                    <li><strong>Quality systems:</strong> $1,400-1,800/kW</li>
+                    <li><strong>Premium systems:</strong> $1,800-2,500/kW</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Feed-in Tariff -->
+        <div class="form-section card">
+            <h3>🔄 Feed-in Tariff</h3>
+            <div class="form-group">
+                <label for="feed_in_tariff">Feed-in Rate (cents/kWh):</label>
+                <input type="number" id="feed_in_tariff" name="feed_in_tariff"
+                       step="0.1" min="0" max="50"
+                       value="8.0" required>
+                <small>Rate paid for excess solar exported to grid. Check with your retailer.</small>
+            </div>
+
+            <div class="fit-guide">
+                <p><strong>Typical Australian rates:</strong> 5-12 cents/kWh</p>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="form-navigation">
+            <button type="button" onclick="window.location.href='/step2'" class="btn btn-secondary">
+                ← Back
+            </button>
+            <button type="submit" class="btn btn-primary">
+                Continue to Battery Analysis →
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const solarStatusRadios = document.querySelectorAll('input[name="solar_status"]');
+    const installationSection = document.getElementById('installation-section');
+    const systemSizeInput = document.getElementById('system_size');
+    const installationCostInput = document.getElementById('installation_cost');
+
+    // Use the REAL kwh_per_kw from NREL API (via recommendation)
+    const kwh_per_kw = {{ recommendation.kwh_per_kw }};
+    const annual_usage = {{ profile_data.annual_usage }};
+
+    function toggleSolarStatus() {
+        const status = document.querySelector('input[name="solar_status"]:checked').value;
+        const needsInstallation = status === 'planning';
+
+        installationSection.style.display = needsInstallation ? 'block' : 'none';
+        installationCostInput.required = needsInstallation;
+
+        if (status === 'none') {
+            systemSizeInput.value = 0;
+        } else if (status === 'planning') {
+            systemSizeInput.value = {{ "{:.1f}".format(recommendation.recommended_size_kw) }};
+        }
+
+        updateGenerationPreview();
+        updateInstallationCost();
+    }
+
+    function updateGenerationPreview() {
+        const systemSize = parseFloat(systemSizeInput.value) || 0;
+
+        // Use the REAL kwh_per_kw from NREL for accurate estimates
+        const annualGen = systemSize * kwh_per_kw;
+        const dailyGen = annualGen / 365;
+        const coverage = (annualGen / annual_usage) * 100;
+
+        document.getElementById('gen-annual').textContent = Math.round(annualGen).toLocaleString() + ' kWh';
+        document.getElementById('gen-daily').textContent = dailyGen.toFixed(1) + ' kWh';
+        document.getElementById('gen-coverage').textContent = coverage.toFixed(0) + '%';
+    }
+
+    function updateInstallationCost() {
+        const systemSize = parseFloat(systemSizeInput.value) || 0;
+        if (systemSize > 0) {
+            const estimatedCost = systemSize * 1500;
+            if (!installationCostInput.value) {
+                installationCostInput.placeholder = `e.g. ${estimatedCost.toLocaleString()}`;
+            }
+        }
+    }
+
+    // Global function for size buttons
+    window.setSystemSize = function(size) {
+        systemSizeInput.value = size;
+        updateGenerationPreview();
+        updateInstallationCost();
+    };
+
+    // Event listeners
+    solarStatusRadios.forEach(radio => {
+        radio.addEventListener('change', toggleSolarStatus);
+    });
+
+    systemSizeInput.addEventListener('input', function() {
+        updateGenerationPreview();
+        updateInstallationCost();
+    });
+
+    // Initialize
+    toggleSolarStatus();
+});
+</script>
+
+{% endblock %}

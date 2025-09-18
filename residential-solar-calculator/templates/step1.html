@@ -1,0 +1,358 @@
+{% extends "base.html" %}
+{% block title %}Step 1: Energy Profile{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="progress-bar">
+        <div class="step active">1. Energy Profile</div>
+        <div class="step">2. Electricity Tariffs</div>
+        <div class="step">3. Solar System</div>
+        <div class="step">4. Battery Analysis</div>
+    </div>
+
+    <h1>Step 1: Build Your Energy Profile</h1>
+    <p class="subtitle">We'll estimate your electricity usage and costs to compare with solar savings</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="/step1" enctype="multipart/form-data" id="profileForm">
+
+        <!-- Location Section -->
+        <div class="form-section card">
+            <h3>Location</h3>
+            <div class="form-group">
+                <label for="postcode">Australian Postcode:</label>
+                <input type="text" id="postcode" name="postcode"
+                       pattern="[0-9]{4}" maxlength="4"
+                       value="{{ form_data.get('postcode', '') }}"
+                       placeholder="e.g. 2000" required>
+                <small>We use this to determine your local solar conditions</small>
+            </div>
+        </div>
+
+        <!-- Data Source Selection -->
+        <div class="form-section card">
+            <h3>Energy Usage Data</h3>
+            <p>Choose how to build your energy profile:</p>
+
+            <div class="radio-group">
+                <label class="radio-option">
+                    <input type="radio" name="data_source" value="build" checked>
+                    <span class="radio-custom"></span>
+                    <div class="radio-content">
+                        <strong>Build Profile</strong>
+                        <small>Answer questions about your household to estimate usage</small>
+                    </div>
+                </label>
+
+                <label class="radio-option">
+                    <input type="radio" name="data_source" value="upload">
+                    <span class="radio-custom"></span>
+                    <div class="radio-content">
+                        <strong>Upload Your Data</strong>
+                        <small>Use actual energy data from your retailer</small>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <!-- Upload Section -->
+        <div id="upload-section" class="form-section card" style="display: none;">
+    <h3>📊 Upload Energy Data</h3>
+
+    <div class="upload-requirements">
+        <h4>File Requirements:</h4>
+        <ul>
+            <li><strong>Format:</strong> CSV or Excel (.xlsx, .xls)</li>
+            <li><strong>Columns:</strong> Date/time and energy usage in kWh</li>
+            <li><strong>Frequency:</strong> Half-hourly, hourly, or daily data</li>
+            <li><strong>Coverage:</strong> Minimum 2 months (full year preferred)</li>
+        </ul>
+
+        <div class="column-examples">
+            <strong>Accepted column names:</strong>
+            <div class="column-tags">
+                <span class="column-tag">datetime</span>
+                <span class="column-tag">dt</span>
+                <span class="column-tag">date</span>
+                <span class="column-tag">timestamp</span>
+            </div>
+            <div class="column-tags">
+                <span class="column-tag">energy_use_kwh</span>
+                <span class="column-tag">kWh</span>
+                <span class="column-tag">usage</span>
+                <span class="column-tag">consumption</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="upload-area">
+        <input type="file" id="energy_file" name="energy_file"
+               accept=".csv,.xlsx,.xls" class="file-input">
+        <label for="energy_file" class="file-label">
+            <div class="upload-icon">📄</div>
+            <span>Choose CSV or Excel file</span>
+            <small id="file-status">No file selected</small>
+        </label>
+    </div>
+
+    <div class="form-group">
+        <label for="recent_bill">Recent Bill Amount ($) - Optional:</label>
+        <input type="number" id="recent_bill" name="recent_bill"
+               step="0.01" min="0"
+               placeholder="e.g. 285.50">
+        <small>Enter your most recent quarterly bill for validation (helps detect data issues)</small>
+    </div>
+
+    <div class="upload-help">
+        <details>
+            <summary>Need help getting your data?</summary>
+            <div class="help-content">
+                <p><strong>Where to get energy data:</strong></p>
+                <ul>
+                    <li>Your electricity retailer's website or app</li>
+                    <li>Request from customer service (usually free)</li>
+                    <li>Smart meter data portal if you have one</li>
+                </ul>
+                <p><strong>Partial year data:</strong> If you only have a few months, we'll extend it to a full year using seasonal patterns specific to your region.</p>
+            </div>
+        </details>
+    </div>
+</div>
+
+<style>
+.upload-requirements {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.upload-requirements h4 {
+    margin: 0 0 10px 0;
+    color: #495057;
+}
+
+.upload-requirements ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.column-examples {
+    margin-top: 15px;
+}
+
+.column-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin: 5px 0;
+}
+
+.column-tag {
+    background: #007bff;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-family: monospace;
+}
+
+.upload-help {
+    margin-top: 20px;
+}
+
+.upload-help details {
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 10px;
+}
+
+.upload-help summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: #007bff;
+}
+
+.help-content {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #dee2e6;
+}
+
+#file-status {
+    color: #6c757d;
+    font-style: italic;
+}
+
+#file-status.file-selected {
+    color: #28a745;
+    font-style: normal;
+}
+</style>
+
+        <!-- Household Profile Section -->
+        <div id="profile-section" class="form-section card">
+            <h3>Household Details</h3>
+
+            <div class="form-row">
+                <div class="form-group col-half">
+                    <label for="occupants">Number of Occupants:</label>
+                    <select id="occupants" name="occupants" required>
+                        <option value="1">1 person</option>
+                        <option value="2">2 people</option>
+                        <option value="3">3 people</option>
+                        <option value="4" selected>4 people</option>
+                        <option value="5">5 people</option>
+                        <option value="6">6+ people</option>
+                    </select>
+                </div>
+
+                <div class="form-group col-half">
+                    <label for="building_type">Building Type:</label>
+                    <select id="building_type" name="building_type" required>
+                        <option value="detached" selected>Detached House</option>
+                        <option value="semi_detached">Semi-Detached</option>
+                        <option value="townhouse">Townhouse</option>
+                        <option value="unit">Unit</option>
+                        <option value="apartment">Apartment</option>
+                    </select>
+                </div>
+            </div>
+
+            <h4>Major Appliances</h4>
+            <div class="appliance-grid">
+                <label class="checkbox-card">
+                    <input type="checkbox" name="has_aircon" id="has_aircon">
+                    <div class="checkbox-content">
+                        <div class="appliance-icon">AC</div>
+                        <strong>Air Conditioning</strong>
+                        <small>Ducted or split system cooling/heating</small>
+                    </div>
+                </label>
+
+                <label class="checkbox-card">
+                    <input type="checkbox" name="has_ev" id="has_ev">
+                    <div class="checkbox-content">
+                        <div class="appliance-icon">EV</div>
+                        <strong>Electric Vehicle</strong>
+                        <small>Home charging station</small>
+                    </div>
+                </label>
+
+                <label class="checkbox-card">
+                    <input type="checkbox" name="has_electric_hw" id="has_electric_hw">
+                    <div class="checkbox-content">
+                        <div class="appliance-icon">HW</div>
+                        <strong>Electric Hot Water</strong>
+                        <small>Electric storage or instantaneous</small>
+                    </div>
+                </label>
+
+                <label class="checkbox-card">
+                    <input type="checkbox" name="has_pool" id="has_pool">
+                    <div class="checkbox-content">
+                        <div class="appliance-icon">POOL</div>
+                        <strong>Pool Pump</strong>
+                        <small>Swimming pool circulation system</small>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="form-navigation">
+            <button type="submit" class="btn btn-primary">
+                Build Profile & Continue
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dataSourceRadios = document.querySelectorAll('input[name="data_source"]');
+    const uploadSection = document.getElementById('upload-section');
+    const profileSection = document.getElementById('profile-section');
+    const fileInput = document.getElementById('energy_file');
+    const recentBillInput = document.getElementById('recent_bill');
+
+    function toggleDataSource() {
+        const isUpload = document.querySelector('input[name="data_source"]:checked').value === 'upload';
+
+        uploadSection.style.display = isUpload ? 'block' : 'none';
+        profileSection.style.display = isUpload ? 'none' : 'block';
+
+        if (isUpload) {
+            fileInput.required = true;
+            recentBillInput.required = false;
+            document.getElementById('occupants').required = false;
+            document.getElementById('building_type').required = false;
+        } else {
+            fileInput.required = false;
+            recentBillInput.required = false;
+            document.getElementById('occupants').required = true;
+            document.getElementById('building_type').required = true;
+        }
+    }
+
+    dataSourceRadios.forEach(radio => {
+        radio.addEventListener('change', toggleDataSource);
+    });
+
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            const fileName = e.target.files[0]?.name;
+            const statusElement = document.getElementById('file-status');
+
+            if (fileName) {
+                statusElement.textContent = fileName;
+                statusElement.classList.add('file-selected');
+            } else {
+                statusElement.textContent = 'No file selected';
+                statusElement.classList.remove('file-selected');
+            }
+        });
+    }
+
+    document.querySelectorAll('.checkbox-card input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const card = this.closest('.checkbox-card');
+            const icon = card.querySelector('.appliance-icon');
+
+            if (this.checked) {
+                card.style.borderColor = '#3498db';
+                card.style.backgroundColor = '#f0f8ff';
+                if (icon) {
+                    icon.style.color = 'white';
+                    icon.style.backgroundColor = '#3498db';
+                }
+            } else {
+                card.style.borderColor = '#e0e0e0';
+                card.style.backgroundColor = 'white';
+                if (icon) {
+                    icon.style.color = '#7f8c8d';
+                    icon.style.backgroundColor = '#ecf0f1';
+                }
+            }
+        });
+
+        if (checkbox.checked) {
+            checkbox.dispatchEvent(new Event('change'));
+        }
+    });
+
+    toggleDataSource();
+});
+</script>
+
+{% endblock %}

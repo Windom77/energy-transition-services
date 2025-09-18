@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}EnTrans - Residential Solar & Battery Calculator{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-content">
+            <h1 class="header-title">EnTrans - Residential Solar & Battery Calculator</h1>
+            <p class="header-subtitle">Estimate your solar savings and battery benefits</p>
+        </div>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-content">
+            <p>&copy; 2025 Solar Calculator | Powered by EnTrans</p>
+        </div>
+    </footer>
+
+    <script>
+        // Global utility functions
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('en-AU', {
+                style: 'currency',
+                currency: 'AUD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(value);
+        }
+
+        function formatNumber(value, decimals = 1) {
+            return new Intl.NumberFormat('en-AU', {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
+            }).format(value);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+{% block title %}Step 2: Electricity Tariffs{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="progress-bar">
+        <div class="step completed">1. Energy Profile</div>
+        <div class="step active">2. Electricity Tariffs</div>
+        <div class="step">3. Solar System</div>
+        <div class="step">4. Battery Analysis</div>
+    </div>
+
+    <h1>Step 2: Your Electricity Tariff</h1>
+    <p class="subtitle">Configure your current electricity rates to calculate baseline costs</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Profile Summary -->
+    <div class="summary-card">
+        <h3>Your Energy Profile Summary</h3>
+        <div class="summary-grid">
+            <div class="summary-item">
+                <span class="summary-label">Location:</span>
+                <span class="summary-value">{{ profile_data.postcode }}</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Annual Usage:</span>
+                <span class="summary-value">{{ "{:,.0f}".format(profile_data.annual_usage) }} kWh</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Daily Average:</span>
+                <span class="summary-value">{{ "{:.1f}".format(profile_data.annual_usage / 365) }} kWh</span>
+            </div>
+            {% if profile_data.source == 'synthetic' %}
+            <div class="summary-item">
+                <span class="summary-label">Household:</span>
+                <span class="summary-value">{{ profile_data.occupants }} occupants, {{ profile_data.building_type.replace('_', ' ').title() }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <form method="POST" action="/step2" id="tariffForm">
+
+        <!-- Tariff Type Selection -->
+        <div class="form-section card">
+            <h3>Tariff Structure</h3>
+            <p>What type of electricity tariff do you have?</p>
+
+            <div class="radio-group">
+                <label class="radio-option">
+                    <input type="radio" name="tariff_type" value="flat" checked>
+                    <span class="radio-custom"></span>
+                    <div class="radio-content">
+                        <strong>Flat Rate</strong>
+                        <small>Same rate charged all day, every day</small>
+                    </div>
+                </label>
+
+                <label class="radio-option">
+                    <input type="radio" name="tariff_type" value="tou">
+                    <span class="radio-custom"></span>
+                    <div class="radio-content">
+                        <strong>Time of Use (TOU)</strong>
+                        <small>Different rates for peak, shoulder, and off-peak periods</small>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <!-- Flat Rate Section -->
+        <div id="flat-section" class="form-section card">
+            <h3>Flat Rate Details</h3>
+            <div class="form-group">
+                <label for="flat_rate">Electricity Rate (cents/kWh):</label>
+                <input type="number" id="flat_rate" name="flat_rate"
+                       step="0.01" min="0" max="100"
+                       value="28.5" placeholder="e.g. 28.5">
+                <small>Check your electricity bill for the usage rate</small>
+            </div>
+        </div>
+
+        <!-- Time of Use Section -->
+        <div id="tou-section" class="form-section card" style="display: none;">
+            <h3>Time of Use Rates</h3>
+            <p class="info-text">
+                <strong>Typical TOU periods:</strong><br>
+                Peak: 2PM-8PM weekdays | Shoulder: 7AM-2PM & 8PM-10PM | Off-peak: 10PM-7AM & weekends
+            </p>
+
+            <div class="tou-grid">
+                <div class="form-group">
+                    <label for="peak_rate">Peak Rate (cents/kWh):</label>
+                    <input type="number" id="peak_rate" name="peak_rate"
+                           step="0.01" min="0" max="100"
+                           value="45.0" placeholder="e.g. 45.0">
+                    <small>Highest rate - typically weekday afternoons</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="shoulder_rate">Shoulder Rate (cents/kWh):</label>
+                    <input type="number" id="shoulder_rate" name="shoulder_rate"
+                           step="0.01" min="0" max="100"
+                           value="25.0" placeholder="e.g. 25.0">
+                    <small>Medium rate - mornings, evenings, weekends</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="offpeak_rate">Off-Peak Rate (cents/kWh):</label>
+                    <input type="number" id="offpeak_rate" name="offpeak_rate"
+                           step="0.01" min="0" max="100"
+                           value="18.0" placeholder="e.g. 18.0">
+                    <small>Lowest rate - nights and early mornings</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Charges -->
+        <div class="form-section card">
+            <h3>Supply Charges</h3>
+            <div class="form-group">
+                <label for="daily_charge">Daily Supply Charge ($):</label>
+                <input type="number" id="daily_charge" name="daily_charge"
+                       step="0.01" min="0" max="10"
+                       value="1.20" placeholder="e.g. 1.20" required>
+                <small>Fixed daily connection fee - check your electricity bill</small>
+            </div>
+        </div>
+
+        <!-- Bill Preview -->
+        <div class="form-section card bill-preview">
+            <h3>Estimated Annual Bill</h3>
+            <div id="bill-estimate">
+                <div class="bill-item">
+                    <span>Usage Cost:</span>
+                    <span id="usage-cost">$0</span>
+                </div>
+                <div class="bill-item">
+                    <span>Supply Cost:</span>
+                    <span id="supply-cost">$438</span>
+                </div>
+                <div class="bill-item total">
+                    <span>Total Annual Cost:</span>
+                    <span id="total-cost">$0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="form-navigation">
+            <button type="button" onclick="window.location.href='/step1'" class="btn btn-secondary">
+                ← Back
+            </button>
+            <button type="submit" class="btn btn-primary">
+                Continue to Solar Setup →
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tariffRadios = document.querySelectorAll('input[name="tariff_type"]');
+    const flatSection = document.getElementById('flat-section');
+    const touSection = document.getElementById('tou-section');
+    const annualUsage = {{ profile_data.annual_usage }};
+
+    function toggleTariffType() {
+        const isFlat = document.querySelector('input[name="tariff_type"]:checked').value === 'flat';
+
+        flatSection.style.display = isFlat ? 'block' : 'none';
+        touSection.style.display = isFlat ? 'none' : 'block';
+
+        // Toggle required fields
+        document.getElementById('flat_rate').required = isFlat;
+        document.getElementById('peak_rate').required = !isFlat;
+        document.getElementById('offpeak_rate').required = !isFlat;
+
+        updateBillEstimate();
+    }
+
+    function updateBillEstimate() {
+        try {
+            const dailyCharge = parseFloat(document.getElementById('daily_charge').value) || 1.20;
+            const supplyCost = dailyCharge * 365;
+
+            let usageCost = 0;
+            const isFlat = document.querySelector('input[name="tariff_type"]:checked').value === 'flat';
+
+            if (isFlat) {
+                const rate = parseFloat(document.getElementById('flat_rate').value) || 0;
+                usageCost = (annualUsage * rate) / 100;
+            } else {
+                // TOU calculation - use typical distribution
+                const peakRate = parseFloat(document.getElementById('peak_rate').value) || 0;
+                const shoulderRate = parseFloat(document.getElementById('shoulder_rate').value) || 0;
+                const offpeakRate = parseFloat(document.getElementById('offpeak_rate').value) || 0;
+
+                // Typical Australian residential TOU distribution
+                const peakUsage = annualUsage * 0.25;
+                const shoulderUsage = annualUsage * 0.45;
+                const offpeakUsage = annualUsage * 0.30;
+
+                usageCost = (peakUsage * peakRate + shoulderUsage * shoulderRate + offpeakUsage * offpeakRate) / 100;
+            }
+
+            const totalCost = usageCost + supplyCost;
+
+            document.getElementById('usage-cost').textContent = '$' + usageCost.toFixed(0);
+            document.getElementById('supply-cost').textContent = '$' + supplyCost.toFixed(0);
+            document.getElementById('total-cost').textContent = '$' + totalCost.toFixed(0);
+
+        } catch (error) {
+            console.error('Error updating bill estimate:', error);
+        }
+    }
+
+    // Event listeners
+    tariffRadios.forEach(radio => {
+        radio.addEventListener('change', toggleTariffType);
+    });
+
+    document.getElementById('flat_rate').addEventListener('input', updateBillEstimate);
+    document.getElementById('peak_rate').addEventListener('input', updateBillEstimate);
+    document.getElementById('shoulder_rate').addEventListener('input', updateBillEstimate);
+    document.getElementById('offpeak_rate').addEventListener('input', updateBillEstimate);
+    document.getElementById('daily_charge').addEventListener('input', updateBillEstimate);
+
+    // Initialize
+    toggleTariffType();
+    updateBillEstimate();
+});
+</script>
+
+{% endblock %}
