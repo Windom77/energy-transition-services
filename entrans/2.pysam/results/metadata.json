@@ -1,15 +1,15 @@
 {
   "execution": {
     "simulation_type": "simplified_complete_hybrid_cashloan_fcas_lrec",
-    "timestamp": "2025-09-22T17:37:14.967840",
-    "weather_file": "1955370_Melbourne_-37.83_144.98_tmy-2020.csv",
+    "timestamp": "2025-09-22T18:20:07.509548",
+    "weather_file": "2060764_Sydney_-33.87_151.22_tmy-2020.csv",
     "modules_executed": [
       "pvsamv1",
       "grid",
       "utilityrate5",
       "cashloan"
     ],
-    "analysis_period": 15,
+    "analysis_period": 10,
     "optimizations_applied": [
       "Simplified execution without progress tracking",
       "Enhanced FCAS module integration",
@@ -24,8 +24,8 @@
   },
   "exports": {
     "total_time_series": 312,
-    "total_metrics": 183,
-    "total_items": 495,
+    "total_metrics": 184,
+    "total_items": 496,
     "details": {
       "scalar_metrics": {
         "file": "scalar_results.csv",
@@ -210,11 +210,12 @@
           "Additional revenue NPV contribution",
           "LCOE with additional revenue",
           "Revenue offset ($/kWh)",
+          "Annual FCAS Revenue (Year 1)",
           "Annual LREC Revenue (Year 1)",
           "Payback Period with FCAS and LREC (years)",
           "Precise Payback Period with FCAS and LREC (years)"
         ],
-        "count": 183
+        "count": 184
       },
       "cashflow_series": {
         "file": "cashflow_timeseries.parquet",
@@ -309,7 +310,7 @@
           "cf_total_project_return_with_fcas_lrec"
         ],
         "count": 88,
-        "analysis_period": 15
+        "analysis_period": 10
       },
       "monthly_series": {
         "file": "monthly_timeseries.parquet",
