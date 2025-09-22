@@ -1136,6 +1136,529 @@ class FormProcessor:
                     except Exception:
                         pass  # Skip invalid entries
 
+# ========== LOAD DATA PROCESSING ====================
+class LoadDataManager:
+    """Handle load profile processing and integration with PySAM"""
+
+    def __init__(self, config_manager: ConfigurationManager):
+        self.config = config_manager
+        self.converter = FormBasedConverter()
+
+        # In pysam_form_integration2.py, LoadDataManager class
+
+    import time
+
+    def process_load_configuration(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Process load configuration with timeout protection"""
+        start_time = time.time()
+        max_processing_time = 10  # 10 seconds max
+
+        try:
+            # Check timeout before expensive operations
+            if time.time() - start_time > max_processing_time:
+                print(f"[LOAD TIMEOUT] Processing exceeded {max_processing_time}s, using default")
+                return self._apply_default_load_profile(data)
+
+            load_method = data.get('hidden_load_method', 'auto')
+            print(f"[LOAD] Processing load method: {load_method}")
+
+            if load_method == 'file':
+                # Add timeout check before file processing
+                if time.time() - start_time > max_processing_time:
+                    return self._apply_default_load_profile(data)
+                return self._process_uploaded_load_file(data)
+
+            elif load_method == 'manual':
+                # Add timeout check before manual processing
+                if time.time() - start_time > max_processing_time:
+                    return self._apply_default_load_profile(data)
+                return self._process_manual_load_data(data)
+
+            else:  # 'auto' or any other value
+                # Add timeout check before auto processing
+                if time.time() - start_time > max_processing_time:
+                    return self._apply_default_load_profile(data)
+                return self._process_auto_load_generation(data)
+
+        except Exception as e:
+            processing_time = time.time() - start_time
+            print(f"[LOAD ERROR] Load processing failed after {processing_time:.1f}s: {e}")
+            return self._apply_default_load_profile(data)
+
+    def _process_uploaded_load_file(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Process user-uploaded load profile data from form and replace PySAM grid.load attribute"""
+        try:
+            # FIXED: Look for load data in form fields instead of physical file
+            load_data_raw = data.get('hidden_load_data')
+
+            if not load_data_raw:
+                print("[LOAD ERROR] No load data found in form fields, using existing PySAM load data")
+                return data
+
+            # Parse the JSON load data
+            try:
+                if isinstance(load_data_raw, str):
+                    import json
+                    load_profile = json.loads(load_data_raw)
+                else:
+                    load_profile = load_data_raw
+            except (json.JSONDecodeError, TypeError) as e:
+                print(f"[LOAD ERROR] Failed to parse load data: {e}")
+                return data
+
+            # Validate the uploaded data
+            if len(load_profile) != 8760:
+                print(f"[LOAD ERROR] Invalid load profile length: {len(load_profile)}, expected 8760")
+                return data
+
+            # Validate all values are numeric and non-negative
+            try:
+                load_profile = [float(x) for x in load_profile]
+                if any(x < 0 for x in load_profile):
+                    print("[LOAD ERROR] Negative load values found")
+                    return data
+            except (ValueError, TypeError):
+                print("[LOAD ERROR] Non-numeric load values found")
+                return data
+
+            # Calculate summary statistics
+            annual_energy = sum(load_profile)
+            peak_demand = max(load_profile)
+            avg_demand = annual_energy / 8760
+
+            # CRITICAL: Replace PySAM grid.load attribute directly
+            data['load'] = load_profile
+
+            # Remove any conflicting annual_energy override since we're using actual data
+            if 'annual_energy' in data:
+                print(
+                    f"[LOAD] Removing annual_energy override ({data['annual_energy']}) - using actual uploaded data ({annual_energy:.0f} kWh)")
+                data.pop('annual_energy', None)
+
+            # Add metadata for reference and results analysis
+            data.update({
+                'load_source': 'uploaded_file',
+                'load_annual_kwh': annual_energy,
+                'load_peak_kw': peak_demand,
+                'load_average_kw': avg_demand,
+                'load_data_replaced': True
+            })
+
+            print(
+                f"[LOAD] ✅ PySAM grid.load replaced with uploaded data: {annual_energy:.0f} kWh annual, {peak_demand:.1f} kW peak")
+            return data
+
+        except Exception as e:
+            print(f"[LOAD ERROR] File processing failed: {e}")
+            return data  # Keep existing PySAM load data
+
+    def _process_manual_load_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Process manually entered load data from form and replace PySAM grid.load attribute"""
+        try:
+            # FIXED: Look for manual load data in form instead of individual monthly fields
+            load_data_raw = data.get('hidden_load_data')
+
+            if not load_data_raw:
+                print("[LOAD] No manual load data provided, keeping existing PySAM load data")
+                return data
+
+            # Parse the JSON load data
+            try:
+                if isinstance(load_data_raw, str):
+                    import json
+                    load_profile = json.loads(load_data_raw)
+                else:
+                    load_profile = load_data_raw
+            except (json.JSONDecodeError, TypeError) as e:
+                print(f"[LOAD ERROR] Failed to parse manual load data: {e}")
+                return data
+
+            # Validate the data
+            if len(load_profile) != 8760:
+                print(f"[LOAD ERROR] Invalid manual load profile length: {len(load_profile)}, expected 8760")
+                return data
+
+            # Validate all values are numeric and non-negative
+            try:
+                load_profile = [float(x) for x in load_profile]
+                if any(x < 0 for x in load_profile):
+                    print("[LOAD ERROR] Negative load values found in manual data")
+                    return data
+            except (ValueError, TypeError):
+                print("[LOAD ERROR] Non-numeric load values found in manual data")
+                return data
+
+            # Calculate summary statistics
+            annual_energy = sum(load_profile)
+            peak_demand = max(load_profile)
+
+            # CRITICAL: Replace PySAM grid.load attribute directly
+            data['load'] = load_profile
+
+            # Remove any conflicting annual_energy override since we're using actual data
+            if 'annual_energy' in data:
+                print(
+                    f"[LOAD] Removing annual_energy override ({data['annual_energy']}) - using actual manual data ({annual_energy:.0f} kWh)")
+                data.pop('annual_energy', None)
+
+            # Add metadata for reference
+            data.update({
+                'load_source': 'manual_entry',
+                'load_annual_kwh': annual_energy,
+                'load_peak_kw': peak_demand,
+                'load_data_replaced': True
+            })
+
+            print(f"[LOAD] ✅ PySAM grid.load replaced with manual entry profile: {annual_energy:.0f} kWh annual")
+            return data
+
+        except Exception as e:
+            print(f"[LOAD ERROR] Manual data processing failed: {e}")
+            return data  # Keep existing PySAM load data
+
+    def _process_auto_load_generation(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Handle automatic load profile - check for form data first, then override or existing template"""
+        try:
+            # FIXED: Check for auto-generated load data from form first
+            load_data_raw = data.get('hidden_load_data')
+            annual_energy_override = data.get('hidden_load_annual_energy') or data.get('annual_energy_kwh') or data.get(
+                'annual_energy')
+
+            if load_data_raw:
+                # Auto-generated data exists in form
+                try:
+                    if isinstance(load_data_raw, str):
+                        import json
+                        load_profile = json.loads(load_data_raw)
+                    else:
+                        load_profile = load_data_raw
+
+                    # Validate the data
+                    if len(load_profile) == 8760:
+                        load_profile = [float(x) for x in load_profile]
+                        annual_energy = sum(load_profile)
+                        peak_demand = max(load_profile)
+
+                        # Replace PySAM grid.load with auto-generated profile
+                        data['load'] = load_profile
+
+                        data.update({
+                            'load_source': 'auto_generated',
+                            'load_annual_kwh': annual_energy,
+                            'load_peak_kw': peak_demand,
+                            'load_data_replaced': True
+                        })
+
+                        print(
+                            f"[LOAD] ✅ PySAM grid.load replaced with auto-generated profile: {annual_energy:.0f} kWh annual, {peak_demand:.1f} kW peak")
+                        return data
+
+                except Exception as e:
+                    print(f"[LOAD ERROR] Failed to process auto-generated data: {e}")
+                    # Fall through to override/existing logic
+
+            # Check if user provided annual energy override
+            if annual_energy_override:
+                try:
+                    annual_energy = float(annual_energy_override)
+
+                    # Generate new hourly profile based on override
+                    system_capacity = float(data.get('system_capacity', 100))
+                    load_type = data.get('hidden_load_type', 'commercial')
+                    load_profile = self._generate_load_profile_by_type(annual_energy, load_type)
+                    peak_demand = max(load_profile)
+
+                    # Replace PySAM grid.load with scaled profile
+                    data['load'] = load_profile
+
+                    # Set annual_energy for PySAM scaling (if supported)
+                    data['annual_energy'] = annual_energy
+
+                    data.update({
+                        'load_source': 'auto_generated_override',
+                        'load_annual_kwh': annual_energy,
+                        'load_peak_kw': peak_demand,
+                        'load_data_replaced': True
+                    })
+
+                    print(
+                        f"[LOAD] ✅ PySAM grid.load replaced with auto-generated profile: {annual_energy:.0f} kWh annual (user override)")
+
+                except (ValueError, TypeError):
+                    print(
+                        f"[LOAD] Invalid annual energy override: {annual_energy_override}, keeping existing PySAM load")
+            else:
+                # No override - keep existing PySAM load data
+                existing_load = data.get('load', [])
+                if existing_load and len(existing_load) == 8760:
+                    annual_energy = sum(existing_load)
+                    peak_demand = max(existing_load)
+
+                    data.update({
+                        'load_source': 'existing_pysam_template',
+                        'load_annual_kwh': annual_energy,
+                        'load_peak_kw': peak_demand,
+                        'load_data_replaced': False
+                    })
+
+                    print(
+                        f"[LOAD] Keeping existing PySAM template load: {annual_energy:.0f} kWh annual, {peak_demand:.1f} kW peak")
+                else:
+                    print("[LOAD] No existing load data found, generating default profile")
+                    return self._apply_default_load_profile(data)
+
+            return data
+
+        except Exception as e:
+            print(f"[LOAD ERROR] Auto-generation failed: {e}")
+            return self._apply_default_load_profile(data)
+
+    def _generate_load_profile_by_type(self, annual_energy: float, load_type: str) -> List[float]:
+        """Generate load profile based on type (residential, commercial, industrial)"""
+        import math
+
+        # Average hourly load
+        avg_hourly = annual_energy / 8760
+        hourly_profile = []
+
+        for hour in range(8760):
+            day_of_year = hour // 24
+            hour_of_day = hour % 24
+            day_of_week = day_of_year % 7
+
+            # Seasonal variation
+            seasonal_factor = 1.0 + 0.3 * math.sin(2 * math.pi * day_of_year / 365 + math.pi / 2)
+
+            # Load type specific patterns
+            if load_type == 'residential':
+                # Morning and evening peaks
+                if 6 <= hour_of_day <= 8 or 18 <= hour_of_day <= 22:
+                    daily_factor = 1.6  # Peak hours
+                elif 9 <= hour_of_day <= 17:
+                    daily_factor = 0.8  # Daytime
+                else:
+                    daily_factor = 0.5  # Night
+            elif load_type == 'industrial':
+                # Consistent during work hours
+                if 6 <= hour_of_day <= 18:
+                    daily_factor = 1.3  # Work hours
+                elif 19 <= hour_of_day <= 22:
+                    daily_factor = 0.9  # Evening
+                else:
+                    daily_factor = 0.6  # Night
+            else:  # commercial (default)
+                # Business hours peak
+                if 8 <= hour_of_day <= 18:
+                    daily_factor = 1.4  # Business hours
+                elif 6 <= hour_of_day <= 7 or 19 <= hour_of_day <= 21:
+                    daily_factor = 0.8  # Shoulder
+                else:
+                    daily_factor = 0.4  # Night
+
+            # Weekend reduction for commercial/industrial
+            if load_type in ['commercial', 'industrial'] and day_of_week >= 5:
+                daily_factor *= 0.6
+
+            # Calculate final hourly load
+            hourly_load = avg_hourly * seasonal_factor * daily_factor
+            hourly_profile.append(max(0, hourly_load))
+
+        return hourly_profile
+
+    def _generate_hourly_from_monthly(self, monthly_loads: List[float]) -> List[float]:
+        """Generate 8760 hourly values from 12 monthly totals"""
+        import calendar
+
+        hourly_profile = []
+
+        # Days in each month
+        days_in_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+        for month_idx, monthly_total in enumerate(monthly_loads):
+            month = month_idx + 1
+            days = days_in_month[month_idx]
+
+            # Calculate average hourly load for this month
+            hours_in_month = days * 24
+            avg_hourly = monthly_total / hours_in_month
+
+            # Apply typical daily profile pattern
+            for day in range(days):
+                for hour in range(24):
+                    # Simple commercial pattern: higher during business hours
+                    if 8 <= hour <= 18:  # Business hours
+                        multiplier = 1.3
+                    elif 6 <= hour <= 7 or 19 <= hour <= 21:  # Shoulder hours
+                        multiplier = 0.9
+                    else:  # Night hours
+                        multiplier = 0.6
+
+                    # Weekend reduction
+                    day_of_week = (day % 7)
+                    if day_of_week in [5, 6]:  # Weekend
+                        multiplier *= 0.7
+
+                    hourly_value = avg_hourly * multiplier
+                    hourly_profile.append(max(0, hourly_value))
+
+        return hourly_profile
+
+    def _generate_typical_commercial_profile(self, annual_energy: float) -> List[float]:
+        """Generate typical commercial load profile"""
+        import math
+
+        # Average hourly load
+        avg_hourly = annual_energy / 8760
+
+        hourly_profile = []
+
+        for hour in range(8760):
+            # Day of year (0-364)
+            day_of_year = hour // 24
+            # Hour of day (0-23)
+            hour_of_day = hour % 24
+            # Day of week (0-6, Monday=0)
+            day_of_week = day_of_year % 7
+
+            # Seasonal variation (summer peak for cooling)
+            seasonal_factor = 1.0 + 0.3 * math.sin(2 * math.pi * day_of_year / 365 + math.pi / 2)
+
+            # Daily pattern - commercial building
+            if 6 <= hour_of_day <= 8:
+                daily_factor = 0.7 + 0.3 * (hour_of_day - 6) / 2  # Ramp up
+            elif 9 <= hour_of_day <= 17:
+                daily_factor = 1.4  # Peak business hours
+            elif 18 <= hour_of_day <= 20:
+                daily_factor = 1.4 - 0.6 * (hour_of_day - 17) / 3  # Ramp down
+            else:
+                daily_factor = 0.5  # Base load
+
+            # Weekend reduction
+            if day_of_week >= 5:  # Saturday/Sunday
+                daily_factor *= 0.6
+
+            # Calculate final hourly load
+            hourly_load = avg_hourly * seasonal_factor * daily_factor
+            hourly_profile.append(max(0, hourly_load))
+
+        return hourly_profile
+
+    def _apply_default_load_profile(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Apply default load profile as last resort - only if no existing PySAM data"""
+        try:
+            # First check if there's already valid load data in PySAM template
+            existing_load = data.get('load', [])
+            if existing_load and len(existing_load) == 8760:
+                annual_energy = sum(existing_load)
+                peak_demand = max(existing_load)
+
+                data.update({
+                    'load_source': 'existing_pysam_template',
+                    'load_annual_kwh': annual_energy,
+                    'load_peak_kw': peak_demand,
+                    'load_data_replaced': False
+                })
+
+                print(
+                    f"[LOAD] Using existing PySAM template load: {annual_energy:.0f} kWh annual, {peak_demand:.1f} kW peak")
+                return data
+
+            # Only generate fallback if no existing data
+            system_capacity = float(data.get('system_capacity', 100))
+            annual_energy = system_capacity * 1200  # Conservative default
+
+            # Simple flat profile with basic daily variation
+            hourly_profile = []
+            avg_hourly = annual_energy / 8760
+
+            for hour in range(8760):
+                hour_of_day = hour % 24
+                if 8 <= hour_of_day <= 18:
+                    multiplier = 1.2
+                else:
+                    multiplier = 0.8
+
+                hourly_profile.append(avg_hourly * multiplier)
+
+            # Replace PySAM grid.load as fallback
+            data['load'] = hourly_profile
+
+            data.update({
+                'load_source': 'fallback_generated',
+                'load_annual_kwh': annual_energy,
+                'load_peak_kw': max(hourly_profile),
+                'load_data_replaced': True
+            })
+
+            print(f"[LOAD] Fallback profile applied to PySAM grid.load: {annual_energy:.0f} kWh annual")
+            return data
+
+        except Exception as e:
+            print(f"[LOAD ERROR] Even fallback profile failed: {e}")
+            # Emergency: ensure PySAM has some load data
+            emergency_load = [10] * 8760  # 10 kW flat load
+            data['load'] = emergency_load
+            data.update({
+                'load_source': 'emergency_flat',
+                'load_annual_kwh': 87600,
+                'load_peak_kw': 10,
+                'load_data_replaced': True
+            })
+            print("[LOAD] Emergency flat profile applied to PySAM grid.load")
+            return data
+
+    def validate_load_data(self, data: Dict[str, Any]) -> Dict[str, bool]:
+        """Validate PySAM grid.load configuration"""
+        validation = {
+            'has_load_profile': False,
+            'correct_length': False,
+            'positive_values': False,
+            'reasonable_scale': False,
+            'pysam_compatible': False
+        }
+
+        # Check if load attribute exists and is properly formatted for PySAM
+        load_profile = data.get('load', [])
+
+        if load_profile:
+            validation['has_load_profile'] = True
+
+            # Check length (must be exactly 8760 for annual hourly data)
+            if len(load_profile) == 8760:
+                validation['correct_length'] = True
+
+                try:
+                    # Ensure all values are numeric
+                    numeric_load = [float(x) for x in load_profile]
+
+                    # Check for non-negative values
+                    if all(x >= 0 for x in numeric_load):
+                        validation['positive_values'] = True
+
+                        # Check if values are in reasonable range (0.001 kW to 50 MW)
+                        max_load = max(numeric_load)
+                        min_load = min(numeric_load)
+                        if 0.001 <= max_load <= 50000 and min_load >= 0:
+                            validation['reasonable_scale'] = True
+
+                            # Final PySAM compatibility check
+                            validation['pysam_compatible'] = True
+
+                except (ValueError, TypeError):
+                    pass  # validation remains False
+
+        # Log validation results
+        if all(validation.values()):
+            annual_energy = sum(float(x) for x in load_profile)
+            peak_demand = max(float(x) for x in load_profile)
+            print(
+                f"[LOAD VALIDATION] ✅ PySAM grid.load validation passed: {annual_energy:.0f} kWh, {peak_demand:.1f} kW peak")
+        else:
+            failed_checks = [k for k, v in validation.items() if not v]
+            print(f"[LOAD VALIDATION] ❌ PySAM grid.load validation failed: {failed_checks}")
+
+        return validation
+
 # ========== ENHANCED MAIN INTEGRATOR WITH FIXED WEATHER PROCESSING ==========
 
 class OptimizedPySAMIntegrator:

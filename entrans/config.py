@@ -20,7 +20,29 @@ class Config:
     Automatically detects local vs cloud environment and sets appropriate paths
     """
 
-    # ========== ENVIRONMENT DETECTION ==========
+    # Class variables - will be initialized after class definition
+    ENVIRONMENT = None
+    PROJECT_ROOT = None
+    INPUT_DIR = None
+    PYSAM_DIR = None
+    OUTPUT_DIR = None
+    DATA_DIR = None
+    WEATHER_DIR = None
+    INPUT_JSON_DIR = None
+    PROFILES_DIR = None
+    TEMPLATE_JSON = None
+    TEMPLATE_JSON_FALLBACK = None
+    FORM_HTML = None
+    FORM_HTML_FALLBACK = None
+    UPDATED_JSON_DIR = None
+    UPDATED_JSON = None
+    RESULTS_DIR = None
+    STATIC_DIR = None
+    TEMPLATES_DIR = None
+    LEGACY_STATIC_DIR = None
+    LEGACY_TEMPLATES_DIR = None
+    FORM_CONFIG_JSON = None
+    BASE_JSON = None
 
     @classmethod
     def _detect_environment(cls) -> str:
@@ -72,91 +94,6 @@ class Config:
             # Fallback to script's parent directory
             return current_path.parent
 
-    # ========== PATH CONFIGURATION ==========
-
-    # Environment detection - Fixed: Call classmethods properly
-    @classmethod
-    def _get_environment(cls) -> str:
-        """Get current environment"""
-        return cls._detect_environment()
-
-    @classmethod
-    def _get_root(cls) -> Path:
-        """Get project root"""
-        return cls._get_project_root()
-
-    # Initialize class variables - Fixed: Use properties instead of direct classmethod calls
-    _ENVIRONMENT = None
-    _PROJECT_ROOT = None
-
-    @classmethod
-    def _initialize_paths(cls):
-        """Initialize environment and paths on first access"""
-        if cls._ENVIRONMENT is None:
-            cls._ENVIRONMENT = cls._detect_environment()
-        if cls._PROJECT_ROOT is None:
-            cls._PROJECT_ROOT = cls._get_project_root()
-
-    @property
-    @classmethod
-    def ENVIRONMENT(cls) -> str:
-        """Get environment with lazy initialization"""
-        cls._initialize_paths()
-        return cls._ENVIRONMENT
-
-    @property
-    @classmethod
-    def PROJECT_ROOT(cls) -> Path:
-        """Get project root with lazy initialization"""
-        cls._initialize_paths()
-        return cls._PROJECT_ROOT
-
-    # ========== PATH CONFIGURATION ==========
-
-    # Class variables will be set after class definition
-    ENVIRONMENT = None
-    PROJECT_ROOT = None
-
-    # Core directories (will be set after initialization)
-    INPUT_DIR = None
-    PYSAM_DIR = None
-    OUTPUT_DIR = None
-    DATA_DIR = None
-
-    # Data subdirectories
-    WEATHER_DIR = None
-    INPUT_JSON_DIR = None
-    PROFILES_DIR = None
-
-    # Template files with fallbacks
-    TEMPLATE_JSON = None
-    TEMPLATE_JSON_FALLBACK = None
-
-    # Input files (with fallbacks)
-    FORM_HTML = None
-    FORM_HTML_FALLBACK = None
-
-    # Output files
-    UPDATED_JSON_DIR = None
-    UPDATED_JSON = None
-
-    # Results directory
-    RESULTS_DIR = None
-
-    # Static assets (with fallbacks for migration)
-    STATIC_DIR = None
-    TEMPLATES_DIR = None
-
-    # Legacy paths for backwards compatibility
-    LEGACY_STATIC_DIR = None
-    LEGACY_TEMPLATES_DIR = None
-
-    # Form configuration
-    FORM_CONFIG_JSON = None
-
-    # Additional required paths
-    BASE_JSON = None
-
     @classmethod
     def _initialize_all_paths(cls):
         """Initialize all paths after class creation"""
@@ -190,18 +127,18 @@ class Config:
         # Results directory
         cls.RESULTS_DIR = cls.PYSAM_DIR / 'results'
 
-        # UPDATED: Check for templates in new structure (root/templates) first
+        # Check for templates in new structure (root/templates) first
         if (cls.PROJECT_ROOT / 'templates').exists():
-            cls.TEMPLATES_DIR = cls.PROJECT_ROOT / 'templates'  # NEW LOCATION
-            cls.STATIC_DIR = cls.PROJECT_ROOT / 'static'        # NEW LOCATION
-            cls.LEGACY_TEMPLATES_DIR = cls.INPUT_DIR / 'templates'  # OLD LOCATION
-            cls.LEGACY_STATIC_DIR = cls.INPUT_DIR / 'static'        # OLD LOCATION
+            cls.TEMPLATES_DIR = cls.PROJECT_ROOT / 'templates'
+            cls.STATIC_DIR = cls.PROJECT_ROOT / 'static'
+            cls.LEGACY_TEMPLATES_DIR = cls.INPUT_DIR / 'templates'
+            cls.LEGACY_STATIC_DIR = cls.INPUT_DIR / 'static'
         else:
             # Fallback to old structure
-            cls.TEMPLATES_DIR = cls.INPUT_DIR / 'templates'     # OLD LOCATION
-            cls.STATIC_DIR = cls.INPUT_DIR / 'static'           # OLD LOCATION
-            cls.LEGACY_TEMPLATES_DIR = cls.PROJECT_ROOT / 'templates'  # FALLBACK
-            cls.LEGACY_STATIC_DIR = cls.PROJECT_ROOT / 'static'        # FALLBACK
+            cls.TEMPLATES_DIR = cls.INPUT_DIR / 'templates'
+            cls.STATIC_DIR = cls.INPUT_DIR / 'static'
+            cls.LEGACY_TEMPLATES_DIR = cls.PROJECT_ROOT / 'templates'
+            cls.LEGACY_STATIC_DIR = cls.PROJECT_ROOT / 'static'
 
         # Form configuration - check both locations
         if (cls.STATIC_DIR / 'js' / 'form_config.json').exists():
@@ -209,12 +146,10 @@ class Config:
         elif (cls.LEGACY_STATIC_DIR / 'js' / 'form_config.json').exists():
             cls.FORM_CONFIG_JSON = cls.LEGACY_STATIC_DIR / 'js' / 'form_config.json'
         else:
-            cls.FORM_CONFIG_JSON = cls.STATIC_DIR / 'js' / 'form_config.json'  # Default
+            cls.FORM_CONFIG_JSON = cls.STATIC_DIR / 'js' / 'form_config.json'
 
         # Additional required paths
         cls.BASE_JSON = cls.INPUT_JSON_DIR / 'All_commercial.json'
-
-    # ========== ENVIRONMENT-SPECIFIC SETTINGS ==========
 
     @classmethod
     def get_debug_mode(cls) -> bool:
@@ -225,18 +160,15 @@ class Config:
 
     @classmethod
     def get_weather_file_by_coordinates(cls, lat: float, lon: float) -> Optional[Path]:
-        """
-        Find closest weather file by coordinates
-        Cloud-safe implementation with error handling
-        """
+        """Find closest weather file by coordinates"""
         try:
             if not cls.WEATHER_DIR.exists():
-                print(f"⚠️ Weather directory not found: {cls.WEATHER_DIR}")
+                print(f"Weather directory not found: {cls.WEATHER_DIR}")
                 return None
 
             weather_files = list(cls.WEATHER_DIR.glob("*.csv"))
             if not weather_files:
-                print(f"⚠️ No weather files found in: {cls.WEATHER_DIR}")
+                print(f"No weather files found in: {cls.WEATHER_DIR}")
                 return None
 
             # Find closest file by coordinates
@@ -252,34 +184,29 @@ class Config:
                         closest_file = weather_file
 
             if closest_file:
-                print(f"🌦️ Selected weather file: {closest_file.name} (distance: {min_distance:.2f})")
+                print(f"Selected weather file: {closest_file.name} (distance: {min_distance:.2f})")
                 return closest_file
             else:
-                print("⚠️ No weather files with valid coordinates found")
+                print("No weather files with valid coordinates found")
                 return None
 
         except Exception as e:
-            print(f"❌ Error finding weather file: {e}")
+            print(f"Error finding weather file: {e}")
             return None
 
     @classmethod
     def _extract_coordinates_from_filename(cls, filename: str) -> Optional[Tuple[float, float]]:
         """Extract coordinates from weather filename"""
         try:
-            # Remove .csv extension and split by underscore
             parts = filename.replace('.csv', '').split('_')
-
-            # Look for numeric parts that could be coordinates
             coords = []
             for part in parts:
                 try:
-                    # Handle negative numbers and decimals
                     coord = float(part)
                     coords.append(coord)
                 except ValueError:
                     continue
 
-            # Return last two coordinates (usually lat, lon)
             if len(coords) >= 2:
                 return (coords[-2], coords[-1])
             return None
@@ -308,17 +235,14 @@ class Config:
             try:
                 directory.mkdir(parents=True, exist_ok=True)
             except Exception as e:
-                print(f"⚠️ Could not create directory {directory}: {e}")
+                print(f"Could not create directory {directory}: {e}")
 
         if cls.get_debug_mode():
-            print(f"✅ Directory structure verified from {cls.PROJECT_ROOT}")
+            print(f"Directory structure verified from {cls.PROJECT_ROOT}")
 
     @classmethod
     def validate_deployment_readiness(cls) -> dict:
-        """
-        Validate that the configuration is ready for deployment
-        Returns comprehensive status for troubleshooting
-        """
+        """Validate that the configuration is ready for deployment"""
         validation_results = {
             'environment': cls.ENVIRONMENT,
             'project_root': str(cls.PROJECT_ROOT),
@@ -354,59 +278,6 @@ class Config:
                 validation_results['errors'].append(f"Missing critical path: {name} ({path})")
                 validation_results['ready_for_deployment'] = False
 
-        # Check weather files
-        if cls.WEATHER_DIR.exists():
-            weather_files = list(cls.WEATHER_DIR.glob("*.csv"))
-            validation_results['weather_files'] = {
-                'count': len(weather_files),
-                'files': [f.name for f in weather_files[:5]],  # First 5 files
-                'coordinates_valid': []
-            }
-
-            for weather_file in weather_files[:3]:  # Check first 3 files
-                coords = cls._extract_coordinates_from_filename(weather_file.name)
-                validation_results['weather_files']['coordinates_valid'].append({
-                    'file': weather_file.name,
-                    'coordinates': coords
-                })
-
-            if len(weather_files) == 0:
-                validation_results['errors'].append("No weather files found")
-                validation_results['ready_for_deployment'] = False
-        else:
-            validation_results['errors'].append("Weather directory not found")
-            validation_results['ready_for_deployment'] = False
-
-        # Check template files
-        template_files = {
-            'TEMPLATE_JSON': cls.TEMPLATE_JSON,
-            'TEMPLATE_JSON_FALLBACK': cls.TEMPLATE_JSON_FALLBACK,
-            'FORM_CONFIG_JSON': cls.FORM_CONFIG_JSON
-        }
-
-        for name, path in template_files.items():
-            exists = path.exists()
-            validation_results['template_files'][name] = {
-                'path': str(path),
-                'exists': exists
-            }
-
-            if not exists:
-                validation_results['warnings'].append(f"Template file not found: {name} ({path})")
-
-        # Environment-specific checks
-        if cls.ENVIRONMENT == 'gcloud':
-            # Cloud-specific validations
-            if not Path('/app').exists():
-                validation_results['warnings'].append("Not running in expected /app directory")
-
-        # Summary
-        validation_results['summary'] = {
-            'total_errors': len(validation_results['errors']),
-            'total_warnings': len(validation_results['warnings']),
-            'deployment_ready': validation_results['ready_for_deployment']
-        }
-
         return validation_results
 
     @classmethod
@@ -415,77 +286,11 @@ class Config:
         if cls.TEMPLATE_JSON.exists():
             return cls.TEMPLATE_JSON
         elif cls.TEMPLATE_JSON_FALLBACK.exists():
-            print(f"⚠️ Using fallback template: {cls.TEMPLATE_JSON_FALLBACK}")
+            print(f"Using fallback template: {cls.TEMPLATE_JSON_FALLBACK}")
             return cls.TEMPLATE_JSON_FALLBACK
         else:
             raise FileNotFoundError("No template JSON files found")
 
-    @classmethod
-    def get_template_path(cls) -> Path:
-        """Get template path with comprehensive fallback checking"""
-        template_locations = [
-            cls.TEMPLATES_DIR / 'index_base4.html' if cls.TEMPLATES_DIR else None,
-            cls.LEGACY_TEMPLATES_DIR / 'index_base4.html' if cls.LEGACY_TEMPLATES_DIR else None,
-            cls.INPUT_DIR / 'templates' / 'index_base4.html' if cls.INPUT_DIR else None,
-            cls.INPUT_DIR / 'index_base4.html' if cls.INPUT_DIR else None,
-            cls.PROJECT_ROOT / 'templates' / 'index_base4.html',
-            Path('templates/index_base4.html'),
-            Path('index_base4.html')
-        ]
-
-        for location in template_locations:
-            if location and location.exists():
-                return location.parent  # Return the directory containing the template
-
-        # If no template found, return the primary template directory
-        return cls.TEMPLATES_DIR if cls.TEMPLATES_DIR else Path('templates')
-
-    @classmethod
-    def debug_template_locations(cls) -> Dict[str, Any]:
-        """Debug template locations for troubleshooting"""
-        debug_info = {
-            'primary_templates_dir': str(cls.TEMPLATES_DIR) if cls.TEMPLATES_DIR else 'None',
-            'legacy_templates_dir': str(cls.LEGACY_TEMPLATES_DIR) if cls.LEGACY_TEMPLATES_DIR else 'None',
-            'recommended_template_dir': str(cls.get_template_path()),
-            'template_exists_in_locations': {}
-        }
-
-        template_locations = [
-            ('PRIMARY', cls.TEMPLATES_DIR / 'index_base4.html' if cls.TEMPLATES_DIR else None),
-            ('LEGACY', cls.LEGACY_TEMPLATES_DIR / 'index_base4.html' if cls.LEGACY_TEMPLATES_DIR else None),
-            ('INPUT/templates', cls.INPUT_DIR / 'templates' / 'index_base4.html' if cls.INPUT_DIR else None),
-            ('INPUT', cls.INPUT_DIR / 'index_base4.html' if cls.INPUT_DIR else None),
-            ('ROOT/templates', cls.PROJECT_ROOT / 'templates' / 'index_base4.html'),
-            ('RELATIVE templates', Path('templates/index_base4.html')),
-            ('CURRENT DIR', Path('index_base4.html'))
-        ]
-
-        for name, location in template_locations:
-            if location:
-                debug_info['template_exists_in_locations'][name] = {
-                    'path': str(location),
-                    'exists': location.exists(),
-                    'parent_exists': location.parent.exists() if location.parent != location else False
-                }
-
-        return debug_info
-
-    @classmethod
-    def get_form_config_path(cls) -> Path:
-        """Get form config with fallback checking"""
-        if cls.FORM_CONFIG_JSON.exists():
-            return cls.FORM_CONFIG_JSON
-        else:
-            # Try legacy location
-            legacy_path = cls.LEGACY_STATIC_DIR / 'js' / 'form_config.json'
-            if legacy_path.exists():
-                print(f"⚠️ Using legacy form config: {legacy_path}")
-                return legacy_path
-            else:
-                raise FileNotFoundError("Form configuration file not found")
-
-
-# ========== AUTO-INITIALIZATION ==========
 
 # Initialize all paths after class definition
 Config._initialize_all_paths()
@@ -497,22 +302,17 @@ Config.ensure_directories()
 if Config.get_debug_mode():
     validation = Config.validate_deployment_readiness()
     if not validation['ready_for_deployment']:
-        print("⚠️ Configuration validation warnings:")
-        for error in validation['errors'][:3]:  # Show first 3 errors
-            print(f"   ❌ {error}")
-        for warning in validation['warnings'][:2]:  # Show first 2 warnings
-            print(f"   ⚠️ {warning}")
+        print("Configuration validation warnings:")
+        for error in validation['errors'][:3]:
+            print(f"   {error}")
 
-
-# ========== CLOUD STORAGE SETTINGS ==========
 
 # Cloud storage configuration (for future use)
 CLOUD_STORAGE_ENABLED = os.getenv('CLOUD_STORAGE_ENABLED', 'false').lower() == 'true'
 STORAGE_BUCKET_DATA = os.getenv('STORAGE_BUCKET_DATA', 'entrans-data')
 STORAGE_BUCKET_UPLOADS = os.getenv('STORAGE_BUCKET_UPLOADS', 'entrans-uploads')
 
-# ========== LOGGING CONFIGURATION ==========
-
+# Logging configuration
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO' if Config.ENVIRONMENT == 'gcloud' else 'DEBUG')
 LOG_FILE = Config.PROJECT_ROOT / 'app.log'
 SIMULATION_LOG = Config.PYSAM_DIR / 'simulation.log'

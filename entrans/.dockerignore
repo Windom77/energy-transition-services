@@ -71,7 +71,7 @@ test_*.py
 
 # Large data files (keep essential ones only)
 *.parquet
-*.csv
+
 # Uncomment below if data files are too large for container
 # data/weather/
 # 2.pysam/results/
