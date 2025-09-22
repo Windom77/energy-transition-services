@@ -1,8 +1,8 @@
 SECTION,Subsection,Special Handling,Field Description & Unit,Input type,PySAM Module,PySAM Key,Description,Shared,REopt Key,Handling1,Handling2,Handling3,Default Value
-Project Information,,general_info,Project Owner,Text,,project_owner,Name of entity considering the project,,,Required, max 100 chars,,Bazza
+Project Information,,general_info,Project Owner,Text,,project_owner,Name of entity considering the project,,,Required, max 100 chars,,Consultant 1
 Project Information,,general_info,Project Evaluation Date,Date picker,,project_date_eval,Date of evaluation,,,Required, future dates not allowed,,
 Project Information,,general_info,Project ID,Text,,project_id,Identifying number or reference,,,Alphanumeric, max 20 chars,,123456B
-Project Information,,general_info,Project Description,Text,,project_desc,Brief outline of the project,,,Optional, max 500 chars,,Big uns
+Project Information,,general_info,Project Description,Text,,project_desc,Brief outline of the project,,,Optional, max 500 chars,,Solar & Battery Project 1
 Project Information,,general_info,Project Lifetime (years),Integer,Cashloan,analysis_period,Length of financial analysis period,,analysis_period,Required, min 1, max 50,25
 Project Information,,general_info,Project Address,address,Site,site.lat,Address search Function & Map (provides latitude & longitude),,latitude,Required, validate coordinates,,
 Project Information,,general_info,Project Timezone,Select,UtilityRate5,tz,AEST; ACST; AWST,,,Required, from predefined list,,AEST
@@ -12,7 +12,7 @@ PV Configuration,,,New System Size (kW),Integer,Pvsamv1,system_capacity,Project 
 PV Configuration,,,Land area (acres),float,Pvsamv1,land_area,Allocated land area,,land_acres,Optional, min 0,,
 PV Configuration,,,Roof space (m2),float,Pvsamv1,roof_space,Usable roof space,,roof_squarefeet,Optional, min 0,,
 PV Configuration,,,Tilt (degrees),float,Pvsamv1,subarray1_tilt,Tilt angle of PV panels,,tilt,Required, min 0, max 90,20
-PV Configuration,,,Azimuth (degrees),float,Pvsamv1,subarray1_azimuth,Orientation of PV array,,azimuth,Required, min 0, max 359,180
+PV Configuration,,,Azimuth (degrees),float,Pvsamv1,subarray1_azimuth,Orientation of PV array,,azimuth,Required, min 0, max 359,0
 PV Configuration,,,Inverter Efficiency (%),Percentage,Pvsamv1,inv_snl_eff_cec,Inverter efficiency,,inv_eff,Required, min 70, max 100,98.7
 PV Configuration,,,Degradation Rate (%),Percentage,Pvsamv1,dc_degradation,Annual degradation rate of PV system,,degradation_fraction,Required, min 0, max 5,0.5
 PV Configuration,,,DCWiring Losses (%),Percentage,Pvsamv1,subarray1_dcwiring_loss,DCWiring Losses (%),,,Required, min 0, max 10,2

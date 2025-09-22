@@ -3,7 +3,7 @@
   "transformer_no_load_loss": 0,
   "transformer_load_loss": 0,
   "system_use_lifetime_output": 1,
-  "analysis_period": 25,
+  "analysis_period": 12,
   "dc_degradation": 0.5,
   "en_dc_lifetime_losses": 0,
   "dc_lifetime_losses": [
@@ -18437,7 +18437,7 @@
   "subarray1_mppt_input": 1,
   "subarray1_tilt": 20.0,
   "subarray1_tilt_eq_lat": 0,
-  "subarray1_azimuth": 180.0,
+  "subarray1_azimuth": 0.0,
   "subarray1_track_mode": 0,
   "subarray1_rotlim": 45,
   "subarray1_shade_mode": 0,
@@ -75500,10 +75500,10 @@
   "number_compute_modules": 4,
   "number_metrics": 17,
   "project_info": {
-    "project_owner": "Bazza",
-    "project_date_eval": "2025-09-08",
+    "project_owner": "Consultant 1",
+    "project_date_eval": "2025-09-04",
     "project_id": "123456B",
-    "project_desc": "Big uns",
+    "project_desc": "Solar & Battery Project #1",
     "project_evaluator": "ETC pty ltd",
     "project_evaluator_contact": 1234567.0,
     "stc_certificates": 0,
@@ -75522,8 +75522,8 @@
       "installer_margin_total_amount": 88961.55249999999
     }
   },
-  "lat": -35.2469814,
-  "lon": 149.0473672,
+  "lat": -33.9658556,
+  "lon": 151.0888877,
   "fcas_enabled": 0,
   "voll": 0.35,
   "incentive_stc": 40.0,

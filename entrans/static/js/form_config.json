@@ -6,7 +6,7 @@
     "type": "text",
     "label": "Project Owner",
     "description": "Name of entity considering the project",
-    "default_value": "Bazza",
+    "default_value": "Consultant 1",
     "general_info": true,
     "validation": {
       "required": "required",
@@ -50,7 +50,7 @@
     "type": "text",
     "label": "Project Description",
     "description": "Brief outline of the project",
-    "default_value": "Big uns",
+    "default_value": "Solar & Battery Project #1",
     "general_info": true,
     "validation": {
       "required": "optional",
@@ -209,7 +209,7 @@
     "label": "Azimuth (degrees)",
     "description": "Orientation of PV array",
     "reopt_key": "azimuth",
-    "default_value": "180",
+    "default_value": "0",
     "general_info": false,
     "validation": {
       "required": "required",

@@ -703,7 +703,8 @@ class FCASProcessor:
         if not enabled_services:
             logging.info("🔋 No FCAS services enabled in fallback mode, returning zero revenue")
             # Still create zero cashflows for table compatibility
-            cashflow_length = analysis_period + 1
+            analysis_period = self.config.get('analysis_period', 25)
+            cashflow_length = analysis_period + 1  # +1 for year 0
             ancillary_results = {}
             for service_num in range(1, 9):
                 revenue_key = f'cf_ancillary_services_{service_num}_revenue'
@@ -717,7 +718,8 @@ class FCASProcessor:
         fcas_region = self.config.get('fcas_region', 'NSW1')
         region_multiplier = SimulationConstants.FCAS_REGIONAL_MULTIPLIERS.get(fcas_region, 1.0)
         participation_rate = self.config.get('fcas_participation_rate', 0.75)
-        cashflow_length = analysis_period + 1
+        analysis_period = self.config.get('analysis_period', 25)
+        cashflow_length = analysis_period + 1  # +1 for year 0
 
         ancillary_results = {}
         total_revenue = 0
@@ -770,9 +772,10 @@ class FCASProcessor:
 class LRECProcessor:
     """Complete LREC (Large-scale Renewable Energy Certificate) processing"""
 
-    def __init__(self, lrec_config: LRECConfiguration, error_handler: ErrorHandler):
+    def __init__(self, lrec_config: LRECConfiguration, error_handler: ErrorHandler, analysis_period: int):
         self.lrec_config = lrec_config
         self.error_handler = error_handler
+        self.analysis_period = analysis_period
 
     def process_lrec(self, modules: Dict[str, Any]) -> Dict[str, Any]:
         """Process LREC revenue calculations - ALWAYS creates cf_lrec_revenue column"""
@@ -793,7 +796,7 @@ class LRECProcessor:
 
     def _create_zero_lrec_results(self) -> Dict[str, Any]:
         """Create zero LREC results for systems not eligible for LREC (e.g., <100kW STC systems)"""
-        analysis_period = 25  # Standard analysis period
+        analysis_period = getattr(self, 'analysis_period', 25)
         cashflow_length = analysis_period + 1
 
         logging.info(f"🌿 Creating zero LREC cashflow for table compatibility ({cashflow_length} periods)")
@@ -1284,6 +1287,12 @@ class ResultsExporter:
 
     def export_all_results(self, results: SimulationResults) -> Dict[str, Any]:
         """Complete results export with all 121+ series"""
+
+        # Enhanced logging for debugging
+        logging.info("=== EXPORT PROCESS START ===")
+        logging.info(f"Scalar results count: {len(results.scalar_results)}")
+        logging.info(f"Time series count: {len(results.time_series)}")
+
         # Create results directory with cloud-safe path resolution
         current_path = Path(__file__).resolve()
         project_root = None
@@ -1306,17 +1315,32 @@ class ResultsExporter:
         results_dir = project_root / '2.pysam' / 'results'
         results_dir.mkdir(parents=True, exist_ok=True)
 
-        print(f"📁 Saving results to: {results_dir}")
+        logging.info(f"Target directory: {results_dir}")
+        logging.info(f"Directory exists: {results_dir.exists()}")
+
         original_cwd = os.getcwd()
 
         try:
             os.chdir(str(results_dir))
 
+            logging.info(f"Changed to directory: {os.getcwd()}")
+            logging.info(f"Directory writable: {os.access('.', os.W_OK)}")
+
             # Export scalar results
+            logging.info("Starting scalar export...")
             self._export_scalar_results(results.scalar_results)
 
+            # Check what files exist after scalar export
+            files_after_scalar = [f for f in os.listdir('.') if os.path.isfile(f)]
+            logging.info(f"Files after scalar export: {files_after_scalar}")
+
             # Export time series (organized by frequency) - COMPLETE
+            logging.info("Starting time series export...")
             self._export_time_series(results.time_series)
+
+            # Check what files exist after time series export
+            files_after_timeseries = [f for f in os.listdir('.') if os.path.isfile(f)]
+            logging.info(f"Files after time series export: {files_after_timeseries}")
 
             # Create metadata
             metadata = self._create_metadata(results)
@@ -1325,12 +1349,45 @@ class ResultsExporter:
             with open('metadata.json', 'w') as f:
                 json.dump(self._clean_for_json(metadata), f, indent=2)
 
-            logging.info(f"✅ Results exported to: {results_dir}")
+            # Final file check
+            final_files = [f for f in os.listdir('.') if os.path.isfile(f)]
+            logging.info(f"Final files created: {final_files}")
+
+            # Log file sizes
+            for file in final_files:
+                try:
+                    size = os.path.getsize(file)
+                    logging.info(f"  {file}: {size} bytes")
+                except:
+                    pass
+
+            logging.info(f"Results exported to: {results_dir}")
+            logging.info("=== EXPORT PROCESS COMPLETE ===")
             return metadata
 
         except Exception as e:
-            logging.error(f"Export failed: {e}")
-            raise
+            logging.error(f"CRITICAL: Results export failed: {e}")
+            import traceback
+            logging.error(f"Export traceback: {traceback.format_exc()}")
+
+            # Create minimal fallback metadata
+            metadata = {
+                'execution': {
+                    'analysis_period': self.analysis_period,
+                    'export_failed': True,
+                    'timestamp': datetime.now().isoformat()
+                },
+                'exports': {
+                    'export_error': str(e),
+                    'total_items': 0
+                }
+            }
+
+            logging.error(f"Current directory: {os.getcwd()}")
+            logging.error(f"Directory contents: {os.listdir('.')}")
+
+            return metadata
+
         finally:
             os.chdir(original_cwd)
 
@@ -1358,98 +1415,304 @@ class ResultsExporter:
             'count': len(output_metrics)
         }
 
-        logging.info(f"📊 Exported {len(output_metrics)} scalar metrics")
+        logging.info(f"ðŸ“Š Exported {len(output_metrics)} scalar metrics")
 
     def _export_time_series(self, time_series: Dict[str, List]):
-        """Export COMPLETE time series organized by frequency - ALL 121+ series"""
-        if not time_series:
-            return
+        """Export time series with comprehensive error tracking"""
+        try:
+            logging.info(f"=== TIME SERIES EXPORT ENTRY ===")
+            logging.info(f"Current working directory: {os.getcwd()}")
+            logging.info(f"Directory contents: {os.listdir('.')}")
+            logging.info(f"Input time series count: {len(time_series)}")
 
-        # Validate and group time series
-        valid_time_series = {}
-        for name, values in time_series.items():
-            if isinstance(values, list) and len(values) in SimulationConstants.EXPECTED_TIME_SERIES_LENGTHS:
-                valid_time_series[name] = values
-            elif name.startswith('cf_'):  # Always include cashflow
-                valid_time_series[name] = values
+            # Log first few time series for debugging
+            for i, (name, values) in enumerate(list(time_series.items())[:5]):
+                logging.info(f"  {name}: {len(values)} values")
 
-        # Extract COMPLETE battery health series (optimized)
-        self._extract_essential_battery_health(time_series, valid_time_series)
+            if not time_series:
+                logging.error("CRITICAL: No time series data received")
+                return
 
-        # Export cashflow data (including LREC and FCAS)
-        cf_data = {k: v for k, v in valid_time_series.items() if k.startswith('cf_')}
-        if cf_data:
-            self._export_cashflow_data(cf_data)
+            # Calculate expected lengths based on analysis_period
+            expected_annual_length = self.analysis_period + 1
+            expected_detailed_length = self.analysis_period * 8760
 
-        # Export other time series grouped by length - COMPLETE
-        for length, group_name in SimulationConstants.TIME_SERIES_GROUPS.items():
-            group_data = {
-                k: v for k, v in valid_time_series.items()
-                if len(v) == length and not k.startswith('cf_')
+            # Create DYNAMIC time series groups
+            dynamic_groups = {
+                1: 'annual',
+                12: 'monthly',
+                expected_annual_length: 'annual',
+                8760: 'hourly',
+                expected_detailed_length: 'detailed'
             }
 
-            if group_data:
-                self._export_time_series_group(group_data, group_name, length)
+            # Validate and group time series using DYNAMIC lengths
+            valid_time_series = {}
+            for name, values in time_series.items():
+                if isinstance(values, list):
+                    series_length = len(values)
+                    if (series_length in dynamic_groups.keys() or
+                            series_length in SimulationConstants.EXPECTED_TIME_SERIES_LENGTHS):
+                        valid_time_series[name] = values
+                    elif name.startswith('cf_'):
+                        valid_time_series[name] = values
+
+            # Extract battery health with correct analysis_period
+            self._extract_essential_battery_health(time_series, valid_time_series)
+
+            # Export cashflow data
+            cf_data = {k: v for k, v in valid_time_series.items() if k.startswith('cf_')}
+            if cf_data:
+                self._export_cashflow_data(cf_data)
+
+            # Export other time series using DYNAMIC grouping
+            for length, group_name in dynamic_groups.items():
+                group_data = {
+                    k: v for k, v in valid_time_series.items()
+                    if len(v) == length and not k.startswith('cf_')
+                }
+
+                if group_data:
+                    self._export_time_series_group(group_data, group_name, length)
+
+            logging.info(f"Dynamic grouping: Annual={expected_annual_length}, Detailed={expected_detailed_length}")
+
+        except Exception as e:
+            logging.error(f"CRITICAL: _export_time_series failed: {e}")
+            import traceback
+            logging.error(f"Full traceback: {traceback.format_exc()}")
+            raise
+
+    def _add_battery_health_annuals(self, time_series: Dict[str, List], annual_data: Dict[str, List]):
+        """Add battery health annual metrics"""
+        try:
+            # Battery cycles (end of year values)
+            if 'batt_cycles' in time_series and len(time_series['batt_cycles']) >= 8760:
+                cycles_data = time_series['batt_cycles']
+                annual_cycles = [0.0]  # Year 0
+
+                for year in range(min(self.analysis_period, len(cycles_data) // 8760)):
+                    year_end_index = (year + 1) * 8760 - 1
+                    if year_end_index < len(cycles_data):
+                        annual_cycles.append(cycles_data[year_end_index])
+
+                # Ensure correct length
+                while len(annual_cycles) < (self.analysis_period + 1):
+                    annual_cycles.append(annual_cycles[-1] if annual_cycles else 0.0)
+
+                annual_data['batt_annual_cycles'] = annual_cycles[:self.analysis_period + 1]
+
+            # Battery capacity fade (if available)
+            if 'batt_capacity_percent' in time_series:
+                capacity_data = time_series['batt_capacity_percent']
+                if len(capacity_data) >= 8760:
+                    annual_capacity = [100.0]  # Year 0 - 100% capacity
+
+                    for year in range(min(self.analysis_period, len(capacity_data) // 8760)):
+                        year_end_index = (year + 1) * 8760 - 1
+                        if year_end_index < len(capacity_data):
+                            annual_capacity.append(capacity_data[year_end_index])
+
+                    # Ensure correct length
+                    while len(annual_capacity) < (self.analysis_period + 1):
+                        annual_capacity.append(annual_capacity[-1] if annual_capacity else 100.0)
+
+                    annual_data['batt_annual_capacity_percent'] = annual_capacity[:self.analysis_period + 1]
+
+        except Exception as e:
+            logging.warning(f"Battery health annuals creation failed: {e}")
+
+    def _add_grid_interaction_annuals(self, time_series: Dict[str, List], annual_data: Dict[str, List]):
+        """Add grid interaction annual metrics"""
+        try:
+            grid_metrics = [
+                'grid_power',
+                'system_to_grid',
+                'grid_to_load',
+                'grid_to_batt',
+                'system_to_load'
+            ]
+
+            for metric in grid_metrics:
+                if metric in time_series and len(time_series[metric]) >= 8760:
+                    hourly_data = time_series[metric]
+                    annual_values = []
+
+                    for year in range(min(self.analysis_period, len(hourly_data) // 8760)):
+                        year_start = year * 8760
+                        year_end = (year + 1) * 8760
+
+                        if year_end <= len(hourly_data):
+                            year_total = sum(hourly_data[year_start:year_end])
+                            annual_values.append(year_total)
+
+                    if annual_values:
+                        # Ensure correct length
+                        if len(annual_values) < self.analysis_period:
+                            annual_values.extend([0.0] * (self.analysis_period - len(annual_values)))
+                        elif len(annual_values) > self.analysis_period:
+                            annual_values = annual_values[:self.analysis_period]
+
+                        annual_data[f'annual_{metric}'] = [0.0] + annual_values
+
+        except Exception as e:
+            logging.warning(f"Grid interaction annuals creation failed: {e}")
+
 
     def _extract_essential_battery_health(self, time_series: Dict[str, List], valid_time_series: Dict[str, List]):
-        """Extract COMPLETE essential battery health metrics (optimized)"""
+        """Extract essential battery health metrics with minimal annual processing for dashboard"""
         try:
-            # Essential hourly metrics (first year only)
-            essential_metrics = ['batt_SOC', 'batt_DOD']
+            # Get analysis period from the exporter
+            analysis_period = getattr(self, 'analysis_period', 25)
 
+            # Essential hourly metrics (first year only) - UNCHANGED
+            essential_metrics = ['batt_SOC', 'batt_DOD']
             for metric in essential_metrics:
                 if metric in time_series:
                     full_data = time_series[metric]
                     if len(full_data) >= 8760:
                         valid_time_series[f'{metric}_year1'] = full_data[:8760]
 
-            # Annual cycles (end of year)
+            # Annual cycles - MAKE VARIABLE
             if 'batt_cycles' in time_series:
                 cycles_data = time_series['batt_cycles']
-                annual_cycles = []
+                annual_cycles = [0.0]  # Year 0
 
-                for year in range(min(25, len(cycles_data) // 8760)):
+                for year in range(min(analysis_period, len(cycles_data) // 8760)):
                     year_end_index = (year + 1) * 8760 - 1
                     if year_end_index < len(cycles_data):
                         annual_cycles.append(cycles_data[year_end_index])
 
-                if annual_cycles:
-                    valid_time_series['batt_annual_cycles'] = [0.0] + annual_cycles
+                # Ensure correct length
+                while len(annual_cycles) < (analysis_period + 1):
+                    annual_cycles.append(annual_cycles[-1] if len(annual_cycles) > 1 else 0.0)
+
+                valid_time_series['batt_annual_cycles'] = annual_cycles[:analysis_period + 1]
+
+            # ADD ONLY: Create the 5 specific battery annual metrics needed for dashboard
+            self._create_required_battery_annual_metrics(time_series, valid_time_series, analysis_period)
 
         except Exception as e:
             logging.warning(f"Battery health extraction error: {e}")
 
+    def _create_required_battery_annual_metrics(self, time_series: Dict[str, List],
+                                                valid_time_series: Dict[str, List],
+                                                analysis_period: int):
+        """Create battery annual metrics with correct analysis_period length"""
+        try:
+            battery_flows = {
+                'batt_to_grid': 'batt_annual_discharge_energy',
+                'grid_to_batt': 'batt_annual_charge_from_grid',
+                'system_to_batt': 'batt_annual_charge_from_system'
+            }
+
+            for source_key, target_key in battery_flows.items():
+                if source_key in time_series:
+                    hourly_data = time_series[source_key]
+                    if len(hourly_data) >= 8760:
+                        annual_values = [0.0]  # Year 0
+
+                        max_years = min(analysis_period, len(hourly_data) // 8760)
+                        for year in range(max_years):
+                            year_start = year * 8760
+                            year_end = (year + 1) * 8760
+
+                            if year_end <= len(hourly_data):
+                                year_total = sum(hourly_data[year_start:year_end])
+                                annual_values.append(year_total)
+
+                        # Ensure exactly analysis_period + 1 data points
+                        while len(annual_values) < (analysis_period + 1):
+                            annual_values.append(0.0)
+
+                        # Truncate to exactly analysis_period + 1
+                        annual_values = annual_values[:analysis_period + 1]
+
+                        valid_time_series[target_key] = annual_values
+
+            # Calculate derived metrics with same length
+            charge_grid = valid_time_series.get('batt_annual_charge_from_grid', [])
+            charge_system = valid_time_series.get('batt_annual_charge_from_system', [])
+
+            if charge_grid and charge_system:
+                expected_length = analysis_period + 1
+                total_charge = [charge_grid[i] + charge_system[i] for i in
+                                range(min(len(charge_grid), expected_length))]
+                valid_time_series['batt_annual_charge_energy'] = total_charge
+
+            logging.info(f"Created battery annual metrics with {analysis_period + 1} data points")
+
+        except Exception as e:
+            logging.warning(f"Required battery annual metrics creation failed: {e}")
+
     def _export_cashflow_data(self, cf_data: Dict[str, List]):
-        """Export COMPLETE cashflow time series including LREC and FCAS"""
+        """Export COMPLETE cashflow time series with array length validation"""
         if not cf_data:
             return
 
-        cf_length = len(next(iter(cf_data.values())))
-        df = pd.DataFrame({
-            'period': range(1, cf_length + 1),
-            **cf_data
-        })
-        df.to_parquet('cashflow_timeseries.parquet')
+        # Determine expected length from analysis period
+        expected_length = self.analysis_period + 1  # Include Year 0
 
-        self.exported_data['cashflow_series'] = {
-            'file': 'cashflow_timeseries.parquet',
-            'series': list(cf_data.keys()),
-            'count': len(cf_data)
-        }
+        # Validate and normalize all cashflow arrays to the same length
+        normalized_cf_data = {}
 
-        # Log FCAS and LREC inclusion
-        fcas_cols = [k for k in cf_data.keys() if 'ancillary' in k]
-        lrec_cols = [k for k in cf_data.keys() if 'lrec' in k]
-        cumulative_cols = [k for k in cf_data.keys() if 'cumulative_payback' in k]
+        for key, values in cf_data.items():
+            if not isinstance(values, list):
+                continue
 
-        if fcas_cols:
-            logging.info(f"💰 Included {len(fcas_cols)} FCAS revenue streams")
-        if lrec_cols:
-            logging.info(f"🌿 Included {len(lrec_cols)} LREC revenue streams")
-        if cumulative_cols:
-            logging.info(f"📈 Included {len(cumulative_cols)} cumulative payback cashflows")
+            # Handle arrays that are too long (truncate)
+            if len(values) > expected_length:
+                logging.warning(f"Truncating {key} from {len(values)} to {expected_length} periods")
+                normalized_values = values[:expected_length]
+            # Handle arrays that are too short (pad with zeros)
+            elif len(values) < expected_length:
+                logging.warning(f"Padding {key} from {len(values)} to {expected_length} periods with zeros")
+                normalized_values = values + [0.0] * (expected_length - len(values))
+            else:
+                normalized_values = values
 
-        logging.info(f"💸 Exported {len(cf_data)} cashflow series")
+            normalized_cf_data[key] = normalized_values
+
+        if not normalized_cf_data:
+            logging.warning("No valid cashflow data found for export")
+            return
+
+        # Create DataFrame with normalized data
+        try:
+            df = pd.DataFrame({
+                'period': range(1, expected_length + 1),
+                **normalized_cf_data
+            })
+            df.to_parquet('cashflow_timeseries.parquet')
+
+            self.exported_data['cashflow_series'] = {
+                'file': 'cashflow_timeseries.parquet',
+                'series': list(normalized_cf_data.keys()),
+                'count': len(normalized_cf_data),
+                'analysis_period': self.analysis_period
+            }
+
+            # Log validation results
+            fcas_cols = [k for k in normalized_cf_data.keys() if 'ancillary' in k]
+            lrec_cols = [k for k in normalized_cf_data.keys() if 'lrec' in k]
+            cumulative_cols = [k for k in normalized_cf_data.keys() if 'cumulative_payback' in k]
+
+            if fcas_cols:
+                logging.info(f"ðŸ’° Included {len(fcas_cols)} FCAS revenue streams ({self.analysis_period} years)")
+            if lrec_cols:
+                logging.info(f"ðŸŒ¿ Included {len(lrec_cols)} LREC revenue streams ({self.analysis_period} years)")
+            if cumulative_cols:
+                logging.info(
+                    f"ðŸ“ˆ Included {len(cumulative_cols)} cumulative payback cashflows ({self.analysis_period} years)")
+
+            logging.info(f"ðŸ’¸ Exported {len(normalized_cf_data)} cashflow series ({self.analysis_period} years)")
+
+        except Exception as e:
+            logging.error(f"Failed to create cashflow DataFrame: {e}")
+            # Log array lengths for debugging
+            lengths = {k: len(v) for k, v in normalized_cf_data.items()}
+            logging.error(f"Array lengths: {lengths}")
+            raise
 
     def _export_time_series_group(self, group_data: Dict[str, List], group_name: str, length: int):
         """Export time series group"""
@@ -1466,7 +1729,7 @@ class ResultsExporter:
             'count': len(group_data)
         }
 
-        logging.info(f"📈 Exported {len(group_data)} {group_name} series")
+        logging.info(f"ðŸ“ˆ Exported {len(group_data)} {group_name} series")
 
     def _create_metadata(self, results: SimulationResults) -> Dict[str, Any]:
         """Create COMPLETE metadata with LREC information"""
@@ -1514,6 +1777,7 @@ class ResultsExporter:
         elif hasattr(data, '__dict__'):
             return str(data)
         return data
+
 
 
 # ========== SIMPLIFIED MAIN SIMULATION RUNNER ==========
@@ -1718,7 +1982,7 @@ def run_simulation_optimized(input_json: Optional[str] = None) -> 'SimulationRes
 
         # Process LREC
         try:
-            lrec_processor = LRECProcessor(lrec_config, error_handler)
+            lrec_processor = LRECProcessor(lrec_config, error_handler, analysis_period)
             lrec_results = lrec_processor.process_lrec(modules)
             if lrec_results and 'total_lrec_revenue' in lrec_results:
                 logging.info(f"✅ LREC processed: ${lrec_results['total_lrec_revenue']:,.0f}")

@@ -1,108 +1,108 @@
 ,Value
-NPV (Real),399935.3465739755
+NPV (Real),124065.35165662573
 Payback Period,
 WACC,8.054999999999996
-LCOE (Real),7.928376621981991
-LCOE (Nominal),9.872101636700508
-annual_ac_battery_loss_percent,0.22874751343003824
-annual_ac_gross,1215082.9154643482
+LCOE (Real),5.229310542945341
+LCOE (Nominal),5.990201257019297
+annual_ac_battery_loss_percent,0.04784907506922366
+annual_ac_gross,1733791.8393753031
 annual_ac_inv_clip_loss_percent,0.0
-annual_ac_inv_eff_loss_percent,4.000027924205936
-annual_ac_inv_pnt_loss_percent,0.0006981003689455836
+annual_ac_inv_eff_loss_percent,4.000019569962587
+annual_ac_inv_pnt_loss_percent,0.0004892465506834027
 annual_ac_inv_pso_loss_percent,0.0
 annual_ac_lifetime_loss_percent,0.0
 annual_ac_loss_ond,0.0
 annual_ac_perf_adj_loss_percent,0.0
-annual_ac_wiring_loss,12151.00587464362
-annual_ac_wiring_loss_percent,1.0000145438634591
-annual_bifacial_electrical_mismatch,28841.28717649239
-annual_bifacial_electrical_mismatch_percent,0.4148155753589854
+annual_ac_wiring_loss,17338.095113753327
+annual_ac_wiring_loss_percent,1.0000101926884348
+annual_bifacial_electrical_mismatch,11060.87545976313
+annual_bifacial_electrical_mismatch_percent,0.11449433857141904
 annual_dc_battery_loss_percent,0.0
-annual_dc_diodes_loss,6622.662324753583
-annual_dc_diodes_loss_percent,0.5000000000000001
-annual_dc_gross,1324532.4649507164
+annual_dc_diodes_loss,9449.801957427171
+annual_dc_diodes_loss_percent,0.5
+annual_dc_gross,1889960.3914854343
 annual_dc_inv_tdc_loss_percent,0.0
-annual_dc_invmppt_loss,5.852312741545602
+annual_dc_invmppt_loss,5.965813436705949
 annual_dc_lifetime_loss_percent,0.0
 annual_dc_loss_ond,0.0
-annual_dc_mismatch_loss,26490.64929901433
-annual_dc_mismatch_loss_percent,2.0000000000000004
-annual_dc_module_loss_percent,3.8825089252398968
-annual_dc_mppt_clip_loss_percent,0.0004246835371772246
+annual_dc_mismatch_loss,37799.207829708685
+annual_dc_mismatch_loss_percent,2.0
+annual_dc_module_loss_percent,3.8832673456981643
+annual_dc_mppt_clip_loss_percent,0.0003033993134040905
 annual_dc_nameplate_loss,0.0
 annual_dc_nameplate_loss_percent,0.0
-annual_dc_net,1265720.5744419796
-annual_dc_nominal,1378040.877318815
+annual_dc_net,1806042.370182698
+annual_dc_nominal,1966323.9740955583
 annual_dc_optimizer_loss,0.0
 annual_dc_optimizer_loss_percent,0.0
 annual_dc_perf_adj_loss_percent,0.0
 annual_dc_snow_loss_percent,0.0
 annual_dc_tracking_loss,0.0
 annual_dc_tracking_loss_percent,0.0
-annual_dc_wiring_loss,26490.64929901433
-annual_dc_wiring_loss_percent,2.0000000000000004
-annual_energy,1200152.437634358
+annual_dc_wiring_loss,37799.207829708685
+annual_dc_wiring_loss_percent,2.0
+annual_energy,1715624.1409028128
 annual_gh,
-annual_ground_absorbed,21599288.61488751
-annual_ground_absorbed_percent,93.55318703833555
-annual_ground_incident,23087710.10231507
-annual_ground_incident_percent,351.4581771735858
+annual_ground_absorbed,18812470.037334893
+annual_ground_absorbed_percent,93.38634875482391
+annual_ground_incident,20144775.21412157
+annual_ground_incident_percent,212.68355915920108
 annual_inv_cliploss,0.0
 annual_inv_pntloss,8.83599999999962
 annual_inv_psoloss,0.0
 annual_inv_tdcloss,0.0
-annual_poa_beam_eff,4029206.5489561455
-annual_poa_beam_nom,4241270.051532787
-annual_poa_cover_loss_percent,3.7663499174844692
-annual_poa_eff,6698744.909980899
-annual_poa_front,6569120.197454393
-annual_poa_nom,7185494.221420817
-annual_poa_rear,214019.44792866785
-annual_poa_rear_direct_diffuse,206890.5926453404
-annual_poa_rear_gain_percent,3.2579621242370136
-annual_poa_rear_ground_reflected,185641.98131833982
-annual_poa_rear_rack_shaded,8917.476997027825
-annual_poa_rear_row_reflections,62.25941546749486
-annual_poa_rear_self_shaded,0.0
+annual_poa_beam_eff,6435617.039816772
+annual_poa_beam_nom,6774333.726122906
+annual_poa_cover_loss_percent,1.499968679643694
+annual_poa_eff,9558426.698106332
+annual_poa_front,9471712.479215425
+annual_poa_nom,10122051.260984315
+annual_poa_rear,134938.33101815984
+annual_poa_rear_direct_diffuse,94981.13851849346
+annual_poa_rear_gain_percent,1.424645557118276
+annual_poa_rear_ground_reflected,99535.07521313426
+annual_poa_rear_rack_shaded,5622.430459089962
+annual_poa_rear_row_reflections,62.2205142485351
+annual_poa_rear_self_shaded,37.57515727902173
 annual_poa_rear_soiled,0.0
-annual_poa_shaded,7185494.221420817
-annual_poa_shaded_soiled,6826219.51034976
+annual_poa_shaded,10122051.260984315
+annual_poa_shaded_soiled,9615948.697935056
 annual_poa_shading_loss_percent,0.0
-annual_poa_soiling_loss_percent,5.000000000000228
-annual_rack_shaded_percent,0.12809310575816713
-annual_rear_direct_diffuse_percent,3.062856696551439
-annual_rear_ground_reflected_percent,2.825979366160451
-annual_rear_row_reflections_percent,0.0009217114358688899
-annual_rear_self_shaded_percent,0.0
+annual_poa_soiling_loss_percent,5.0000000000004245
+annual_rack_shaded_percent,0.058165560763964376
+annual_rear_direct_diffuse_percent,0.9923525698347905
+annual_rear_ground_reflected_percent,1.050866730082363
+annual_rear_row_reflections_percent,0.0006500773686471628
+annual_rear_self_shaded_percent,0.00038872363366070924
 annual_rear_soiled_percent,0.0
-annual_subarray1_dc_diodes_loss,6622.662324753583
-annual_subarray1_dc_gross,1324532.4649507164
-annual_subarray1_dc_mismatch_loss,26490.64929901433
+annual_subarray1_dc_diodes_loss,9449.801957427171
+annual_subarray1_dc_gross,1889960.3914854343
+annual_subarray1_dc_mismatch_loss,37799.207829708685
 annual_subarray1_dc_nameplate_loss,0.0
 annual_subarray1_dc_tracking_loss,0.0
-annual_subarray1_dc_wiring_loss,26490.64929901433
-annual_total_loss_percent,82.08392088723706
+annual_subarray1_dc_wiring_loss,37799.207829708685
+annual_total_loss_percent,82.05118692553552
 annual_transmission_loss,0.0
 annual_transmission_loss_percent,0.0
 annual_xfmr_loss_percent,0.0
-assign,<built-in method assign of Cashloan.Outputs object at 0x74cad835acb0>
-average_battery_conversion_efficiency,91.21228605840011
-average_battery_roundtrip_efficiency,91.21228605840011
+assign,<built-in method assign of Cashloan.Outputs object at 0x7cdda6d4e9d0>
+average_battery_conversion_efficiency,90.9799825896504
+average_battery_roundtrip_efficiency,90.9799825896504
 batt_bank_installed_capacity,1200.0
-batt_grid_charge_percent,51.81437278765316
-batt_system_charge_percent,48.18562721234698
-batt_year1_charge_from_grid,15736.012485060344
-batt_year1_charge_from_system,16675.73375672638
-capacity_factor,13.591637195069106
-capacity_factor_ac,8.154982317041464
+batt_grid_charge_percent,6.18286150982302
+batt_system_charge_percent,93.81713849017706
+batt_year1_charge_from_grid,572.1460432712903
+batt_year1_charge_from_system,3217.2024681295493
+capacity_factor,19.429315939411794
+capacity_factor_ac,11.657589563647075
 elev,38.0
-export,<built-in method export of Cashloan.Outputs object at 0x74cad835acb0>
-kwh_per_kw,1190.6274182880536
+export,<built-in method export of Cashloan.Outputs object at 0x7cdda6d4e9d0>
+kwh_per_kw,1702.008076292473
 lat,-33.869998931884766
 lon,151.22000122070312
 nameplate_dc_rating,1069.9879680000001
-performance_ratio,0.8119160128247193
-replace,<built-in method replace of Cashloan.Outputs object at 0x74cad835acb0>
+performance_ratio,0.8239198307919069
+replace,<built-in method replace of Cashloan.Outputs object at 0x7cdda6d4e9d0>
 sixpar_Adj,0.0529963
 sixpar_Il,13.7267
 sixpar_Io,2.59771e-11
@@ -118,9 +118,9 @@ xfmr_loss_year1,0.0
 xfmr_nll_year1,0.0
 annual_ac_curtailment_loss_kwh,0.0
 annual_ac_curtailment_loss_percent,0.0
-annual_energy_pre_curtailment_ac,1200152.437634358
-savings_year1,44610.70274028167
-utility_bill_w_sys_year1,777.4044137183332
+annual_energy_pre_curtailment_ac,1715624.1409028128
+savings_year1,45026.87090907292
+utility_bill_w_sys_year1,361.2362449270803
 utility_bill_wo_sys_year1,45388.107154
 year1_electric_load,726208.3843999718
 adjusted_installed_cost,1868192.6025
@@ -129,7 +129,7 @@ cbi_total_fed,0.0
 cbi_total_oth,0.0
 cbi_total_sta,0.0
 cbi_total_uti,0.0
-cf_length,26.0
+cf_length,13.0
 discounted_payback,
 effective_tax_rate,30.25
 first_cost,747277.041
@@ -142,43 +142,43 @@ irr,
 itc_total,560457.78075
 itc_total_fed,560457.78075
 itc_total_sta,0.0
-lcoe_nom,9.872101636700508
-lcoe_real,7.928376621981991
+lcoe_nom,5.990201257019297
+lcoe_real,5.229310542945341
 lcoptc_fed_nom,0.0
 lcoptc_fed_real,0.0
 lcoptc_sta_nom,0.0
 lcoptc_sta_real,0.0
-lcos_nom,182.58901973023768
-lcos_real,144.71577623697348
-lnte_nom,5.374246968684487
-lnte_real,4.316107713971696
+lcos_nom,526.5270395341154
+lcos_real,436.7461218053917
+lnte_nom,3.2998008242766605
+lnte_real,2.880651667552825
 loan_amount,1120915.5615
 nominal_discount_rate,9.67499999999999
-npv,-658597.6366217836
-npv_annual_costs_lcos,578769.5412405587
-npv_energy_lcos_nom,316979.37920672866
-npv_energy_lcos_real,399935.3465739755
+npv,-428265.786953221
+npv_annual_costs_lcos,541850.6118645341
+npv_energy_lcos_nom,102910.31061652169
+npv_energy_lcos_real,124065.35165662573
 payback,
 present_value_fuel,0.0
-present_value_insandproptax,212401.34523153218
-present_value_oandm,260863.5313085927
-present_value_oandm_nonfuel,260863.5313085927
+present_value_insandproptax,144765.5393484219
+present_value_oandm,183899.47933331755
+present_value_oandm_nonfuel,183899.47933331755
 total_cost,1868192.6025
 wacc,8.054999999999996
-year1_nte,3.7170863751453633
+year1_nte,2.6245183799627827
 Total ancillary services revenue,0.0
 Ancillary services revenue,0.0
-Total LREC revenue,1727097.28931997
-Annual LRECs (Year 1),1200.152437634358
+Total LREC revenue,2468894.542334698
+Annual LRECs (Year 1),1715.6241409028128
 LREC price (Year 1),45.0
 LREC escalation rate,0.025
-LREC NPV,752749.9679834724
-LREC Present Value,752749.9679834724
-LREC Revenue (Year 1),54006.85969354611
-NPV with FCAS and LREC,1152685.314557448
-Additional revenue NPV contribution,752749.9679834724
-LCOE with additional revenue,7.867100038670803
-Revenue offset ($/kWh),0.06127658331118841
-Annual LREC Revenue (Year 1),54006.85969354611
+LREC NPV,1076059.987581109
+LREC Present Value,1076059.987581109
+LREC Revenue (Year 1),77203.08634062657
+NPV with FCAS and LREC,1200125.3392377347
+Additional revenue NPV contribution,1076059.987581109
+LCOE with additional revenue,5.10592675936826
+Revenue offset ($/kWh),0.12338378357708064
+Annual LREC Revenue (Year 1),77203.08634062657
 Payback Period with FCAS and LREC (years),2
-Precise Payback Period with FCAS and LREC (years),1.780337002174163
+Precise Payback Period with FCAS and LREC (years),1.530251297034248

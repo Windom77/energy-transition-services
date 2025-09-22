@@ -1,7 +1,7 @@
 {
   "execution": {
     "simulation_type": "simplified_complete_hybrid_cashloan_fcas_lrec",
-    "timestamp": "2025-09-22T10:53:45.913305",
+    "timestamp": "2025-09-22T13:56:19.956563",
     "weather_file": "2060764_Sydney_-33.87_151.22_tmy-2020.csv",
     "modules_executed": [
       "pvsamv1",
@@ -9,7 +9,7 @@
       "utilityrate5",
       "cashloan"
     ],
-    "analysis_period": 25,
+    "analysis_period": 12,
     "optimizations_applied": [
       "Simplified execution without progress tracking",
       "Enhanced FCAS module integration",
@@ -308,7 +308,8 @@
           "cf_cumulative_payback_with_fcas_lrec",
           "cf_total_project_return_with_fcas_lrec"
         ],
-        "count": 88
+        "count": 88,
+        "analysis_period": 12
       },
       "monthly_series": {
         "file": "monthly_timeseries.parquet",
