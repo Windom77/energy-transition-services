@@ -1,7 +1,7 @@
-# dashboard_module.py - Enhanced with Variable Analysis Period Support
+# dashboard_module.py - Part 1 - Modular Dash Results Dashboard for Flask Integration
 """
 Enhanced FCAS Results Dashboard Module for Flask Integration
-Now supports variable analysis periods (not just 25 years)
+Extracted and modularized from RESULTS_builder_v7.py for use with Flask app.py
 """
 
 import dash
@@ -35,6 +35,7 @@ except ImportError:
         OUTPUT_DIR = Path("3.output")
         INPUT_DIR = Path("1.input")
         DATA_DIR = Path("data")
+
 
 # ==============================================================================
 # ENHANCED CSS STYLING - Consolidated and streamlined
@@ -230,85 +231,7 @@ LANDSCAPE_TABLE_CSS = """
 
 
 # ==============================================================================
-# ANALYSIS PERIOD UTILITIES - NEW SECTION
-# ==============================================================================
-
-def get_analysis_period_from_metadata(data_sources):
-    """Extract analysis period from metadata with fallback to 25 years"""
-    try:
-        metadata = data_sources.get('metadata', {})
-        execution_info = metadata.get('execution', {})
-        analysis_period = execution_info.get('analysis_period', 25)
-
-        # Validate analysis period is reasonable
-        if isinstance(analysis_period, (int, float)) and 1 <= analysis_period <= 50:
-            return int(analysis_period)
-        else:
-            logger.warning(f"Invalid analysis period {analysis_period}, using 25 years")
-            return 25
-    except Exception as e:
-        logger.warning(f"Could not extract analysis period: {e}, using 25 years")
-        return 25
-
-
-def get_period_labels(analysis_period):
-    """Generate period labels for given analysis period"""
-    year_labels = []
-    max_periods = analysis_period + 1  # Include Year 0
-
-    for i in range(max_periods):
-        if i == 0:
-            year_labels.append("Year 0")
-        else:
-            year_labels.append(f"Year {i}")
-
-    return year_labels
-
-
-def validate_dataframe_length(df, analysis_period, data_source_name=""):
-    """Validate and truncate dataframe to analysis period length"""
-    max_periods = analysis_period + 1  # Include Year 0
-
-    if len(df) > max_periods:
-        logger.info(f"Truncating {data_source_name} from {len(df)} to {max_periods} periods")
-        return df.iloc[:max_periods]
-    elif len(df) < max_periods:
-        logger.warning(f"{data_source_name} has only {len(df)} periods, expected {max_periods}")
-
-    return df
-
-
-def get_dynamic_column_config(analysis_period, custom_layout):
-    """Get column configuration with dynamic period headers"""
-    base_config = {
-        'showYear1': True,
-        'show25Year': False,  # Will be updated below
-        'year1Header': 'Year 1',
-        'totalHeader': f'{analysis_period}-Year Total'
-    }
-
-    # Update from custom layout
-    if custom_layout:
-        column_config = custom_layout.get('columnConfig', {})
-        base_config.update(column_config)
-
-        # Handle legacy 'show25Year' key
-        if 'show25Year' in column_config:
-            base_config['showTotal'] = column_config['show25Year']
-
-        # Update header if not specified
-        if 'total25Header' in column_config and 'totalHeader' not in base_config:
-            base_config['totalHeader'] = column_config['total25Header']
-
-    # Set showTotal if not explicitly set
-    if 'showTotal' not in base_config:
-        base_config['showTotal'] = base_config.get('show25Year', False)
-
-    return base_config
-
-
-# ==============================================================================
-# DATA LOADING AND PROCESSING FUNCTIONS - UPDATED
+# DATA LOADING AND PROCESSING FUNCTIONS
 # ==============================================================================
 
 def get_paths():
@@ -327,7 +250,6 @@ def get_paths():
 
     return results_path, structure_path, project_config_path, data_dir
 
-
 def safe_float_conversion(value, default=0.0):
     """Safely convert value to float, handling NaN, None, and invalid values"""
     if pd.isna(value) or value is None or value == '' or value == 'N/A':
@@ -340,7 +262,6 @@ def safe_float_conversion(value, default=0.0):
         return float_val
     except (ValueError, TypeError):
         return default
-
 
 def safe_literal_eval(s):
     """Safely evaluate string literals with enhanced error handling"""
@@ -447,7 +368,7 @@ def format_landscape_currency(value):
 
 
 def load_data_sources_from_csv(structure_df):
-    """Enhanced data loading with dynamic analysis period support"""
+    """Enhanced data loading with FCAS metadata integration and cashflow column validation"""
     results_path, _, project_config_path, data_dir = get_paths()
     data_sources = {}
 
@@ -466,19 +387,6 @@ def load_data_sources_from_csv(structure_df):
                 all_sources.add(source)
 
     referenced_sources = list(all_sources)
-
-    # Load metadata first to get analysis period
-    metadata_path = results_path / 'metadata.json'
-    analysis_period = 25  # Default fallback
-    if metadata_path.exists():
-        try:
-            with open(metadata_path, 'r') as f:
-                metadata = json.load(f)
-            data_sources['metadata'] = metadata
-            analysis_period = metadata.get('execution', {}).get('analysis_period', 25)
-            logger.info(f"Analysis period from metadata: {analysis_period} years")
-        except Exception as e:
-            logger.error(f"Failed to load metadata: {e}")
 
     # Load scalar results with FCAS support
     if 'scalar_results.csv' in referenced_sources:
@@ -505,7 +413,7 @@ def load_data_sources_from_csv(structure_df):
                     print(f"   FCAS keys: {fcas_keys[:3]}..." if len(fcas_keys) > 3 else f"   FCAS keys: {fcas_keys}")
 
             except Exception as e:
-                print(f"Error loading scalar_results.csv: {e}")
+                print(f"❌ Error loading scalar_results.csv: {e}")
                 data_sources['scalar_results.csv'] = {}
 
     # Load project configuration
@@ -528,10 +436,11 @@ def load_data_sources_from_csv(structure_df):
                             main_config_data[key] = value
                     data_sources['main_config'] = main_config_data
 
-            except Exception as e:
-                print(f"Error loading configuration: {e}")
 
-    # Load parquet files with dynamic period validation
+            except Exception as e:
+                print(f"❌ Error loading configuration: {e}")
+
+    # Load parquet files with enhanced FCAS column detection
     parquet_sources = [s for s in referenced_sources if s.endswith('.parquet')]
     for source in parquet_sources:
         file_path = results_path / source
@@ -539,9 +448,9 @@ def load_data_sources_from_csv(structure_df):
             try:
                 df = pq.read_table(file_path).to_pandas()
 
-                # Dynamic validation and truncation for cashflow data
-                if 'cashflow' in source:
-                    df = validate_dataframe_length(df, analysis_period, source)
+                # Special handling for cashflow data
+                if 'cashflow' in source and len(df) > 25:
+                    df = df.iloc[:26]  # Limit to 25 years
                     df = df.dropna(axis=1, how='all').ffill()
 
                 # Log column information for cashflow files
@@ -553,10 +462,12 @@ def load_data_sources_from_csv(structure_df):
                         print(f"   FCAS columns: {fcas_columns[:3]}..." if len(
                             fcas_columns) > 3 else f"   FCAS columns: {fcas_columns}")
 
+
+
                 data_sources[source] = df
 
             except Exception as e:
-                print(f"Error loading {source}: {e}")
+                print(f"❌ Error loading {source}: {e}")
 
     # Load FCAS historical data
     fcas_historical_path = data_dir / 'fcas' / 'fcas_historical.csv'
@@ -579,17 +490,30 @@ def load_data_sources_from_csv(structure_df):
             data_sources['fcas_historical.csv'] = df
 
         except Exception as e:
-            print(f"Error loading fcas_historical.csv: {e}")
+            print(f"❌ Error loading fcas_historical.csv: {e}")
 
-    # Create calculated values with dynamic period support
+    # Load metadata for FCAS details
+    metadata_path = results_path / 'metadata.json'
+    if metadata_path.exists():
+        try:
+            with open(metadata_path, 'r') as f:
+                metadata = json.load(f)
+            data_sources['metadata'] = metadata
+        except Exception as e:
+            print(f"❌ Error loading metadata: {e}")
+
+    # Create calculated values
     if 'calculated' in referenced_sources:
-        data_sources['calculated'] = create_enhanced_calculated_values(data_sources, analysis_period)
+        data_sources['calculated'] = create_enhanced_calculated_values(data_sources)
 
     return data_sources
 
 
-def create_enhanced_calculated_values(data_sources, analysis_period=25):
-    """Enhanced calculated values with dynamic analysis period support"""
+        # dashboard_module.py - Part 2 - Component Creation, Layout, and Callbacks
+
+
+def create_enhanced_calculated_values(data_sources):
+    """SIMPLIFIED calculated values - back to original working approach"""
     calculated = {}
 
     project_info = data_sources.get('project_info', {})
@@ -598,13 +522,12 @@ def create_enhanced_calculated_values(data_sources, analysis_period=25):
     metadata = data_sources.get('metadata', {})
 
     try:
-        # FCAS calculation with dynamic period
+        # SIMPLE FCAS calculation - just like the original
         total_fcas = scalar_data.get('Total ancillary services revenue', 0)
         calculated['total_fcas_revenue'] = float(total_fcas) if total_fcas else 0
-        calculated['fcas_revenue_annual'] = calculated[
-                                                'total_fcas_revenue'] / analysis_period if analysis_period > 0 else 0
+        calculated['fcas_revenue_annual'] = calculated['total_fcas_revenue'] / 25
 
-        # Get individual FCAS services
+        # Get individual FCAS services - original simple approach
         for i in range(1, 5):
             service_key = f'Ancillary services {i} revenue'
             if service_key in scalar_data:
@@ -612,27 +535,25 @@ def create_enhanced_calculated_values(data_sources, analysis_period=25):
             else:
                 calculated[f'fcas_service_{i}_revenue'] = 0
 
-        # Availability check
+        # SIMPLE availability check - just check if we have revenue
         calculated['fcas_services_available'] = calculated['total_fcas_revenue'] > 0
 
-        # Energy calculations with dynamic period
+        # Energy calculations (always work)
         annual_energy = safe_float_conversion(scalar_data.get('annual_energy', 0))
         energy_value = safe_float_conversion(scalar_data.get('Energy value', 0))
         calculated['annual_energy_production'] = annual_energy
         calculated['total_energy_revenue'] = energy_value
-        calculated[
-            'energy_revenue_annual'] = energy_value / analysis_period if energy_value > 0 and analysis_period > 0 else 0
+        calculated['energy_revenue_annual'] = energy_value / 25 if energy_value > 0 else 0
 
-        # Other revenue streams with dynamic period
+        # Other revenue streams
         lrec_revenue = safe_float_conversion(scalar_data.get('Total LREC revenue', 0))
         calculated['total_lrec_revenue'] = lrec_revenue
-        calculated[
-            'lrec_revenue_annual'] = lrec_revenue / analysis_period if lrec_revenue > 0 and analysis_period > 0 else 0
+        calculated['lrec_revenue_annual'] = lrec_revenue / 25 if lrec_revenue > 0 else 0
 
         stc_revenue = safe_float_conversion(project_info.get('stc_value', 0))
         calculated['total_stc_revenue'] = stc_revenue
 
-        # Service revenue comparison - only if FCAS exists
+        # Simple service revenue comparison - only if FCAS exists
         service_revenues = []
         if calculated['fcas_services_available']:
             service_names = ['Fast Raise (6s)', 'Fast Lower (6s)', 'Slow Raise (60s)', 'Slow Lower (60s)']
@@ -643,7 +564,7 @@ def create_enhanced_calculated_values(data_sources, analysis_period=25):
 
         calculated['service_revenue_comparison'] = service_revenues
 
-        # Revenue breakdown - only include sources with revenue > 0
+        # Simple revenue breakdown - only include sources with revenue > 0
         revenue_breakdown = []
 
         if calculated['total_energy_revenue'] > 0:
@@ -676,29 +597,25 @@ def create_enhanced_calculated_values(data_sources, analysis_period=25):
 
         calculated['revenue_breakdown_all'] = revenue_breakdown
 
-        # Add analysis period info to calculated values
-        calculated['analysis_period'] = analysis_period
-
-        logger.info(
-            f"FCAS STATUS: {calculated['fcas_services_available']} (Revenue: ${calculated['total_fcas_revenue']:,.0f}, Period: {analysis_period} years)")
+        print(
+            f"✅ SIMPLIFIED FCAS STATUS: {calculated['fcas_services_available']} (Revenue: ${calculated['total_fcas_revenue']:,.0f})")
 
     except Exception as e:
-        logger.error(f"Error creating calculated values: {e}")
-        # Fallback with period info
+        print(f"❌ Error creating calculated values: {e}")
+        # Simple fallback
         calculated.update({
             'total_fcas_revenue': 0,
             'fcas_revenue_annual': 0,
             'fcas_services_available': False,
             'service_revenue_comparison': [],
-            'revenue_breakdown_all': [],
-            'analysis_period': analysis_period
+            'revenue_breakdown_all': []
         })
 
     return calculated
 
 
 def get_value_from_data_sources(data_sources, data_source, attribute, calculation=None):
-    """Data retrieval with enhanced period awareness"""
+    """SIMPLIFIED data retrieval - back to original working approach"""
     if pd.isna(data_source):
         data_source = ''
     else:
@@ -723,6 +640,7 @@ def get_value_from_data_sources(data_sources, data_source, attribute, calculatio
 
                     value = get_single_source_value(data_sources[source_file], attr, calc)
 
+                    # SIMPLE validation - just return first valid value found
                     if value != "N/A" and value != "Data not available" and not pd.isna(value):
                         return value
 
@@ -756,6 +674,7 @@ def get_dispatch_choice_description(dispatch_value):
         return "Not Set"
 
     try:
+        # Handle both string and numeric values
         if isinstance(dispatch_value, str):
             dispatch_key = dispatch_value.strip()
         else:
@@ -800,6 +719,7 @@ def get_single_source_value(source_data, attribute, calculation=None):
 
             return value
         else:
+            print(f"DEBUG SINGLE: Attribute '{attribute}' not found in dict keys: {list(source_data.keys())[:10]}...")
             return "N/A"
 
     # Enhanced retrieval for DataFrame sources
@@ -828,7 +748,7 @@ def get_single_source_value(source_data, attribute, calculation=None):
 
 
 def perform_calculation(source_data, attribute, calculation):
-    """FIXED calculation handling with dynamic period support"""
+    """FIXED calculation handling - especially for index_1 (Year 1 values)"""
     try:
         calc_lower = calculation.lower().strip()
 
@@ -914,6 +834,7 @@ def perform_calculation(source_data, attribute, calculation):
             else:
                 return "N/A"
 
+
             # Multi-attribute calculations
             if calc_lower == 'sum':
                 result = sum(values)
@@ -958,7 +879,7 @@ def perform_calculation(source_data, attribute, calculation):
 
 
 # ==============================================================================
-# COMPONENT CREATION FUNCTIONS - UPDATED
+# COMPONENT CREATION FUNCTIONS
 # ==============================================================================
 
 def get_metric_icon_and_color(component_title, attribute):
@@ -1004,6 +925,7 @@ def has_battery_attributes(attributes):
 def apply_value_modifiers(df_melted, attributes, component, metric_titles):
     """Apply value modifiers to make specified attributes negative"""
     try:
+
         value_modifiers = component.get('value_modifiers', '')
 
         if pd.isna(value_modifiers) or value_modifiers == '' or value_modifiers is None:
@@ -1018,7 +940,9 @@ def apply_value_modifiers(df_melted, attributes, component, metric_titles):
         while len(modifiers) < len(attributes):
             modifiers.append('positive')
 
+
         for i, attr in enumerate(attributes):
+
             if pd.isna(attr) or attr is None:
                 continue
 
@@ -1042,6 +966,7 @@ def apply_value_modifiers(df_melted, attributes, component, metric_titles):
             modifier = modifiers[i] if i < len(modifiers) else 'positive'
 
             if isinstance(modifier, str) and modifier.strip().lower() in ['negative', 'neg', '-']:
+
                 mask = df_melted['Series'] == display_name
                 matching_rows = mask.sum()
 
@@ -1057,18 +982,17 @@ def apply_value_modifiers(df_melted, attributes, component, metric_titles):
 
 
 def create_metric_card_from_csv(component, data_sources):
-    """Enhanced metric card with period awareness"""
+    """SIMPLIFIED metric card - back to original working approach"""
     attribute = component['attribute']
     data_source = component['data_source']
     calculation = safe_get_calculation(component)
 
-    # Get the value
+    # SIMPLE - just try to get the value
     value = get_value_from_data_sources(data_sources, data_source, attribute, calculation)
     formatted_value = format_metric_value(value, component.get('display_format', ''))
 
-    # Enhanced messaging for FCAS metrics
-    if value == "N/A" and (
-            'fcas' in component['component_title'].lower() or 'ancillary' in component['component_title'].lower()):
+    # If value is N/A for FCAS metrics, show that it's not available (not an error)
+    if value == "N/A" and ('fcas' in component['component_title'].lower() or 'ancillary' in component['component_title'].lower()):
         formatted_value = "Not Available"
 
     styling = get_metric_icon_and_color(component['component_title'], attribute)
@@ -1080,14 +1004,222 @@ def create_metric_card_from_csv(component, data_sources):
             ], className="text-center"),
             html.H3(formatted_value, className="text-center fw-bold mb-1"),
             html.P(component['component_title'], className="text-center mb-0"),
-            html.P(component.get('tooltip', ''), className="text-center small mt-2 opacity-75") if component.get(
-                'tooltip') else None
+            html.P(component.get('tooltip', ''), className="text-center small mt-2 opacity-75") if component.get('tooltip') else None
         ])
     ], className="h-100 shadow-sm border-0 metric-card")
 
 
+
+# ==============================================================================
+# LAYOUT CREATION FUNCTIONS
+# ==============================================================================
+
+def create_data_driven_tabs(structure_df):
+    """Create tabs from CSV structure"""
+    tab_info = structure_df.groupby('tab_name').agg({
+        'tab_order': 'min'
+    }).reset_index().sort_values('tab_order', na_position='last')
+
+    tabs = []
+    tab_icons = {
+        'executive summary': '🏠',
+        'financial': '💰',
+        'energy': '⚡',
+        'battery': '🔋',
+        'cashflow': '💸',
+        'market analysis': '📈',
+        'system performance': '📊',
+        'technical details': '🔧',
+        'compliance': '✅'
+    }
+
+    for _, row in tab_info.iterrows():
+        tab_name = row['tab_name']
+        tab_key = tab_name.lower().replace(' ', '_')
+
+        icon_emoji = '📊'
+        for key, icon in tab_icons.items():
+            if key in tab_name.lower():
+                icon_emoji = icon
+                break
+
+        tab_label = f"{icon_emoji} {tab_name}"
+
+        tab = dbc.Tab(
+            label=tab_label,
+            tab_id=tab_key,
+            active_tab_style={"background-color": "#667eea", "color": "white"}
+        )
+        tabs.append(tab)
+
+    return dbc.Tabs(
+        tabs,
+        id="main-tabs",
+        active_tab=tabs[0].tab_id if tabs else "executive_summary",
+        className="nav-tabs-custom mb-4"
+    )
+
+
+def create_enhanced_app_layout():
+    """Create the complete enhanced layout"""
+    return html.Div([
+        # Enhanced Header
+        html.Div([
+            dbc.Container([
+                dbc.Row([
+                    dbc.Col([
+                        html.H1("EnTrans Results Dashboard", className="text-white mb-2"),
+                        html.P("Enhanced FCAS Revenue Analysis & Energy Arbitrage Platform",
+                               className="text-white mb-0 opacity-75")
+                    ], width=8),
+                    dbc.Col([
+                        html.Div([
+                            html.A([
+                                html.I(className="fas fa-arrow-left me-2"),
+                                "Back to Form"
+                            ], href="/form-with-saved-values", className="btn btn-light me-2"),
+                            dbc.Button([
+                                html.I(className="fas fa-download me-2"),
+                                "Export PDF"
+                            ], color="light", size="sm", className="me-2"),
+                            dbc.Button([
+                                html.I(className="fas fa-share me-2"),
+                                "Share"
+                            ], color="light", outline=True, size="sm")
+                        ], className="d-flex justify-content-end")
+                    ], width=4)
+                ])
+            ])
+        ], className="dashboard-header"),
+
+        # Main Content
+        dbc.Container([
+            html.Div(id='dynamic-tabs'),
+            html.Div(id='tab-content', className="mt-4")
+        ], fluid=True),
+
+        # Footer
+        html.Footer([
+            dbc.Container([
+                dbc.Row([
+                    dbc.Col([
+                        html.P("EnTrans Energy Solutions", className="mb-1 fw-bold"),
+                        html.P("Enhanced FCAS Revenue Analysis Platform",
+                               className="text-muted small mb-0")
+                    ], width=6),
+                    dbc.Col([
+                        html.P(f"Generated: {datetime.now().strftime('%Y-%m-%d at %H:%M')}",
+                               className="mb-1 text-end"),
+                        html.P("Confidential Analysis",
+                               className="text-muted small mb-0 text-end")
+                    ], width=6)
+                ])
+            ])
+        ], className="mt-5 pt-4 border-top text-muted")
+    ])
+
+
+def load_data_with_metadata():
+    """Simple data loading for dashboard"""
+    results_path, structure_path, project_config_path, data_dir = get_paths()
+
+    structure_df = pd.DataFrame()
+    data_sources = {}
+
+    if structure_path.exists():
+        structure_df = pd.read_csv(structure_path)
+        data_sources = load_data_sources_from_csv(structure_df)
+
+    return structure_df, data_sources
+
+
+def setup_dashboard_callbacks(dash_app):
+    """Simple dashboard callbacks - removed cache-busting complexity"""
+
+    @dash_app.callback(
+        Output('dynamic-tabs', 'children'),
+        [Input('dynamic-tabs', 'id')]
+    )
+    def create_tabs(_):
+        """Create navigation tabs dynamically"""
+        try:
+            structure_df, data_sources = load_data_with_metadata()
+
+            if structure_df is None or (hasattr(structure_df, 'empty') and structure_df.empty):
+                return html.Div("No dashboard structure available", className="mb-4")
+
+            return create_data_driven_tabs(structure_df)
+
+        except Exception as e:
+            logger.error(f"ERROR in create_tabs callback: {e}")
+            return html.Div("Error loading tabs", className="mb-4")
+
+    @dash_app.callback(
+        Output('tab-content', 'children'),
+        [Input('main-tabs', 'active_tab')]
+    )
+    def render_tab_content(active_tab):
+        """Render tab content"""
+        try:
+            if not active_tab:
+                return dbc.Alert("Loading...", color="info")
+
+            structure_df, data_sources = load_data_with_metadata()
+
+            if structure_df is None or (hasattr(structure_df, 'empty') and structure_df.empty):
+                return dbc.Alert("No data available", color="warning")
+
+            # Tab name mapping
+            tab_name_mapping = {
+                'executive_summary': 'Executive Summary',
+                'financial_results': 'Financial Results',
+                'energy_results': 'Energy Results',
+                'battery_analysis': 'Battery Analysis',
+                'grid_interaction': 'Grid Interaction',
+                'cashflow': 'CashFlow',
+                'market_analysis': 'Market Analysis',
+                'system_performance': 'System Performance',
+                'technical_details': 'Technical Details',
+                'compliance': 'Compliance'
+            }
+
+            tab_name = tab_name_mapping.get(active_tab, active_tab.replace('_', ' ').title())
+            content = create_data_driven_tab_content(tab_name, structure_df, data_sources)
+
+            return content
+
+        except Exception as e:
+            logger.error(f"ERROR in render_tab_content callback: {e}")
+            return dbc.Alert(f"Error loading tab content: {str(e)}", color="danger")
+
+    logger.info("✅ Simple dashboard callbacks setup complete")
+
+
+# ==============================================================================
+# GLOBAL VARIABLES FOR FLASK INTEGRATION
+# ==============================================================================
+
+# These will be set by the Flask app
+structure_df = None
+data_sources = {}
+
+# ==============================================================================
+# EXPORT FUNCTIONS FOR FLASK INTEGRATION
+# ==============================================================================
+
+__all__ = [
+    'load_data_with_metadata',
+    'create_enhanced_app_layout',
+    'setup_dashboard_callbacks',
+    'ENHANCED_CSS',
+    'LANDSCAPE_TABLE_CSS'
+]
+
+
+# dashboard_module.py - Part 3 - Remaining Component Creation and Layout Functions
+
 def create_panel_component_from_csv(component, data_sources):
-    """Panel component creation with period awareness"""
+    """Optimized panel component creation"""
     attributes = component['attribute'].split('|') if '|' in component['attribute'] else [component['attribute']]
     data_source = component['data_source']
 
@@ -1139,11 +1271,10 @@ def create_panel_component_from_csv(component, data_sources):
 
 
 def create_pipe_separated_table(component, data_sources):
-    """Enhanced table with dynamic analysis period support"""
+    """Fixed pipe-separated table with proper format handling and calculations"""
     print(f"DEBUG: Processing table: {component.get('component_title', 'Unknown')}")
-
-    # Get analysis period from data sources
-    analysis_period = get_analysis_period_from_metadata(data_sources)
+    print(f"DEBUG: Data source: {component.get('data_source', 'Unknown')}")
+    print(f"DEBUG: Attributes: {component.get('attribute', 'Unknown')}")
 
     data_file = component.get('data_source', '')
 
@@ -1163,10 +1294,11 @@ def create_pipe_separated_table(component, data_sources):
     while len(source_files) < len(attributes):
         source_files.append(source_files[-1])
 
-    # Handle pipe-separated display formats properly
+    # FIXED: Handle pipe-separated display formats properly
     display_formats = []
     if component.get('display_format') and '|' in component.get('display_format', ''):
         display_formats = component['display_format'].split('|')
+        print(f"DEBUG: Split display formats: {display_formats}")
     else:
         display_formats = [component.get('display_format', '')] * len(attributes)
 
@@ -1185,16 +1317,30 @@ def create_pipe_separated_table(component, data_sources):
     while len(calculations) < len(attributes):
         calculations.append('')
 
-    # Get custom layout with dynamic period support
+    # Get custom layout
     custom_layout_raw = component.get('custom_layout', '{}')
+    print(f"DEBUG: Raw custom_layout value: {repr(custom_layout_raw)}")
+
     custom_layout = safe_literal_eval(custom_layout_raw)
+    print(f"DEBUG: Parsed custom_layout: {custom_layout}")
+
     metric_titles = custom_layout.get('metricTitles', {})
+    print(f"DEBUG: metric_titles: {metric_titles}")
 
-    # Get dynamic column configuration
-    column_config = get_dynamic_column_config(analysis_period, custom_layout)
-    show_total = column_config.get('showTotal', False)
+    # Get column configuration
+    column_config = custom_layout.get('columnConfig', {
+        'showYear1': True,
+        'show25Year': False,
+        'year1Header': 'Year 1',
+        'total25Header': '25-Year Total'
+    })
 
-    print(f"DEBUG: Analysis period: {analysis_period}, show_total: {show_total}")
+    show_25_year = column_config.get('show25Year', False)
+    if isinstance(show_25_year, str):
+        show_25_year = show_25_year.lower() == 'true'
+
+    print(f"DEBUG: column_config: {column_config}")
+    print(f"DEBUG: show25Year value: {show_25_year} (type: {type(show_25_year)})")
 
     # Create table data structure
     table_data = []
@@ -1204,6 +1350,9 @@ def create_pipe_separated_table(component, data_sources):
         calculation = calculations[i] if i < len(calculations) else ''
         display_format = display_formats[i] if i < len(display_formats) else ''
 
+        print(f"DEBUG: Processing attribute {i}: {attr}")
+        print(f"DEBUG: Source: {source_file}, Calculation: '{calculation}', Format: '{display_format}'")
+
         # Check if source file exists
         if source_file not in data_sources:
             print(f"Warning: Data source '{source_file}' not found for attribute '{attr}'")
@@ -1211,33 +1360,45 @@ def create_pipe_separated_table(component, data_sources):
 
         # Get Year 1 value with PROPER calculation handling
         year1_value = get_value_from_data_sources(data_sources, source_file, attr, calculation)
+        print(f"DEBUG: Year 1 value for {attr}: {year1_value}")
 
-        # Get total value if requested (dynamic period)
-        total_value = "N/A"
-        if show_total:
+        # Get 25-year total if requested
+        total25_value = "N/A"
+        if show_25_year:
+            print(f"DEBUG: Calculating 25-year value for {attr}")
             if source_file.endswith('.parquet'):
-                total_value = get_value_from_data_sources(data_sources, source_file, attr, 'sum')
+                total25_value = get_value_from_data_sources(data_sources, source_file, attr, 'sum')
+                print(f"DEBUG: 25-year sum value: {total25_value}")
             elif year1_value != "N/A" and isinstance(year1_value, (int, float)):
-                total_value = year1_value * analysis_period
+                total25_value = year1_value * 25
+                print(f"DEBUG: 25-year calculated value (x25): {total25_value}")
 
         if year1_value != "N/A":
             # Get display name from custom titles
             display_name = metric_titles.get(attr, attr.replace('_', ' ').replace('.', ' ').title())
+            print(f"DEBUG: Display name for {attr}: {display_name}")
 
-            # Format values with corresponding display format
+            # FIXED: Format values with corresponding display format
             formatted_year1 = format_metric_value(year1_value, display_format)
-            formatted_total = format_metric_value(total_value, display_format) if total_value != "N/A" else "N/A"
+            formatted_total25 = format_metric_value(total25_value, display_format) if total25_value != "N/A" else "N/A"
+
+            print(f"DEBUG: Formatted Year 1: {formatted_year1}")
+            if show_25_year:
+                print(f"DEBUG: Formatted 25-year: {formatted_total25}")
 
             row_data = {
                 'Metric': display_name,
                 column_config.get('year1Header', 'Year 1'): formatted_year1
             }
 
-            # Add total column if requested (dynamic header)
-            if show_total:
-                row_data[column_config.get('totalHeader', f'{analysis_period}-Year Total')] = formatted_total
+            # Add 25-year column if requested
+            if show_25_year:
+                row_data[column_config.get('total25Header', '25-Year Total')] = formatted_total25
+                print(f"DEBUG: Added 25-year column with value: {formatted_total25}")
 
             table_data.append(row_data)
+
+    print(f"DEBUG: Final table_data: {table_data}")
 
     if not table_data:
         return dbc.Alert("No data available for the specified attributes", color="info")
@@ -1249,18 +1410,20 @@ def create_pipe_separated_table(component, data_sources):
         "id": column_config.get('year1Header', 'Year 1')
     })
 
-    if show_total:
-        total_header = column_config.get('totalHeader', f'{analysis_period}-Year Total')
+    if show_25_year:
         columns.append({
-            "name": total_header,
-            "id": total_header
+            "name": column_config.get('total25Header', '25-Year Total'),
+            "id": column_config.get('total25Header', '25-Year Total')
         })
+        print(f"DEBUG: Added 25-year column to columns list")
+
+    print(f"DEBUG: Final columns: {columns}")
 
     # Create the table
     return dbc.Card([
         dbc.CardHeader([
             html.H5(component['component_title'], className="mb-0 text-primary"),
-            html.Small(f"Analysis period: {analysis_period} years", className="text-muted")
+            html.Small(component.get('tooltip', 'Key performance metrics'), className="text-muted")
         ]),
         dbc.CardBody([
             dash_table.DataTable(
@@ -1298,7 +1461,7 @@ def create_pipe_separated_table(component, data_sources):
                     },
                     {
                         'if': {'column_id': [column_config.get('year1Header', 'Year 1'),
-                                             column_config.get('totalHeader', f'{analysis_period}-Year Total')]},
+                                             column_config.get('total25Header', '25-Year Total')]},
                         'textAlign': 'right',
                         'fontWeight': 'bold'
                     }
@@ -1307,28 +1470,26 @@ def create_pipe_separated_table(component, data_sources):
                                            {
                                                'if': {'column_id': 'Metric'},
                                                'minWidth': '200px',
-                                               'width': '50%' if show_total else '60%'
+                                               'width': '50%' if show_25_year else '60%'
                                            },
                                            {
                                                'if': {'column_id': column_config.get('year1Header', 'Year 1')},
                                                'minWidth': '120px',
-                                               'width': '25%' if show_total else '40%'
+                                               'width': '25%' if show_25_year else '40%'
                                            }
                                        ] + ([{
-                    'if': {'column_id': column_config.get('totalHeader', f'{analysis_period}-Year Total')},
+                    'if': {'column_id': column_config.get('total25Header', '25-Year Total')},
                     'minWidth': '150px',
                     'width': '25%'
-                }] if show_total else [])
+                }] if show_25_year else [])
             )
         ])
     ], className="performance-table")
 
 
-def create_generic_landscape_table(component, data_sources):
-    """Enhanced landscape table with dynamic analysis period support"""
-    # Get analysis period from data sources
-    analysis_period = get_analysis_period_from_metadata(data_sources)
 
+def create_generic_landscape_table(component, data_sources):
+    """SIMPLIFIED landscape table - back to original working approach"""
     data_file = component.get('data_source', '')
 
     # Handle pipe-separated data sources
@@ -1352,40 +1513,48 @@ def create_generic_landscape_table(component, data_sources):
         return dbc.Alert(f"Data source is not a DataFrame: {data_file}", color="warning")
 
     try:
-        # Parse attributes
+        # Parse attributes - SIMPLE approach
         if '|' in component['attribute']:
             requested_attributes = [attr.strip() for attr in component['attribute'].split('|')]
         else:
             requested_attributes = [component['attribute'].strip()]
 
-        # Find which attributes exist in the dataframe
+        # SIMPLE - just find which attributes exist in the dataframe
         available_attributes = [attr for attr in requested_attributes if attr in df.columns]
 
+        # If no attributes available, show simple message
         if not available_attributes:
             return dbc.Alert(f"No data columns found for: {', '.join(requested_attributes)}", color="info")
+
+        print(f"DEBUG LANDSCAPE: Using {len(available_attributes)}/{len(requested_attributes)} attributes")
 
         custom_layout = safe_literal_eval(component.get('custom_layout', '{}'))
         metric_titles = custom_layout.get('metricTitles', {})
 
-        # Create landscape data with dynamic period limits
+        # Create landscape data with available attributes only
         landscape_data = []
         df_subset = df[available_attributes].copy()
 
-        # Limit to analysis period (+ year 0)
-        max_years = min(len(df_subset), analysis_period + 1)
-        year_labels = get_period_labels(analysis_period)[:max_years]
+        # Limit to reasonable number of years (25 + year 0)
+        max_years = min(len(df_subset), 26)
+        year_labels = []
+        for i in range(max_years):
+            if i == 0:
+                year_labels.append("Year 0")
+            else:
+                year_labels.append(f"Year {i}")
 
         # Process each available attribute
         for attr in available_attributes:
             display_name = metric_titles.get(attr,
-                                             attr.replace('cf_', '')
-                                             .replace('ancillary_services_', 'FCAS ')
-                                             .replace('_', ' ')
-                                             .title())
+                                           attr.replace('cf_', '')
+                                           .replace('ancillary_services_', 'FCAS ')
+                                           .replace('_', ' ')
+                                           .title())
 
             row_data = {'Metric': display_name}
 
-            # Add data for each year (limited by analysis period)
+            # Add data for each year
             for i, year_label in enumerate(year_labels):
                 if i < len(df_subset):
                     value = df_subset[attr].iloc[i]
@@ -1410,7 +1579,7 @@ def create_generic_landscape_table(component, data_sources):
                 if col['id'] not in row:
                     row[col['id']] = "$0"
 
-        # Header color based on component title
+        # Simple header color based on component title
         def get_header_color_class(component_title):
             title_lower = component_title.lower()
             if 'fcas' in title_lower or 'ancillary' in title_lower:
@@ -1428,7 +1597,7 @@ def create_generic_landscape_table(component, data_sources):
 
         header_color, header_class = get_header_color_class(component['component_title'])
 
-        # Create the table card with period info
+        # Create the table card
         return dbc.Card([
             dbc.CardHeader([
                 html.Div([
@@ -1437,7 +1606,6 @@ def create_generic_landscape_table(component, data_sources):
                         component['component_title']
                     ], className="mb-1 text-white"),
                     html.Small([
-                        f"Analysis period: {analysis_period} years • ",
                         f"Showing {len(available_attributes)} of {len(requested_attributes)} metrics",
                         " • Scroll horizontally to view all years" if len(year_labels) > 6 else ""
                     ], className="text-white opacity-75")
@@ -1516,11 +1684,10 @@ def create_generic_landscape_table(component, data_sources):
         ], color="danger")
 
 
-def create_graph_from_csv(component, data_sources):
-    """Enhanced graph creation with dynamic analysis period support"""
-    # Get analysis period from data sources
-    analysis_period = get_analysis_period_from_metadata(data_sources)
 
+
+def create_graph_from_csv(component, data_sources):
+    """Enhanced graph creation with all formatting and graph types - SIMPLIFIED FCAS handling"""
     data_file = component.get('data_source', '')
 
     if data_file not in data_sources:
@@ -1551,7 +1718,7 @@ def create_graph_from_csv(component, data_sources):
             ])
         ], className="shadow-sm border-0")
 
-    # Handle revenue breakdown pie charts
+    # Handle revenue breakdown pie charts with NaN protection
     if data_file == 'calculated' and component['attribute'] == 'revenue_breakdown_all':
         revenue_data = source_data.get('revenue_breakdown_all', [])
         if not revenue_data or len(revenue_data) == 0:
@@ -1592,13 +1759,15 @@ def create_graph_from_csv(component, data_sources):
     df = source_data.copy()
     attributes = component['attribute'].split('|') if '|' in component['attribute'] else [component['attribute']]
 
-    # Check which attributes exist in the dataframe
+    # SIMPLIFIED: Just check which attributes exist in the dataframe
     available_attributes = [attr for attr in attributes if attr in df.columns]
 
+    # If no attributes available, show simple message
     if not available_attributes:
         return dbc.Alert(f"No data columns found for chart: {', '.join(attributes)}", color="info")
 
     # Continue with only available attributes
+    print(f"DEBUG GRAPH: Using {len(available_attributes)}/{len(attributes)} attributes")
     attributes = available_attributes
 
     visual_props = safe_literal_eval(component.get('visual_properties', '{}'))
@@ -1611,8 +1780,10 @@ def create_graph_from_csv(component, data_sources):
     else:
         graph_type = str(graph_type).strip().lower()
 
-    # PIE CHART HANDLING - Enhanced with period awareness
+    # PIE CHART HANDLING - ENHANCED VERSION
     if graph_type == 'pie':
+        print(f"DEBUG: Creating enhanced pie chart for {len(attributes)} attributes")
+
         # Get calculations for each attribute
         calculation = safe_get_calculation(component)
         if calculation and '|' in calculation:
@@ -1659,64 +1830,110 @@ def create_graph_from_csv(component, data_sources):
 
                     pie_labels.append(label)
 
+        print(f"DEBUG: Pie chart data - Values: {pie_values}, Labels: {pie_labels}")
+
         if not pie_values:
             return dbc.Alert("No non-zero values found for pie chart", color="info")
 
-        # Modern color palette
+        # ENHANCED: Modern color palette
         modern_colors = [
-            '#667eea', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6',
-            '#06b6d4', '#84cc16', '#f97316', '#ec4899', '#6b7280'
+            '#667eea',  # Primary blue
+            '#10b981',  # Green
+            '#f59e0b',  # Amber
+            '#ef4444',  # Red
+            '#8b5cf6',  # Purple
+            '#06b6d4',  # Cyan
+            '#84cc16',  # Lime
+            '#f97316',  # Orange
+            '#ec4899',  # Pink
+            '#6b7280'  # Gray
         ]
 
         # Create enhanced pie chart
         fig = go.Figure()
 
+        # ENHANCED: Add pie trace with modern styling
         fig.add_trace(go.Pie(
             labels=pie_labels,
             values=pie_values,
-            hole=custom_layout.get('hole', 0.4),
+            hole=custom_layout.get('hole', 0.4),  # Default to donut style
             hovertemplate='<b>%{label}</b><br>' +
                           'Value: <b>%{value:$,.0f}</b><br>' +
                           'Percentage: <b>%{percent}</b><br>' +
                           '<extra></extra>',
             textinfo='label+percent',
             textposition='auto',
-            textfont=dict(size=12, color='white', family='Segoe UI'),
+            textfont=dict(
+                size=12,
+                color='white',
+                family='Segoe UI'
+            ),
             marker=dict(
                 colors=modern_colors[:len(pie_values)],
-                line=dict(color='white', width=2)
+                line=dict(
+                    color='white',
+                    width=2
+                )
             ),
-            pull=[0.05 if i == 0 else 0 for i in range(len(pie_values))],
-            rotation=90,
-            sort=False
+            pull=[0.05 if i == 0 else 0 for i in range(len(pie_values))],  # Highlight first slice
+            rotation=90,  # Start from top
+            sort=False  # Maintain order
         ))
 
-        # Enhanced layout styling
+        # ENHANCED: Modern layout styling
         fig.update_layout(
             title=dict(
                 text=custom_layout.get('title', component['component_title']),
-                x=0.5, y=0.95, xanchor='center', yanchor='top',
-                font=dict(size=18, color='#2d3748', family='Segoe UI', weight='bold')
+                x=0.5,
+                y=0.95,
+                xanchor='center',
+                yanchor='top',
+                font=dict(
+                    size=18,
+                    color='#2d3748',
+                    family='Segoe UI',
+                    weight='bold'
+                )
             ),
             showlegend=custom_layout.get('showlegend', True),
             legend=dict(
-                orientation='v', yanchor='middle', y=0.5, xanchor='left', x=1.02,
-                font=dict(size=11, color='#374151', family='Segoe UI'),
+                orientation='v',
+                yanchor='middle',
+                y=0.5,
+                xanchor='left',
+                x=1.02,
+                font=dict(
+                    size=11,
+                    color='#374151',
+                    family='Segoe UI'
+                ),
                 bgcolor='rgba(255,255,255,0.8)',
-                bordercolor='rgba(0,0,0,0.1)', borderwidth=1
+                bordercolor='rgba(0,0,0,0.1)',
+                borderwidth=1
             ),
             height=visual_props.get('height', 500),
-            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
             font=dict(family="Segoe UI", size=12, color='#374151'),
             margin=dict(l=20, r=120, t=60, b=20),
             annotations=[
                 dict(
-                    text=f'<b>Total</b><br>${sum(pie_values):,.0f}<br><small>{analysis_period} years</small>',
-                    x=0.5, y=0.5, font_size=14, font_color='#374151',
-                    font_family='Segoe UI', showarrow=False
+                    text=f'<b>Total</b><br>${sum(pie_values):,.0f}',
+                    x=0.5, y=0.5,
+                    font_size=14,
+                    font_color='#374151',
+                    font_family='Segoe UI',
+                    showarrow=False
                 )
-            ] if custom_layout.get('hole', 0.4) > 0 else []
+            ] if custom_layout.get('hole', 0.4) > 0 else []  # Only show center text for donuts
         )
+
+        # Apply additional custom styling
+        if custom_layout:
+            layout_updates = {k: v for k, v in custom_layout.items()
+                              if k not in ['labels', 'hole', 'title', 'showlegend', 'metricTitles']}
+            if layout_updates:
+                fig.update_layout(**layout_updates)
 
         return dbc.Card([
             dbc.CardHeader([
@@ -1724,22 +1941,36 @@ def create_graph_from_csv(component, data_sources):
                     html.I(className="fas fa-chart-pie me-2 text-primary"),
                     component['component_title']
                 ], className="mb-0"),
-                html.Small(f"Analysis period: {analysis_period} years", className="text-muted")
+                html.Small(component.get('tooltip', 'Revenue breakdown by category'),
+                           className="text-muted")
             ], className="bg-light border-0"),
             dbc.CardBody([
                 dcc.Graph(
                     figure=fig,
                     style={'height': f'{visual_props.get("height", 500)}px'},
-                    config={'displayModeBar': True, 'displaylogo': False}
+                    config={
+                        'displayModeBar': True,
+                        'displaylogo': False,
+                        'modeBarButtonsToRemove': ['pan2d', 'lasso2d', 'select2d'],
+                        'toImageButtonOptions': {
+                            'format': 'png',
+                            'filename': f'{component["component_title"]}_pie_chart',
+                            'height': 500,
+                            'width': 700,
+                            'scale': 2
+                        }
+                    }
                 )
             ], className="p-3")
         ], className="shadow-sm border-0")
 
-    # WATERFALL CHART HANDLING with dynamic period
+    # WATERFALL CHART HANDLING
     if graph_type == 'waterfall':
+        # Get all attributes and calculations
         calculation = safe_get_calculation(component)
         calculations = calculation.split('|') if calculation and '|' in calculation else [calculation] * len(attributes)
 
+        # Ensure equal lengths
         while len(calculations) < len(attributes):
             calculations.append('')
 
@@ -1775,7 +2006,7 @@ def create_graph_from_csv(component, data_sources):
                 # Determine type based on attribute name and position
                 if 'purchases' in attr or 'cost' in attr or 'expense' in attr or 'payment' in attr:
                     waterfall_type = 'negative'
-                    value = -abs(value)
+                    value = -abs(value)  # Ensure negative values are negative
                 else:
                     waterfall_type = 'positive'
 
@@ -1804,16 +2035,30 @@ def create_graph_from_csv(component, data_sources):
             ))
 
             fig.update_layout(
-                title=f"{custom_layout.get('title', component['component_title'])} ({analysis_period} years)",
+                title=custom_layout.get('title', component['component_title']),
                 title_x=0.5,
                 height=visual_props.get('height', 500),
                 showlegend=False,
                 plot_bgcolor='rgba(0,0,0,0)',
                 paper_bgcolor='rgba(0,0,0,0)',
                 font=dict(family="Segoe UI", size=12),
-                yaxis=dict(title="Value ($)", tickformat="$,.0f", gridcolor="#f0f0f0"),
-                xaxis=dict(title="Financial Components", tickangle=-45)
+                yaxis=dict(
+                    title="Value ($)",
+                    tickformat="$,.0f",
+                    gridcolor="#f0f0f0"
+                ),
+                xaxis=dict(
+                    title="Financial Components",
+                    tickangle=-45
+                )
             )
+
+            # Apply custom layout excluding metricTitles
+            if custom_layout:
+                valid_layout_props = {k: v for k, v in custom_layout.items()
+                                      if k not in ['metricTitles']}
+                if valid_layout_props:
+                    fig.update_layout(**valid_layout_props)
 
             return dbc.Card([
                 dbc.CardBody([
@@ -1823,26 +2068,32 @@ def create_graph_from_csv(component, data_sources):
         else:
             return dbc.Alert("No waterfall data available", color="info")
 
-    # Continue with existing chart types with period awareness
+    # Continue with existing chart types
     try:
         # Better index handling based on data type
         primary_attr = attributes[0]
+
+        # Reset index and create proper x-axis
         df = df.reset_index()
 
         # Determine the appropriate x-axis column
         if 'index' in df.columns:
             x_col = 'index'
         elif len(df.columns) > 0:
+            # Use the first column as x-axis if no index
             x_col = df.columns[0]
         else:
             return dbc.Alert("No suitable x-axis column found", color="warning")
 
+        # Initialize fig to None to catch any issues
         fig = None
 
-        # Handle quarterly/historical data
+        # Handle quarterly/historical data (like FCAS historical)
         if 'Quarter' in df.columns or data_file.endswith('_historical.csv'):
+            # Handle quarterly data
             x_col = 'Quarter'
 
+            # Handle multiple attributes for quarterly data
             if len(attributes) > 1:
                 df_subset = df[attributes + ['Quarter']].copy()
 
@@ -1852,24 +2103,24 @@ def create_graph_from_csv(component, data_sources):
                     if attr in metric_titles:
                         clean_name = metric_titles[attr]
                     else:
+                        # Clean up attribute names (remove prefixes/suffixes, format nicely)
                         clean_name = attr.replace('AVG_', '').replace(' ($/MW)', '').replace('_', ' ').title()
+                        # Handle specific FCAS naming
                         clean_name = clean_name.replace('Lowerreg', 'Lower Reg').replace('Raisereg', 'Raise Reg')
                         clean_name = clean_name.replace('Lower5min', 'Lower 5min').replace('Raise5min', 'Raise 5min')
                         clean_name = clean_name.replace('Lower60sec', 'Lower 60s').replace('Raise60sec', 'Raise 60s')
                         clean_name = clean_name.replace('Lower6sec', 'Lower 6s').replace('Raise6sec', 'Raise 6s')
+                        clean_name = clean_name.replace('Lower1sec', 'Lower 1s').replace('Raise1sec', 'Raise 1s')
                     df_display = df_display.rename(columns={attr: clean_name})
 
                 display_attributes = [metric_titles.get(attr,
                                                         attr.replace('AVG_', '').replace(' ($/MW)', '')
                                                         .replace('_', ' ').title()
-                                                        .replace('Lowerreg', 'Lower Reg').replace('Raisereg',
-                                                                                                  'Raise Reg')
-                                                        .replace('Lower5min', 'Lower 5min').replace('Raise5min',
-                                                                                                    'Raise 5min')
-                                                        .replace('Lower60sec', 'Lower 60s').replace('Raise60sec',
-                                                                                                    'Raise 60s')
-                                                        .replace('Lower6sec', 'Lower 6s').replace('Raise6sec',
-                                                                                                  'Raise 6s'))
+                                                        .replace('Lowerreg', 'Lower Reg').replace('Raisereg', 'Raise Reg')
+                                                        .replace('Lower5min', 'Lower 5min').replace('Raise5min', 'Raise 5min')
+                                                        .replace('Lower60sec', 'Lower 60s').replace('Raise60sec', 'Raise 60s')
+                                                        .replace('Lower6sec', 'Lower 6s').replace('Raise6sec', 'Raise 6s')
+                                                        .replace('Lower1sec', 'Lower 1s').replace('Raise1sec', 'Raise 1s'))
                                       for attr in attributes]
 
                 df_melted = df_display.melt(id_vars=['Quarter'],
@@ -1877,19 +2128,23 @@ def create_graph_from_csv(component, data_sources):
                                             var_name='Series',
                                             value_name='Value')
 
+                # Apply value modifiers
                 df_melted = apply_value_modifiers(df_melted, attributes, component, metric_titles)
 
+                # Create line chart for historical data
                 fig = px.line(df_melted, x='Quarter', y='Value', color='Series',
                               title=component['component_title'],
                               color_discrete_sequence=px.colors.qualitative.Set3)
 
+                # Update layout for quarterly data
                 fig.update_layout(
                     xaxis_title="Quarter",
                     yaxis_title="Price ($/MW)",
                     height=visual_props.get('height', 450),
-                    xaxis={'tickangle': 45}
+                    xaxis={'tickangle': 45}  # Rotate quarter labels for better readability
                 )
             else:
+                # Single attribute
                 if graph_type == 'line':
                     fig = px.line(df, x=x_col, y=primary_attr, title=component['component_title'])
                 elif graph_type == 'bar':
@@ -1914,15 +2169,17 @@ def create_graph_from_csv(component, data_sources):
             if len(attributes) > 1:
                 df_subset = df[attributes + ['month_name']].copy()
 
-                # Use metric titles if available
+                # Use metric titles if available, otherwise clean up attribute names
                 df_display = df_subset.copy()
                 for attr in attributes:
+                    # Use custom title if available, otherwise generate clean name
                     if attr in metric_titles:
                         clean_name = metric_titles[attr]
                     else:
                         clean_name = attr.replace('monthly_', '').replace('_', ' ').title()
                     df_display = df_display.rename(columns={attr: clean_name})
 
+                # Get the final column names (either custom titles or cleaned names)
                 display_attributes = [metric_titles.get(attr, attr.replace('monthly_', '').replace('_', ' ').title())
                                       for attr in attributes]
 
@@ -1931,9 +2188,10 @@ def create_graph_from_csv(component, data_sources):
                                             var_name='Series',
                                             value_name='Value')
 
+                # Apply value modifiers for negative values
                 df_melted = apply_value_modifiers(df_melted, attributes, component, metric_titles)
 
-                # Create charts based on graph_type
+                # Create charts based on graph_type for multi-attribute data
                 if graph_type == 'stacked_bar':
                     fig = px.bar(df_melted, x='month_name', y='Value', color='Series',
                                  title=component['component_title'],
@@ -1945,7 +2203,9 @@ def create_graph_from_csv(component, data_sources):
                                  color_discrete_sequence=px.colors.qualitative.Set3,
                                  barmode='group')
                 elif graph_type in ['area', 'stacked_area']:
+                    # Area chart logic - explicit control via graph_type
                     should_stack = (graph_type == 'stacked_area')
+
                     fig = go.Figure()
                     colors = px.colors.qualitative.Set3
 
@@ -1953,16 +2213,20 @@ def create_graph_from_csv(component, data_sources):
                         series_data = df_melted[df_melted['Series'] == display_attr]
 
                         if should_stack:
+                            # Stacked area chart (stacked_area)
                             fill_mode = 'tonexty' if i > 0 else 'tozeroy'
                             opacity = 0.7
                             hovermode = 'closest'
                         else:
-                            fill_mode = 'tozeroy'
-                            opacity = 0.4
+                            # Overlapping area chart (area - default)
+                            fill_mode = 'tozeroy'  # Each area fills to zero independently
+                            opacity = 0.4  # More transparent for better visibility of overlaps
                             hovermode = 'x unified'
 
+                        # Handle color with proper opacity
                         base_color = colors[i % len(colors)]
                         if base_color.startswith('#'):
+                            # Convert hex to rgba
                             r = int(base_color[1:3], 16)
                             g = int(base_color[3:5], 16)
                             b = int(base_color[5:7], 16)
@@ -1978,7 +2242,7 @@ def create_graph_from_csv(component, data_sources):
                             name=display_attr,
                             line=dict(color=base_color, width=2),
                             fillcolor=fillcolor,
-                            hovertemplate='<b>%{fullData.name}</b><br>' +
+                            hovertemplate=f'<b>{display_attr}</b><br>' +
                                           '%{x}<br>' +
                                           'Value: %{y:$,.0f}<br>' +
                                           '<extra></extra>'
@@ -1990,23 +2254,32 @@ def create_graph_from_csv(component, data_sources):
                         yaxis_title="Energy Flow (kWh)" if has_battery_attributes(attributes) else "Value",
                         height=visual_props.get('height', 400),
                         hovermode=hovermode,
-                        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+                        legend=dict(
+                            orientation="h",
+                            yanchor="bottom",
+                            y=1.02,
+                            xanchor="right",
+                            x=1
+                        )
                     )
 
+                    # Add zero line for battery flow charts with safe checking
                     if has_battery_attributes(attributes):
                         fig.add_hline(y=0, line_dash="dash", line_color="gray",
                                       annotation_text="Zero Line", annotation_position="bottom right")
 
                 elif graph_type == 'line':
+                    # Create multi-attribute line chart
                     fig = px.line(df_melted, x='month_name', y='Value', color='Series',
                                   title=component['component_title'],
                                   color_discrete_sequence=px.colors.qualitative.Set3)
                 else:
+                    # Default to line for multi-attribute
                     fig = px.line(df_melted, x='month_name', y='Value', color='Series',
                                   title=component['component_title'],
                                   color_discrete_sequence=px.colors.qualitative.Set3)
             else:
-                # Single attribute charts
+                # Single attribute charts (existing logic)
                 if graph_type == 'bar':
                     fig = px.bar(df, x=x_col, y=primary_attr,
                                  title=component['component_title'],
@@ -2025,18 +2298,20 @@ def create_graph_from_csv(component, data_sources):
             if len(attributes) == 1 or graph_type in ['stacked_bar', 'grouped_bar', 'line']:
                 fig.update_layout(
                     xaxis_title="Month",
-                    xaxis={'categoryorder': 'array', 'categoryarray': month_names},
+                    xaxis={'categoryorder': 'array',
+                           'categoryarray': month_names},
                     yaxis_title=component.get('display_format', '').replace('{', '').replace('}', '').replace(':', ''),
                     height=visual_props.get('height', 400)
                 )
 
         elif 'hourly' in data_file and len(df) == 8760:
-            # Handle hourly data (like batt_SOC_year1) with period validation
+            # Handle hourly data (like batt_SOC_year1)
             df['hour'] = range(1, len(df) + 1)
             x_col = 'hour'
 
             # Handle multiple attributes for hourly data
             if len(attributes) > 1:
+                # Create melted DataFrame for multiple series
                 df_subset = df[attributes + ['hour']].copy()
 
                 # Apply metric titles
@@ -2056,10 +2331,13 @@ def create_graph_from_csv(component, data_sources):
                                             var_name='Series',
                                             value_name='Value')
 
+                # Apply value modifiers
                 df_melted = apply_value_modifiers(df_melted, attributes, component, metric_titles)
 
                 if graph_type in ['area', 'stacked_area']:
+                    # Area chart logic for hourly data
                     should_stack = (graph_type == 'stacked_area')
+
                     fig = go.Figure()
                     colors = px.colors.qualitative.Set3
 
@@ -2092,7 +2370,10 @@ def create_graph_from_csv(component, data_sources):
                             name=display_attr,
                             line=dict(color=base_color, width=2),
                             fillcolor=fillcolor,
-                            hovertemplate='<b>%{fullData.name}</b><br>Hour: %{x}<br>Value: %{y:$,.0f}<br><extra></extra>'
+                            hovertemplate=f'<b>{display_attr}</b><br>' +
+                                          'Hour: %{x}<br>' +
+                                          'Value: %{y:$,.0f}<br>' +
+                                          '<extra></extra>'
                         ))
 
                     fig.update_layout(
@@ -2124,8 +2405,7 @@ def create_graph_from_csv(component, data_sources):
             )
 
         elif 'annual' in data_file:
-            # Handle annual data with dynamic period validation
-            df = validate_dataframe_length(df, analysis_period, data_file)
+            # Handle annual data
             df['year'] = range(len(df))
             x_col = 'year'
 
@@ -2150,10 +2430,13 @@ def create_graph_from_csv(component, data_sources):
                                             var_name='Series',
                                             value_name='Value')
 
+                # Apply value modifiers
                 df_melted = apply_value_modifiers(df_melted, attributes, component, metric_titles)
 
                 if graph_type in ['area', 'stacked_area']:
+                    # Area chart logic for annual data
                     should_stack = (graph_type == 'stacked_area')
+
                     fig = go.Figure()
                     colors = px.colors.qualitative.Set3
 
@@ -2186,11 +2469,14 @@ def create_graph_from_csv(component, data_sources):
                             name=display_attr,
                             line=dict(color=base_color, width=2),
                             fillcolor=fillcolor,
-                            hovertemplate='<b>%{fullData.name}</b><br>Year: %{x}<br>Value: %{y:$,.0f}<br><extra></extra>'
+                            hovertemplate=f'<b>{display_attr}</b><br>' +
+                                          'Year: %{x}<br>' +
+                                          'Value: %{y:$,.0f}<br>' +
+                                          '<extra></extra>'
                         ))
 
                     fig.update_layout(
-                        title=f"{component['component_title']} ({analysis_period} years)",
+                        title=component['component_title'],
                         xaxis_title="Year",
                         yaxis_title="Value",
                         height=visual_props.get('height', 400),
@@ -2198,28 +2484,24 @@ def create_graph_from_csv(component, data_sources):
                     )
                 elif graph_type == 'line':
                     fig = px.line(df_melted, x='year', y='Value', color='Series',
-                                  title=f"{component['component_title']} ({analysis_period} years)",
+                                  title=component['component_title'],
                                   color_discrete_sequence=px.colors.qualitative.Set3)
                 elif graph_type == 'bar':
                     fig = px.bar(df_melted, x='year', y='Value', color='Series',
-                                 title=f"{component['component_title']} ({analysis_period} years)")
+                                 title=component['component_title'])
                 else:
                     fig = px.line(df_melted, x='year', y='Value', color='Series',
-                                  title=f"{component['component_title']} ({analysis_period} years)")
+                                  title=component['component_title'])
             else:
                 # Single attribute
                 if graph_type == 'line':
-                    fig = px.line(df, x=x_col, y=primary_attr,
-                                  title=f"{component['component_title']} ({analysis_period} years)")
+                    fig = px.line(df, x=x_col, y=primary_attr, title=component['component_title'])
                 elif graph_type == 'bar':
-                    fig = px.bar(df, x=x_col, y=primary_attr,
-                                 title=f"{component['component_title']} ({analysis_period} years)")
+                    fig = px.bar(df, x=x_col, y=primary_attr, title=component['component_title'])
                 elif graph_type in ['area', 'stacked_area']:
-                    fig = px.area(df, x=x_col, y=primary_attr,
-                                  title=f"{component['component_title']} ({analysis_period} years)")
+                    fig = px.area(df, x=x_col, y=primary_attr, title=component['component_title'])
                 else:
-                    fig = px.line(df, x=x_col, y=primary_attr,
-                                  title=f"{component['component_title']} ({analysis_period} years)")
+                    fig = px.line(df, x=x_col, y=primary_attr, title=component['component_title'])
 
             fig.update_layout(
                 xaxis_title="Year",
@@ -2228,7 +2510,7 @@ def create_graph_from_csv(component, data_sources):
             )
 
         else:
-            # Generic handling for other data types with period awareness
+            # Generic handling for other data types
             if len(attributes) > 1:
                 df_subset = df[attributes + [x_col]].copy()
 
@@ -2249,10 +2531,13 @@ def create_graph_from_csv(component, data_sources):
                                             var_name='Series',
                                             value_name='Value')
 
+                # Apply value modifiers
                 df_melted = apply_value_modifiers(df_melted, attributes, component, metric_titles)
 
                 if graph_type in ['area', 'stacked_area']:
+                    # Area chart logic for generic data
                     should_stack = (graph_type == 'stacked_area')
+
                     fig = go.Figure()
                     colors = px.colors.qualitative.Set3
 
@@ -2285,7 +2570,10 @@ def create_graph_from_csv(component, data_sources):
                             name=display_attr,
                             line=dict(color=base_color, width=2),
                             fillcolor=fillcolor,
-                            hovertemplate='<b>%{fullData.name}</b><br>%{x}<br>Value: %{y:$,.0f}<br><extra></extra>'
+                            hovertemplate=f'<b>{display_attr}</b><br>' +
+                                          '%{x}<br>' +
+                                          'Value: %{y:$,.0f}<br>' +
+                                          '<extra></extra>'
                         ))
 
                     fig.update_layout(
@@ -2317,8 +2605,9 @@ def create_graph_from_csv(component, data_sources):
 
         # Apply custom layout AFTER removing metricTitles
         if custom_layout:
+            # Only apply valid Plotly layout properties
             valid_layout_props = {k: v for k, v in custom_layout.items()
-                                  if k not in ['metricTitles']}
+                                  if k not in ['metricTitles']}  # Exclude our custom properties
             if valid_layout_props:
                 fig.update_layout(**valid_layout_props)
 
@@ -2329,14 +2618,15 @@ def create_graph_from_csv(component, data_sources):
 
         height = visual_props.get('height', 400)
 
-        # Return with proper card wrapper and period info
+        # Return with proper card wrapper for ALL graph types
         return dbc.Card([
             dbc.CardHeader([
                 html.H5([
                     html.I(className="fas fa-chart-line me-2 text-primary"),
                     component['component_title']
                 ], className="mb-0"),
-                html.Small(f"Analysis period: {analysis_period} years", className="text-muted")
+                html.Small(component.get('tooltip', 'Data visualization'),
+                           className="text-muted")
             ], className="bg-light border-0"),
             dbc.CardBody([
                 dcc.Graph(
@@ -2364,219 +2654,11 @@ def create_graph_from_csv(component, data_sources):
         return dbc.Alert(f"Graph creation error: {str(e)}", color="danger")
 
 
-# ==============================================================================
-# LAYOUT CREATION FUNCTIONS - UPDATED
-# ==============================================================================
 
-def create_data_driven_tabs(structure_df):
-    """Create tabs from CSV structure"""
-    tab_info = structure_df.groupby('tab_name').agg({
-        'tab_order': 'min'
-    }).reset_index().sort_values('tab_order', na_position='last')
-
-    tabs = []
-    tab_icons = {
-        'executive summary': '📊',
-        'financial': '💰',
-        'energy': '⚡',
-        'battery': '🔋',
-        'cashflow': '💸',
-        'market analysis': '📈',
-        'system performance': '📊',
-        'technical details': '🔧',
-        'compliance': '✅'
-    }
-
-    for _, row in tab_info.iterrows():
-        tab_name = row['tab_name']
-        tab_key = tab_name.lower().replace(' ', '_')
-
-        icon_emoji = '📊'
-        for key, icon in tab_icons.items():
-            if key in tab_name.lower():
-                icon_emoji = icon
-                break
-
-        tab_label = f"{icon_emoji} {tab_name}"
-
-        tab = dbc.Tab(
-            label=tab_label,
-            tab_id=tab_key,
-            active_tab_style={"background-color": "#667eea", "color": "white"}
-        )
-        tabs.append(tab)
-
-    return dbc.Tabs(
-        tabs,
-        id="main-tabs",
-        active_tab=tabs[0].tab_id if tabs else "executive_summary",
-        className="nav-tabs-custom mb-4"
-    )
-
-
-def create_enhanced_app_layout():
-    """Create the complete enhanced layout with period awareness"""
-    return html.Div([
-        # Enhanced Header
-        html.Div([
-            dbc.Container([
-                dbc.Row([
-                    dbc.Col([
-                        html.H1("EnTrans Results Dashboard", className="text-white mb-2"),
-                        html.P("Enhanced FCAS Revenue Analysis & Energy Arbitrage Platform",
-                               className="text-white mb-0 opacity-75")
-                    ], width=8),
-                    dbc.Col([
-                        html.Div([
-                            html.A([
-                                html.I(className="fas fa-arrow-left me-2"),
-                                "Back to Form"
-                            ], href="/form-with-saved-values", className="btn btn-light me-2"),
-                            dbc.Button([
-                                html.I(className="fas fa-download me-2"),
-                                "Export PDF"
-                            ], color="light", size="sm", className="me-2"),
-                            dbc.Button([
-                                html.I(className="fas fa-share me-2"),
-                                "Share"
-                            ], color="light", outline=True, size="sm")
-                        ], className="d-flex justify-content-end")
-                    ], width=4)
-                ])
-            ])
-        ], className="dashboard-header"),
-
-        # Main Content
-        dbc.Container([
-            html.Div(id='dynamic-tabs'),
-            html.Div(id='tab-content', className="mt-4")
-        ], fluid=True),
-
-        # Footer with period info
-        html.Footer([
-            dbc.Container([
-                dbc.Row([
-                    dbc.Col([
-                        html.P("EnTrans Energy Solutions", className="mb-1 fw-bold"),
-                        html.P("Enhanced FCAS Revenue Analysis Platform",
-                               className="text-muted small mb-0")
-                    ], width=6),
-                    dbc.Col([
-                        html.P(f"Generated: {datetime.now().strftime('%Y-%m-%d at %H:%M')}",
-                               className="mb-1 text-end"),
-                        html.P(id="analysis-period-info",
-                               className="text-muted small mb-0 text-end")
-                    ], width=6)
-                ])
-            ])
-        ], className="mt-5 pt-4 border-top text-muted")
-    ])
-
-
-def load_data_with_metadata():
-    """Enhanced data loading for dashboard with period info"""
-    results_path, structure_path, project_config_path, data_dir = get_paths()
-
-    structure_df = pd.DataFrame()
-    data_sources = {}
-
-    if structure_path.exists():
-        structure_df = pd.read_csv(structure_path)
-        data_sources = load_data_sources_from_csv(structure_df)
-
-    return structure_df, data_sources
-
-
-def setup_dashboard_callbacks(dash_app):
-    """Enhanced dashboard callbacks with period awareness"""
-
-    @dash_app.callback(
-        Output('dynamic-tabs', 'children'),
-        [Input('dynamic-tabs', 'id')]
-    )
-    def create_tabs(_):
-        """Create navigation tabs dynamically"""
-        try:
-            structure_df, data_sources = load_data_with_metadata()
-
-            if structure_df is None or (hasattr(structure_df, 'empty') and structure_df.empty):
-                return html.Div("No dashboard structure available", className="mb-4")
-
-            return create_data_driven_tabs(structure_df)
-
-        except Exception as e:
-            logger.error(f"ERROR in create_tabs callback: {e}")
-            return html.Div("Error loading tabs", className="mb-4")
-
-    @dash_app.callback(
-        Output('tab-content', 'children'),
-        [Input('main-tabs', 'active_tab')]
-    )
-    def render_tab_content(active_tab):
-        """Render tab content with period awareness"""
-        try:
-            if not active_tab:
-                return dbc.Alert("Loading...", color="info")
-
-            structure_df, data_sources = load_data_with_metadata()
-
-            if structure_df is None or (hasattr(structure_df, 'empty') and structure_df.empty):
-                return dbc.Alert("No data available", color="warning")
-
-            # Get analysis period for display
-            analysis_period = get_analysis_period_from_metadata(data_sources)
-
-            # Tab name mapping
-            tab_name_mapping = {
-                'executive_summary': 'Executive Summary',
-                'financial_results': 'Financial Results',
-                'energy_results': 'Energy Results',
-                'battery_analysis': 'Battery Analysis',
-                'grid_interaction': 'Grid Interaction',
-                'cashflow': 'CashFlow',
-                'market_analysis': 'Market Analysis',
-                'system_performance': 'System Performance',
-                'technical_details': 'Technical Details',
-                'compliance': 'Compliance'
-            }
-
-            tab_name = tab_name_mapping.get(active_tab, active_tab.replace('_', ' ').title())
-            content = create_data_driven_tab_content(tab_name, structure_df, data_sources)
-
-            # Add period info banner if not default 25 years
-            if analysis_period != 25:
-                period_banner = dbc.Alert([
-                    html.I(className="fas fa-info-circle me-2"),
-                    f"This analysis uses a {analysis_period}-year period instead of the standard 25 years."
-                ], color="info", className="mb-3")
-
-                return html.Div([period_banner, content])
-
-            return content
-
-        except Exception as e:
-            logger.error(f"ERROR in render_tab_content callback: {e}")
-            return dbc.Alert(f"Error loading tab content: {str(e)}", color="danger")
-
-    # Add callback for footer analysis period info
-    @dash_app.callback(
-        Output('analysis-period-info', 'children'),
-        [Input('analysis-period-info', 'id')]
-    )
-    def update_analysis_period_info(_):
-        """Update analysis period info in footer"""
-        try:
-            structure_df, data_sources = load_data_with_metadata()
-            analysis_period = get_analysis_period_from_metadata(data_sources)
-            return f"Analysis Period: {analysis_period} years"
-        except:
-            return "Analysis Period: 25 years (default)"
-
-    logger.info("✅ Enhanced dashboard callbacks with period awareness setup complete")
 
 
 def create_section_content_from_csv(components, data_sources):
-    """Create section content with proper component type handling and period awareness"""
+    """Create section content with proper component type handling"""
     content_rows = []
     current_row_components = []
     current_row_width = 0
@@ -2586,6 +2668,9 @@ def create_section_content_from_csv(components, data_sources):
     for _, component in components.iterrows():
         comp_width = width_mapping.get(component.get('width', 'full'), 12)
         component_type = str(component['component_type']).strip().lower()
+
+        print(f"DEBUG: Processing component {component.get('component_id', 'unknown')}: "
+              f"{component.get('component_title', 'unknown')} - type: '{component_type}'")
 
         try:
             if component_type == 'metric_card':
@@ -2653,7 +2738,7 @@ def create_section_content_from_csv(components, data_sources):
 
 
 def create_data_driven_tab_content(tab_name, structure_df, data_sources):
-    """Create tab content with enhanced period support"""
+    """Create tab content with enhanced FCAS support"""
     tab_components = structure_df[structure_df['tab_name'] == tab_name].sort_values('order', na_position='last')
 
     if tab_components.empty:
@@ -2761,18 +2846,3 @@ def create_standard_tab_layout(tab_name, structure_df, data_sources, sections):
     return html.Div(content_sections)
 
 
-# ==============================================================================
-# EXPORT FUNCTIONS FOR FLASK INTEGRATION
-# ==============================================================================
-
-__all__ = [
-    'load_data_with_metadata',
-    'create_enhanced_app_layout',
-    'setup_dashboard_callbacks',
-    'ENHANCED_CSS',
-    'LANDSCAPE_TABLE_CSS',
-    'get_analysis_period_from_metadata',
-    'get_period_labels',
-    'validate_dataframe_length',
-    'get_dynamic_column_config'
-]

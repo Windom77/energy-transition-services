@@ -155,111 +155,9 @@
             opacity: 0.6;
             transform: scale(0.95);
         }
-
-        /* Load Data specific styles */
-        .load-section {
-            background: linear-gradient(135deg, #fef3c7, #fde68a);
-            border: 1px solid #f59e0b;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-        }
-
-        .load-method-card {
-            background: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 0.5rem 0;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .load-method-card:hover {
-            border-color: #3b82f6;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
-        }
-
-        .load-method-card.selected {
-            border-color: #10b981;
-            background: linear-gradient(135deg, #ecfdf5, #d1fae5);
-        }
-
-        .load-method-card .method-icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .upload-area {
-            border: 2px dashed #d1d5db;
-            border-radius: 8px;
-            padding: 2rem;
-            text-align: center;
-            background: #f9fafb;
-            transition: all 0.3s ease;
-        }
-
-        .upload-area.drag-over {
-            border-color: #3b82f6;
-            background: #eff6ff;
-        }
-
-        .upload-progress {
-            background: #f3f4f6;
-            border-radius: 4px;
-            height: 8px;
-            overflow: hidden;
-            margin: 1rem 0;
-        }
-
-        .upload-progress-bar {
-            background: linear-gradient(90deg, #10b981, #059669);
-            height: 100%;
-            transition: width 0.3s ease;
-        }
-
-        .monthly-input-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin: 1rem 0;
-        }
-
-        .month-input-card {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            padding: 1rem;
-        }
-
-        .load-validation-result {
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-        }
-
-        .load-validation-result.success {
-            background: #ecfdf5;
-            border: 1px solid #10b981;
-            color: #065f46;
-        }
-
-        .load-validation-result.error {
-            background: #fef2f2;
-            border: 1px solid #ef4444;
-            color: #991b1b;
-        }
-
-        .load-chart-container {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            height: 300px;
-        }
     </style>
+
+
 </head>
 
 <body class="bg-light">
@@ -407,9 +305,6 @@
                                     <li><a class="dropdown-item" href="#" id="preview-tariff">
                                         <i class="fas fa-plug me-2"></i>Tariff Settings
                                     </a></li>
-                                    <li><a class="dropdown-item" href="#" id="preview-load">
-                                        <i class="fas fa-chart-line me-2"></i>Load Profile
-                                    </a></li>
                                 </ul>
                             </div>
                             {% endif %}
@@ -447,6 +342,7 @@
                 </div>
             </div>
         </div>
+
     </main>
 
     <!-- Configuration Preview Modal -->
@@ -471,33 +367,6 @@
                     </button>
                     <button type="button" class="btn btn-primary" onclick="exportConfiguration()">
                         <i class="fas fa-download me-2"></i>Export Configuration
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Load Data Upload Modal -->
-    <div class="modal fade" id="loadUploadModal" tabindex="-1" aria-labelledby="loadUploadTitle" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="loadUploadTitle">
-                        <i class="fas fa-upload me-2"></i>Upload Load Data
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="load-upload-content">
-                        <!-- Content will be populated by JavaScript -->
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-2"></i>Cancel
-                    </button>
-                    <button type="button" class="btn btn-primary" id="confirm-load-upload" disabled>
-                        <i class="fas fa-check me-2"></i>Use This Data
                     </button>
                 </div>
             </div>
@@ -548,14 +417,15 @@
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
             crossorigin=""></script>
 
-    <!-- Chart.js for load visualization -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <!-- Enhanced Form Script with FCAS Integration -->
     <script src="{{ url_for('static', filename='js/tariff_v4.js') }}"></script>
 
     <!-- PRODUCTION-READY: Core Application JavaScript -->
     <script>
+
+
+
+
         // Global configuration and state management
         const restoredValues = {{ restored_values | tojson | safe if restored_values else '{}' }};
         const isRestoration = {{ 'true' if is_restoration else 'false' }};
@@ -703,12 +573,6 @@
                     }
                 });
 
-                // Method 4: Collect load configuration data
-                if (window.loadDataManager && window.loadDataManager.getFormData) {
-                    const loadData = window.loadDataManager.getFormData();
-                    Object.assign(formData, loadData);
-                }
-
                 return formData;
             } catch (error) {
                 console.error('Form data collection failed:', error.message);
@@ -765,6 +629,7 @@
                 resetSubmitButton();
             }
         }
+
 
         // Update the autoPollingFunction to use cache-busted requests
         function autoPollingFunction() {
@@ -833,6 +698,8 @@
 
             autoPollingFunction();
         }
+
+
 
         function updateSimpleStatus(data) {
             const progressMsg = document.getElementById('progress-message');
@@ -940,8 +807,7 @@
             const previewHandlers = [
                 { id: 'preview-config', type: 'full' },
                 { id: 'preview-fcas', type: 'fcas' },
-                { id: 'preview-tariff', type: 'tariff' },
-                { id: 'preview-load', type: 'load' }
+                { id: 'preview-tariff', type: 'tariff' }
             ];
 
             previewHandlers.forEach(handler => {
@@ -1054,10 +920,6 @@
                     title.innerHTML = '<i class="fas fa-plug me-2"></i>Tariff Configuration Preview';
                     previewHTML = generateTariffPreview();
                     break;
-                case 'load':
-                    title.innerHTML = '<i class="fas fa-chart-line me-2"></i>Load Profile Preview';
-                    previewHTML = generateLoadPreview();
-                    break;
                 default:
                     title.innerHTML = '<i class="fas fa-eye me-2"></i>Full Configuration Preview';
                     previewHTML = generateFullPreview();
@@ -1115,44 +977,20 @@
             `;
         }
 
-        function generateLoadPreview() {
-            const loadMethod = window.loadDataManager?.getCurrentMethod() || 'auto';
-            const loadSummary = window.loadDataManager?.getSummary() || 'No load data configured';
-
-            return `
-                <div class="row">
-                    <div class="col-md-12">
-                        <h6>Load Configuration</h6>
-                        <table class="table table-sm">
-                            <tr><td><strong>Method:</strong></td><td>${loadMethod}</td></tr>
-                            <tr><td><strong>Summary:</strong></td><td>${loadSummary}</td></tr>
-                        </table>
-                        ${window.loadDataManager?.hasChart() ?
-                            '<div class="mt-3"><canvas id="preview-load-chart" width="400" height="200"></canvas></div>' :
-                            '<div class="alert alert-info mt-3">No load chart available</div>'
-                        }
-                    </div>
-                </div>
-            `;
-        }
-
         function generateFullPreview() {
             return `
                 <div class="row">
                     <div class="col-12">
                         <div class="alert alert-info">
                             <i class="fas fa-info-circle me-2"></i>
-                            Full configuration preview includes form data, FCAS settings, tariff configuration, and load profile.
+                            Full configuration preview includes form data, FCAS settings, and tariff configuration.
                             <hr>
                             <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     ${generateFCASPreview()}
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     ${generateTariffPreview()}
-                                </div>
-                                <div class="col-md-4">
-                                    ${generateLoadPreview()}
                                 </div>
                             </div>
                         </div>

@@ -163,7 +163,7 @@ def simple_convert():
 
     if not input_file:
         # List available files
-        parquet_files = list(Path("").glob("*.parquet"))
+        parquet_files = list(Path(".").glob("*.parquet"))
         if not parquet_files:
             results_dir = Path("results")
             if results_dir.exists():

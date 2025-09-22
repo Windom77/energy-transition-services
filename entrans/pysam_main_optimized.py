@@ -36,6 +36,27 @@ os.environ['MKL_NUM_THREADS'] = str(os.cpu_count() or 4)
 os.environ['OMP_NUM_THREADS'] = str(os.cpu_count() or 4)
 
 
+# OPTIMIZATION 8: Pre-compilation optimization
+def optimize_numpy_libraries():
+    """Pre-warm numpy/scipy libraries for faster execution"""
+    try:
+        import numpy as np
+        import scipy
+
+        # Pre-allocate some arrays to warm up memory allocators
+        dummy = np.random.random((1000, 1000))
+        dummy = np.dot(dummy, dummy.T)
+        del dummy
+        gc.collect()
+
+        logging.info("✅ Numpy libraries pre-warmed")
+    except Exception as e:
+        logging.warning(f"Library pre-warming failed: {e}")
+
+
+# Call this at module import
+optimize_numpy_libraries()
+
 # ========== DATA CLASSES (PRESERVED) ==========
 
 @dataclass
@@ -124,10 +145,10 @@ class FinancialParameters:
         capacity_factor = max(0.1, min(1.0, float(raw_capacity_factor)))
 
         # Debug logging for verification
-        logging.info(f"ðŸ’° Financial Parameter Conversion:")
-        logging.info(f"   Raw escalation: {raw_escalation} â†’ {escalation_rate:.1%}")
-        logging.info(f"   Raw discount: {raw_discount} â†’ {discount_rate:.1%}")
-        logging.info(f"   Raw WACC: {raw_wacc} â†’ {wacc:.1%}")
+        logging.info(f"💰 Financial Parameter Conversion:")
+        logging.info(f"   Raw escalation: {raw_escalation} → {escalation_rate:.1%}")
+        logging.info(f"   Raw discount: {raw_discount} → {discount_rate:.1%}")
+        logging.info(f"   Raw WACC: {raw_wacc} → {wacc:.1%}")
 
         return cls(
             escalation_rate=escalation_rate,
@@ -177,14 +198,14 @@ class SimulationConstants:
 
     # FCAS service definitions (complete)
     FCAS_SERVICES = {
-        1: {'name': 'Fast Raise (6s)', 'rate': 1.25, 'default_enabled': True},  # âœ… Was 400
-        2: {'name': 'Fast Lower (6s)', 'rate': 1.18, 'default_enabled': True},  # âœ… Was 380
-        3: {'name': 'Slow Raise (60s)', 'rate': 0.78, 'default_enabled': True},  # âœ… Was 250
-        4: {'name': 'Slow Lower (60s)', 'rate': 0.72, 'default_enabled': True},  # âœ… Was 230
-        5: {'name': 'Delayed Raise (5min)', 'rate': 0.56, 'default_enabled': False},  # âœ… Was 180
-        6: {'name': 'Delayed Lower (5min)', 'rate': 0.50, 'default_enabled': False},  # âœ… Was 160
-        7: {'name': 'Raise Regulation', 'rate': 0.38, 'default_enabled': False},  # âœ… Was 120
-        8: {'name': 'Lower Regulation', 'rate': 0.31, 'default_enabled': False}  # âœ… Was 100
+        1: {'name': 'Fast Raise (6s)', 'rate': 1.25, 'default_enabled': True},  # ✅ Was 400
+        2: {'name': 'Fast Lower (6s)', 'rate': 1.18, 'default_enabled': True},  # ✅ Was 380
+        3: {'name': 'Slow Raise (60s)', 'rate': 0.78, 'default_enabled': True},  # ✅ Was 250
+        4: {'name': 'Slow Lower (60s)', 'rate': 0.72, 'default_enabled': True},  # ✅ Was 230
+        5: {'name': 'Delayed Raise (5min)', 'rate': 0.56, 'default_enabled': False},  # ✅ Was 180
+        6: {'name': 'Delayed Lower (5min)', 'rate': 0.50, 'default_enabled': False},  # ✅ Was 160
+        7: {'name': 'Raise Regulation', 'rate': 0.38, 'default_enabled': False},  # ✅ Was 120
+        8: {'name': 'Lower Regulation', 'rate': 0.31, 'default_enabled': False}  # ✅ Was 100
     }
 
     # Regional multipliers for FCAS revenue
@@ -232,7 +253,7 @@ class BatteryDetector:
                 battery_enabled = bool(int(float(en_batt)) if en_batt != '' else 0)
 
             if not battery_enabled:
-                logging.info("ðŸ”‹ Battery disabled via en_batt toggle")
+                logging.info("🔋 Battery disabled via en_batt toggle")
                 return BatteryParameters(enabled=False)
 
             # Consolidated field detection with all possible sources
@@ -255,7 +276,7 @@ class BatteryDetector:
             power_kw = float(power or capacity or 0)
 
             if capacity_kwh <= 0 or power_kw <= 0:
-                logging.info(f"ðŸ”‹ Invalid battery parameters: {capacity_kwh} kWh, {power_kw} kW")
+                logging.info(f"🔋 Invalid battery parameters: {capacity_kwh} kWh, {power_kw} kW")
                 return BatteryParameters(enabled=False)
 
             return BatteryParameters(
@@ -298,7 +319,7 @@ class LRECDetector:
 
             # Debug: Show project_info contents
             if project_info:
-                logging.info(f"ðŸ” Found project_info section with keys: {list(project_info.keys())}")
+                logging.info(f"🔍 Found project_info section with keys: {list(project_info.keys())}")
 
             # Extract LREC price (main trigger along with system size)
             incentive_lrec_price = float(
@@ -319,7 +340,7 @@ class LRECDetector:
             )
 
             # Debug logging
-            logging.info(f"ðŸ” LREC Parameter Detection (Complete):")
+            logging.info(f"🔍 LREC Parameter Detection (Complete):")
             logging.info(f"   incentive_lrec_price: ${incentive_lrec_price}")
             logging.info(f"   system_size_kw: {system_size_kw}")
 
@@ -336,15 +357,15 @@ class LRECDetector:
             size_ok = system_size_kw >= SimulationConstants.LREC_MWH_THRESHOLD
             price_ok = incentive_lrec_price > 0
 
-            logging.info(f"ðŸ” LREC Eligibility Checks (Complete):")
-            logging.info(f"   Size â‰¥100kW: {size_ok} ({system_size_kw} kW)")
+            logging.info(f"🔍 LREC Eligibility Checks (Complete):")
+            logging.info(f"   Size ≥100kW: {size_ok} ({system_size_kw} kW)")
             logging.info(f"   Price >0: {price_ok} (${incentive_lrec_price})")
 
             # Override enabled status based on complete criteria
             lrec_config.enabled = size_ok and price_ok
 
             if lrec_config.enabled:
-                logging.info(f"ðŸŒ¿ LREC System Enabled:")
+                logging.info(f"🌿 LREC System Enabled:")
                 logging.info(f"   System Size: {system_size_kw} kW")
                 logging.info(f"   LREC Price: ${incentive_lrec_price}")
                 logging.info(f"   LRECs will be calculated from actual PySAM energy production")
@@ -355,7 +376,7 @@ class LRECDetector:
                 if not price_ok:
                     missing_reasons.append("no LREC price specified")
 
-                logging.info(f"ðŸŒ¿ LREC not enabled: {', '.join(missing_reasons)}")
+                logging.info(f"🌿 LREC not enabled: {', '.join(missing_reasons)}")
 
             return lrec_config
 
@@ -407,7 +428,7 @@ class ErrorHandler:
         else:
             self.warnings.append(error_msg)
             self.recoverable_errors.append(module_name)
-            logging.warning(f"âš ï¸ {error_msg} (continuing)")
+            logging.warning(f"⚠️ {error_msg} (continuing)")
             return False
 
     def handle_fcas_error(self, error: Exception) -> bool:
@@ -417,11 +438,11 @@ class ErrorHandler:
 
         # FIXED: Clear messaging about what's happening
         if "joblib" in str(error):
-            logging.warning(f"âš ï¸ {error_msg} (missing ML dependencies - using calibrated fallback)")
+            logging.warning(f"⚠️ {error_msg} (missing ML dependencies - using calibrated fallback)")
         elif "enhanced_fcas_module" in str(error):
-            logging.warning(f"âš ï¸ {error_msg} (module not found - using calibrated fallback)")
+            logging.warning(f"⚠️ {error_msg} (module not found - using calibrated fallback)")
         else:
-            logging.warning(f"âš ï¸ {error_msg} (using calibrated fallback)")
+            logging.warning(f"⚠️ {error_msg} (using calibrated fallback)")
 
         return True
 
@@ -429,7 +450,7 @@ class ErrorHandler:
         """Handle LREC-specific errors"""
         error_msg = f"LREC processing failed: {error}"
         self.warnings.append(error_msg)
-        logging.warning(f"âš ï¸ {error_msg} (falling back to estimates)")
+        logging.warning(f"⚠️ {error_msg} (falling back to estimates)")
         return True
 
     def get_summary(self) -> Dict[str, Any]:
@@ -458,7 +479,7 @@ class WeatherFileValidator:
 
             if Path(specified_file).exists():
                 weather_file = specified_file
-                logging.info(f"âœ… Using specified weather file: {weather_file}")
+                logging.info(f"✅ Using specified weather file: {weather_file}")
             else:
                 # Try weather directory
                 weather_filename = Path(specified_file).name
@@ -466,9 +487,9 @@ class WeatherFileValidator:
 
                 if weather_path.exists():
                     weather_file = str(weather_path)
-                    logging.info(f"âœ… Found weather file in directory: {weather_file}")
+                    logging.info(f"✅ Found weather file in directory: {weather_file}")
                 else:
-                    logging.warning(f"âŒ Weather file not found: {specified_file}")
+                    logging.warning(f"❌ Weather file not found: {specified_file}")
         else:
             logging.warning("No weather file specified in configuration")
 
@@ -489,7 +510,7 @@ class FCASProcessor:
     def process_fcas(self, modules: Dict[str, Any]) -> Dict[str, Any]:
         """Complete FCAS processing with enhanced module and fallback"""
         if not self.battery_params.enabled:
-            logging.info("ðŸ”‹ No battery detected, skipping FCAS processing")
+            logging.info("🔋 No battery detected, skipping FCAS processing")
             return {}
 
         try:
@@ -504,7 +525,7 @@ class FCASProcessor:
 
     def _process_enhanced_fcas(self, modules: Dict[str, Any]) -> Dict[str, Any]:
         """Complete enhanced FCAS processing"""
-        logging.info("ðŸ‡¦ðŸ‡º Processing Enhanced FCAS...")
+        logging.info("🇦🇺 Processing Enhanced FCAS...")
 
         # Import FCAS module (cached)
         if self._fcas_module is None:
@@ -516,18 +537,18 @@ class FCASProcessor:
         # Log essential configuration only
         enabled_count = sum(1 for key in fcas_config.keys()
                            if key.startswith('fcas_enable_') and fcas_config[key])
-        logging.info(f"ðŸ”‹ FCAS: {fcas_config['fcas_region']}, {enabled_count}/{SimulationConstants.FCAS_SERVICE_COUNT} services")
+        logging.info(f"🔋 FCAS: {fcas_config['fcas_region']}, {enabled_count}/{SimulationConstants.FCAS_SERVICE_COUNT} services")
 
         # Call FCAS module
         try:
             fcas_results = self._fcas_module.enhanced_fcas_for_pysam(modules, fcas_config)
         except TypeError as e:
-            logging.warning(f"âš ï¸ FCAS function signature error: {e}")
+            logging.warning(f"⚠️ FCAS function signature error: {e}")
             raise ValueError("Enhanced FCAS module signature incompatible")
 
         if fcas_results and 'total_ancillary_revenue' in fcas_results:
             total_revenue = fcas_results['total_ancillary_revenue']
-            logging.info(f"âœ… Enhanced FCAS Revenue: ${total_revenue:,.0f}")
+            logging.info(f"✅ Enhanced FCAS Revenue: ${total_revenue:,.0f}")
             return fcas_results
         else:
             raise ValueError("Enhanced FCAS module returned no results")
@@ -548,7 +569,7 @@ class FCASProcessor:
 
                 module_file = Path(fcas_path) / 'enhanced_fcas_module.py'
                 if module_file.exists():
-                    logging.info(f"âœ… Found FCAS module: {module_file}")
+                    logging.info(f"✅ Found FCAS module: {module_file}")
                     break
 
         try:
@@ -606,8 +627,8 @@ class FCASProcessor:
             'fcas_forecast_method': 'ML',
 
             # Proper unit conversion
-            'power_mw': actual_power_kw / 1000.0,  # kW â†’ MW
-            'energy_mwh': actual_capacity_kwh / 1000.0,  # kWh â†’ MWh
+            'power_mw': actual_power_kw / 1000.0,  # kW → MW
+            'energy_mwh': actual_capacity_kwh / 1000.0,  # kWh → MWh
             'charge_power_mw': (actual_power_kw * 0.8) / 1000.0,
             'efficiency': actual_efficiency,
             'participation_rate': participation_rate,
@@ -645,14 +666,14 @@ class FCASProcessor:
 
     def _create_estimated_fcas_results(self) -> Dict[str, Any]:
         """FIXED: Calibrated fallback FCAS with proper service detection"""
-        logging.info("ðŸ”§ Creating calibrated FCAS estimates (fallback mode)")
+        logging.info("🔧 Creating calibrated FCAS estimates (fallback mode)")
 
         battery = self.battery_params
         financial_params = FinancialParameters.from_config(self.config)
         analysis_period = self.config.get('analysis_period', 25)
 
         if not battery.enabled:
-            logging.info("ðŸ”‹ No battery detected, skipping FCAS fallback")
+            logging.info("🔋 No battery detected, skipping FCAS fallback")
             return {}
 
         # FIXED: Proper service detection from form configuration
@@ -680,7 +701,7 @@ class FCASProcessor:
         # FIXED: Check if ANY services are enabled (respects user choice)
         enabled_services = [num for num, enabled in service_mapping.items() if enabled]
         if not enabled_services:
-            logging.info("ðŸ”‹ No FCAS services enabled in fallback mode, returning zero revenue")
+            logging.info("🔋 No FCAS services enabled in fallback mode, returning zero revenue")
             # Still create zero cashflows for table compatibility
             cashflow_length = analysis_period + 1
             ancillary_results = {}
@@ -690,7 +711,7 @@ class FCASProcessor:
             ancillary_results['total_ancillary_revenue'] = 0.0
             return ancillary_results
 
-        logging.info(f"ðŸ”‹ FCAS Fallback - Services Enabled: {enabled_services}")
+        logging.info(f"🔋 FCAS Fallback - Services Enabled: {enabled_services}")
 
         # Get regional settings
         fcas_region = self.config.get('fcas_region', 'NSW1')
@@ -737,7 +758,7 @@ class FCASProcessor:
         ancillary_results['total_ancillary_revenue'] = total_revenue
 
         # FIXED: Log reasonable totals
-        logging.info(f"ðŸŽ¯ Calibrated FCAS Fallback: {fcas_region}, ${total_revenue:,.0f} total")
+        logging.info(f"🎯 Calibrated FCAS Fallback: {fcas_region}, ${total_revenue:,.0f} total")
         logging.info(f"   Battery: {battery.capacity_kwh} kWh, Participation: {participation_rate:.0%}")
         logging.info(f"   Enabled Services: {len(enabled_services)}/{len(SimulationConstants.FCAS_SERVICES)}")
 
@@ -749,10 +770,9 @@ class FCASProcessor:
 class LRECProcessor:
     """Complete LREC (Large-scale Renewable Energy Certificate) processing"""
 
-    def __init__(self, lrec_config: LRECConfiguration, error_handler: ErrorHandler, analysis_period: int):
+    def __init__(self, lrec_config: LRECConfiguration, error_handler: ErrorHandler):
         self.lrec_config = lrec_config
         self.error_handler = error_handler
-        self.analysis_period = analysis_period
 
     def process_lrec(self, modules: Dict[str, Any]) -> Dict[str, Any]:
         """Process LREC revenue calculations - ALWAYS creates cf_lrec_revenue column"""
@@ -760,7 +780,7 @@ class LRECProcessor:
 
         if not lrec_config.enabled:
             logging.info(
-                f"LREC not enabled (system <100kW or no LREC price), creating zero cashflow for {self.analysis_period} years")
+                "🌿 LREC not enabled (system <100kW or no LREC price), creating zero cashflow for table compatibility")
             return self._create_zero_lrec_results()
 
         try:
@@ -772,10 +792,11 @@ class LRECProcessor:
                 return self._create_zero_lrec_results()
 
     def _create_zero_lrec_results(self) -> Dict[str, Any]:
-        # CHANGED: Use instance variable instead of hardcoded 25
-        cashflow_length = self.analysis_period + 1
+        """Create zero LREC results for systems not eligible for LREC (e.g., <100kW STC systems)"""
+        analysis_period = 25  # Standard analysis period
+        cashflow_length = analysis_period + 1
 
-        logging.info(f"Creating zero LREC cashflow for {self.analysis_period} years ({cashflow_length} periods)")
+        logging.info(f"🌿 Creating zero LREC cashflow for table compatibility ({cashflow_length} periods)")
 
         return {
             'cf_lrec_revenue': [0.0] * cashflow_length,
@@ -787,7 +808,7 @@ class LRECProcessor:
 
     def _calculate_lrec_cashflow(self, modules: Dict[str, Any], lrec_config: LRECConfiguration) -> Dict[str, Any]:
         """Calculate LREC cashflow based on energy production - complete approach"""
-        logging.info("Processing LREC revenue (complete approach)...")
+        logging.info("🌿 Processing LREC revenue (complete approach)...")
 
         # Always get actual energy production from PySAM modules (preferred method)
         annual_energy_kwh = self._extract_annual_energy(modules)
@@ -800,11 +821,11 @@ class LRECProcessor:
         annual_lrecs = annual_energy_kwh / SimulationConstants.MWH_TO_KWH
         logging.info(f"Calculated LRECs from actual energy: {annual_lrecs:.1f} (from {annual_energy_kwh:.1f} kWh)")
 
-        # Build LREC cashflow - PASS analysis_period
+        # Build LREC cashflow
         lrec_results = self._build_lrec_cashflow(annual_lrecs, lrec_config)
 
         total_lrec_revenue = lrec_results.get('total_lrec_revenue', 0)
-        logging.info(f"LREC Revenue: ${total_lrec_revenue:,.0f} total over {self.analysis_period} years")
+        logging.info(f"✅ LREC Revenue: ${total_lrec_revenue:,.0f} total")
 
         return lrec_results
 
@@ -836,22 +857,22 @@ class LRECProcessor:
 
     def _build_lrec_cashflow(self, annual_lrecs: float, lrec_config: LRECConfiguration) -> Dict[str, Any]:
         """Build LREC cashflow with degradation and escalation"""
-        # CHANGED: Use instance variable instead of hardcoded 25
-        cashflow_length = self.analysis_period + 1
+        analysis_period = 25  # Standard analysis period
+        cashflow_length = analysis_period + 1
         lrec_price = lrec_config.incentive_lrec_price
         escalation_rate = lrec_config.escalation_rate
 
         # Safety checks for reasonable values
-        if escalation_rate > 0.5:
-            logging.warning(f"Unrealistic escalation rate {escalation_rate:.1%}, capping at 5%")
+        if escalation_rate > 0.5:  # More than 50% is unrealistic
+            logging.warning(f"⚠️ Unrealistic escalation rate {escalation_rate:.1%}, capping at 5%")
             escalation_rate = 0.05
 
-        if lrec_price > 200:
-            logging.warning(f"Unrealistic LREC price ${lrec_price}, using $45")
+        if lrec_price > 200:  # More than $200/LREC is unrealistic
+            logging.warning(f"⚠️ Unrealistic LREC price ${lrec_price}, using $45")
             lrec_price = 45.0
 
-        if annual_lrecs > 50000:
-            logging.warning(f"Very large LREC count {annual_lrecs}, double-check system size")
+        if annual_lrecs > 50000:  # More than 50k LRECs is very large
+            logging.warning(f"⚠️ Very large LREC count {annual_lrecs}, double-check system size")
 
         # Assume solar degradation of 0.5% per year
         degradation_rate = 0.005
@@ -860,15 +881,13 @@ class LRECProcessor:
         lrec_cashflow = [0.0]  # Year 0
         total_revenue = 0.0
 
-        logging.info(f"LREC Cashflow Calculation:")
-        logging.info(f"   Analysis Period: {self.analysis_period} years")
+        logging.info(f"🔍 LREC Cashflow Calculation:")
         logging.info(f"   Annual LRECs: {annual_lrecs}")
         logging.info(f"   LREC Price: ${lrec_price}")
         logging.info(f"   Escalation Rate: {escalation_rate:.1%}")
         logging.info(f"   Degradation Rate: {degradation_rate:.1%}")
 
-        # CHANGED: Use self.analysis_period instead of hardcoded 25
-        for year in range(1, min(self.analysis_period + 1, 26)):  # Cap at 25 years
+        for year in range(1, min(analysis_period + 1, 26)):  # Cap at 25 years
             # Calculate degraded energy production
             degradation_factor = (1 - degradation_rate) ** (year - 1)
             year_lrecs = annual_lrecs * degradation_factor
@@ -883,13 +902,13 @@ class LRECProcessor:
 
             # Debug first few years
             if year <= 3:
-                logging.info(f"   Year {year}: {year_lrecs:.0f} LRECs Ã— ${escalated_price:.2f} = ${year_revenue:,.0f}")
+                logging.info(f"   Year {year}: {year_lrecs:.0f} LRECs × ${escalated_price:.2f} = ${year_revenue:,.0f}")
 
-        logging.info(f"LREC Total Revenue: ${total_revenue:,.0f}")
+        logging.info(f"🔍 LREC Total Revenue: ${total_revenue:,.0f}")
 
         # Sanity check
-        if total_revenue > 10_000_000:
-            logging.warning(f"LREC revenue ${total_revenue:,.0f} seems very high - please verify parameters")
+        if total_revenue > 10_000_000:  # More than $10M seems excessive for most projects
+            logging.warning(f"⚠️ LREC revenue ${total_revenue:,.0f} seems very high - please verify parameters")
 
         return {
             'cf_lrec_revenue': lrec_cashflow,
@@ -956,7 +975,7 @@ class ResultsProcessor:
         if not fcas_results:
             return scalar_results, time_series
 
-        logging.info("ðŸ”— Integrating FCAS results")
+        logging.info("🔗 Integrating FCAS results")
 
         # Add individual FCAS cashflows to time series
         fcas_service_cashflows = []
@@ -977,7 +996,7 @@ class ResultsProcessor:
 
             # Add total FCAS cashflow to time series
             time_series['cf_fcas_total_revenue'] = cf_fcas_total_revenue
-            logging.info(f"âœ… Created total FCAS cashflow: ${sum(cf_fcas_total_revenue):,.0f}")
+            logging.info(f"✅ Created total FCAS cashflow: ${sum(cf_fcas_total_revenue):,.0f}")
 
         # Add FCAS totals to scalar results
         if 'total_ancillary_revenue' in fcas_results:
@@ -994,7 +1013,7 @@ class ResultsProcessor:
         if not lrec_results:
             return scalar_results, time_series
 
-        logging.info("ðŸ”— Integrating LREC results")
+        logging.info("🔗 Integrating LREC results")
 
         # Add LREC cashflow to time series
         if 'cf_lrec_revenue' in lrec_results:
@@ -1101,7 +1120,7 @@ class ResultsProcessor:
         if first_year_lrec > 0:
             scalar_results['Annual LREC Revenue (Year 1)'] = first_year_lrec
 
-        logging.info(f"ðŸ“Š Enhanced Metrics: Total Additional Revenue ${total_additional_revenue:,.0f}")
+        logging.info(f"📊 Enhanced Metrics: Total Additional Revenue ${total_additional_revenue:,.0f}")
         return scalar_results
 
     def _calculate_cumulative_payback_cashflow(self, scalar_results: Dict[str, Any],
@@ -1149,7 +1168,7 @@ class ResultsProcessor:
             cumulative_cashflow.append(cumulative_total)
 
             # Log the initial investment for debugging
-            logging.info(f"ðŸ’° Initial investment (Year 0): ${initial_investment:,.0f}")
+            logging.info(f"💰 Initial investment (Year 0): ${initial_investment:,.0f}")
 
             # Years 1 onwards: Add annual cash flows to cumulative total
             for year in range(1, min(analysis_period + 1, len(enhanced_cashflow))):
@@ -1187,13 +1206,13 @@ class ResultsProcessor:
 
             # Log results
             final_cumulative = cumulative_cashflow[-1] if cumulative_cashflow else 0
-            logging.info(f"ðŸ’° Cumulative Payback Calculated:")
+            logging.info(f"💰 Cumulative Payback Calculated:")
             logging.info(f"   Initial investment: ${initial_investment:,.0f}")
             logging.info(f"   Final cumulative value: ${final_cumulative:,.0f}")
             if payback_year:
                 logging.info(f"   Payback period: {payback_year} years")
 
-            logging.info(f"âœ… Created enhanced payback cashflow starting from ${initial_investment:,.0f}")
+            logging.info(f"✅ Created enhanced payback cashflow starting from ${initial_investment:,.0f}")
 
         except Exception as e:
             logging.error(f"Failed to calculate cumulative payback cashflow: {e}")
@@ -1287,7 +1306,7 @@ class ResultsExporter:
         results_dir = project_root / '2.pysam' / 'results'
         results_dir.mkdir(parents=True, exist_ok=True)
 
-        print(f"ðŸ“ Saving results to: {results_dir}")
+        print(f"📁 Saving results to: {results_dir}")
         original_cwd = os.getcwd()
 
         try:
@@ -1306,7 +1325,7 @@ class ResultsExporter:
             with open('metadata.json', 'w') as f:
                 json.dump(self._clean_for_json(metadata), f, indent=2)
 
-            logging.info(f"âœ… Results exported to: {results_dir}")
+            logging.info(f"✅ Results exported to: {results_dir}")
             return metadata
 
         except Exception as e:
@@ -1339,10 +1358,10 @@ class ResultsExporter:
             'count': len(output_metrics)
         }
 
-        logging.info(f"ðŸ“Š Exported {len(output_metrics)} scalar metrics")
+        logging.info(f"📊 Exported {len(output_metrics)} scalar metrics")
 
     def _export_time_series(self, time_series: Dict[str, List]):
-        """Export COMPLETE time series organized by frequency - ALL 121+ series with ANNUAL EXPORT"""
+        """Export COMPLETE time series organized by frequency - ALL 121+ series"""
         if not time_series:
             return
 
@@ -1356,16 +1375,6 @@ class ResultsExporter:
 
         # Extract COMPLETE battery health series (optimized)
         self._extract_essential_battery_health(time_series, valid_time_series)
-
-        # CRITICAL: Create and export annual time series for dashboard
-        annual_data = {}
-        self._create_annual_time_series(time_series, annual_data)
-
-        # Export annual data if it exists
-        if annual_data:
-            self._export_annual_time_series(annual_data)
-        else:
-            logging.warning("No annual time series data created - dashboard may show warnings")
 
         # Export cashflow data (including LREC and FCAS)
         cf_data = {k: v for k, v in valid_time_series.items() if k.startswith('cf_')}
@@ -1381,307 +1390,6 @@ class ResultsExporter:
 
             if group_data:
                 self._export_time_series_group(group_data, group_name, length)
-
-    def _create_annual_time_series(self, time_series: Dict[str, List], annual_data: Dict[str, List]):
-        """Create comprehensive annual time series for dashboard - ALL relevant metrics"""
-        try:
-            logging.info(
-                f"Processing {len(time_series)} time series for {self.analysis_period}-year analysis period...")
-
-            # Get all hourly data (8760 hours)
-            hourly_series = {k: v for k, v in time_series.items()
-                             if isinstance(v, list) and len(v) >= 8760}
-
-            # Get all monthly data (12 months)
-            monthly_series = {k: v for k, v in time_series.items()
-                              if isinstance(v, list) and len(v) == 12}
-
-            logging.info(f"Found {len(hourly_series)} hourly series and {len(monthly_series)} monthly series")
-
-            # Process hourly data to annual summaries
-            for key, hourly_values in hourly_series.items():
-                # Skip if already processed or not suitable for annual aggregation
-                if (key.startswith('cf_') or  # Skip cashflow (handled separately)
-                        'year1' in key or  # Skip already year-specific data
-                        len(hourly_values) < 8760):
-                    continue
-
-                annual_values = []
-
-                # Calculate annual values for each year in analysis period
-                for year in range(min(self.analysis_period, len(hourly_values) // 8760)):
-                    year_start = year * 8760
-                    year_end = (year + 1) * 8760
-
-                    if year_end <= len(hourly_values):
-                        year_data = hourly_values[year_start:year_end]
-
-                        # Determine aggregation method based on metric type
-                        if any(keyword in key.lower() for keyword in [
-                            'energy', 'charge', 'discharge', 'generation',
-                            'consumption', 'import', 'export', 'kwh'
-                        ]):
-                            # Sum for energy metrics
-                            year_value = sum(year_data)
-                        elif any(keyword in key.lower() for keyword in [
-                            'power', 'voltage', 'current', 'temperature',
-                            'soc', 'dod', 'efficiency', 'kw'
-                        ]):
-                            # Average for state/power metrics
-                            year_value = sum(year_data) / len(year_data) if year_data else 0
-                        elif 'cycles' in key.lower():
-                            # End-of-year value for cumulative metrics
-                            year_value = year_data[-1] if year_data else 0
-                        else:
-                            # Default to sum
-                            year_value = sum(year_data)
-
-                        annual_values.append(year_value)
-
-                if annual_values:
-                    # Create annual series name with corrected naming convention
-                    if key.startswith('batt_'):
-                        annual_key = key.replace('batt_', 'batt_annual_')
-                    elif key.startswith('grid_'):
-                        annual_key = key.replace('grid_', 'annual_grid_')
-                    else:
-                        annual_key = f"annual_{key}" if not key.startswith('annual_') else key
-
-                    # FIXED: Ensure we have exactly analysis_period + 1 values
-                    if len(annual_values) == self.analysis_period:
-                        # Correct length - add Year 0
-                        annual_data[annual_key] = [0.0] + annual_values
-                    elif len(annual_values) < self.analysis_period:
-                        # Pad to correct length
-                        padded_values = annual_values + [0.0] * (self.analysis_period - len(annual_values))
-                        annual_data[annual_key] = [0.0] + padded_values
-                    else:
-                        # Truncate to correct length
-                        truncated_values = annual_values[:self.analysis_period]
-                        annual_data[annual_key] = [0.0] + truncated_values
-
-            # Process monthly data to annual summaries
-            for key, monthly_values in monthly_series.items():
-                if len(monthly_values) == 12:
-                    # Sum monthly values to get annual total
-                    annual_total = sum(monthly_values)
-
-                    # Create annual series (same value for each year with degradation if applicable)
-                    annual_values = []
-                    for year in range(self.analysis_period):
-                        if 'energy' in key.lower() or 'generation' in key.lower():
-                            # Apply 0.5% annual degradation for energy metrics
-                            degraded_value = annual_total * ((1 - 0.005) ** year)
-                        else:
-                            # No degradation for other metrics
-                            degraded_value = annual_total
-
-                        annual_values.append(degraded_value)
-
-                    # Create annual series name with corrected naming convention
-                    if key.startswith('batt_'):
-                        annual_key = key.replace('batt_', 'batt_annual_')
-                    elif key.startswith('grid_'):
-                        annual_key = key.replace('grid_', 'annual_grid_')
-                    else:
-                        annual_key = f"annual_{key}" if not key.startswith('annual_') else key
-
-                    # Create exactly analysis_period + 1 values (Year 0 + analysis years)
-                    annual_data[annual_key] = [0.0] + annual_values
-
-            # Add specific battery health metrics if available
-            self._add_battery_health_annuals(time_series, annual_data)
-
-            # Add grid interaction metrics if available
-            self._add_grid_interaction_annuals(time_series, annual_data)
-
-            logging.info(f"Created {len(annual_data)} annual time series for {self.analysis_period}-year analysis")
-
-            # Log breakdown by category
-            battery_count = len([k for k in annual_data.keys() if 'batt' in k.lower()])
-            grid_count = len(
-                [k for k in annual_data.keys() if any(term in k.lower() for term in ['grid', 'import', 'export'])])
-            energy_count = len([k for k in annual_data.keys() if 'energy' in k.lower()])
-
-            # CRITICAL: Create the specific battery energy columns the dashboard expects
-            if any('batt_annual_to_grid' in k for k in annual_data.keys()):
-                # Create missing battery energy flow columns using existing data
-                battery_mappings = {
-                    'batt_annual_to_grid': 'batt_annual_discharge_energy',
-                    'annual_grid_to_batt': 'batt_annual_charge_from_grid',
-                    'annual_system_to_batt': 'batt_annual_charge_from_system'
-                }
-
-                for source_key, target_key in battery_mappings.items():
-                    if source_key in annual_data and target_key not in annual_data:
-                        annual_data[target_key] = annual_data[source_key].copy()
-                        logging.info(f"Created {target_key} from {source_key}")
-
-                # Create total charge energy
-                if ('batt_annual_charge_from_grid' in annual_data and
-                        'batt_annual_charge_from_system' in annual_data):
-                    charge_grid = annual_data['batt_annual_charge_from_grid']
-                    charge_system = annual_data['batt_annual_charge_from_system']
-
-                    total_charge = []
-                    for i in range(len(charge_grid)):
-                        total_charge.append(charge_grid[i] + charge_system[i])
-
-                    annual_data['batt_annual_charge_energy'] = total_charge
-                    logging.info("Created batt_annual_charge_energy from grid + system charging")
-
-                # Create energy loss
-                if ('batt_annual_charge_energy' in annual_data and
-                        'batt_annual_discharge_energy' in annual_data):
-                    charge_data = annual_data['batt_annual_charge_energy']
-                    discharge_data = annual_data['batt_annual_discharge_energy']
-
-                    energy_loss = []
-                    for i in range(len(charge_data)):
-                        loss = max(0, charge_data[i] - discharge_data[i])
-                        energy_loss.append(loss)
-
-                    annual_data['batt_annual_energy_loss'] = energy_loss
-                    logging.info("Created batt_annual_energy_loss from charge/discharge difference")
-
-            logging.info(f"Created {len(annual_data)} annual time series for {self.analysis_period}-year analysis")
-
-            logging.info(f"Annual series breakdown: {battery_count} battery, {grid_count} grid, {energy_count} energy")
-
-        except Exception as e:
-            logging.error(f"Annual time series creation failed: {e}")
-            import traceback
-            traceback.print_exc()
-
-    def _add_battery_health_annuals(self, time_series: Dict[str, List], annual_data: Dict[str, List]):
-        """Add battery health annual metrics"""
-        try:
-            # Battery cycles (end of year values)
-            if 'batt_cycles' in time_series and len(time_series['batt_cycles']) >= 8760:
-                cycles_data = time_series['batt_cycles']
-                annual_cycles = [0.0]  # Year 0
-
-                for year in range(min(self.analysis_period, len(cycles_data) // 8760)):
-                    year_end_index = (year + 1) * 8760 - 1
-                    if year_end_index < len(cycles_data):
-                        annual_cycles.append(cycles_data[year_end_index])
-
-                # Ensure correct length
-                while len(annual_cycles) < (self.analysis_period + 1):
-                    annual_cycles.append(annual_cycles[-1] if annual_cycles else 0.0)
-
-                annual_data['batt_annual_cycles'] = annual_cycles[:self.analysis_period + 1]
-
-            # Battery capacity fade (if available)
-            if 'batt_capacity_percent' in time_series:
-                capacity_data = time_series['batt_capacity_percent']
-                if len(capacity_data) >= 8760:
-                    annual_capacity = [100.0]  # Year 0 - 100% capacity
-
-                    for year in range(min(self.analysis_period, len(capacity_data) // 8760)):
-                        year_end_index = (year + 1) * 8760 - 1
-                        if year_end_index < len(capacity_data):
-                            annual_capacity.append(capacity_data[year_end_index])
-
-                    # Ensure correct length
-                    while len(annual_capacity) < (self.analysis_period + 1):
-                        annual_capacity.append(annual_capacity[-1] if annual_capacity else 100.0)
-
-                    annual_data['batt_annual_capacity_percent'] = annual_capacity[:self.analysis_period + 1]
-
-        except Exception as e:
-            logging.warning(f"Battery health annuals creation failed: {e}")
-
-    def _add_grid_interaction_annuals(self, time_series: Dict[str, List], annual_data: Dict[str, List]):
-        """Add grid interaction annual metrics"""
-        try:
-            grid_metrics = [
-                'grid_power',
-                'system_to_grid',
-                'grid_to_load',
-                'grid_to_batt',
-                'system_to_load'
-            ]
-
-            for metric in grid_metrics:
-                if metric in time_series and len(time_series[metric]) >= 8760:
-                    hourly_data = time_series[metric]
-                    annual_values = []
-
-                    for year in range(min(self.analysis_period, len(hourly_data) // 8760)):
-                        year_start = year * 8760
-                        year_end = (year + 1) * 8760
-
-                        if year_end <= len(hourly_data):
-                            year_total = sum(hourly_data[year_start:year_end])
-                            annual_values.append(year_total)
-
-                    if annual_values:
-                        # Ensure correct length
-                        if len(annual_values) < self.analysis_period:
-                            annual_values.extend([0.0] * (self.analysis_period - len(annual_values)))
-                        elif len(annual_values) > self.analysis_period:
-                            annual_values = annual_values[:self.analysis_period]
-
-                        annual_data[f'annual_{metric}'] = [0.0] + annual_values
-
-        except Exception as e:
-            logging.warning(f"Grid interaction annuals creation failed: {e}")
-
-    def _export_annual_time_series(self, annual_data: Dict[str, List]):
-        """Export annual time series as annual_timeseries.parquet"""
-        try:
-            if not annual_data:
-                logging.warning("No annual data to export")
-                return
-
-            # FIXED: Include Year 0 in expected length
-            expected_length = self.analysis_period + 1  # Include Year 0
-
-            # Normalize data to include Year 0
-            normalized_annual_data = {}
-            for key, values in annual_data.items():
-                if isinstance(values, list):
-                    # CRITICAL FIX: Ensure Year 0 is included
-                    if len(values) == self.analysis_period:  # Missing Year 0
-                        normalized_values = [0.0] + values  # Add Year 0
-                    elif len(values) == expected_length:  # Already has Year 0
-                        normalized_values = values
-                    else:
-                        # Handle other length mismatches
-                        if len(values) > expected_length:
-                            normalized_values = values[:expected_length]
-                        else:
-                            normalized_values = values + [0.0] * (expected_length - len(values))
-
-                    normalized_annual_data[key] = normalized_values
-
-            if normalized_annual_data:
-                # FIXED: Create DataFrame with Year 0 included
-                df = pd.DataFrame({
-                    'year': range(0, expected_length),  # 0, 1, 2, ..., analysis_period
-                    **normalized_annual_data
-                })
-                df.to_parquet('annual_timeseries.parquet', index=False)
-
-                logging.info(
-                    f"Exported {len(normalized_annual_data)} annual time series with {expected_length} periods (including Year 0)")
-
-                self.exported_data['annual_series'] = {
-                    'file': 'annual_timeseries.parquet',
-                    'series': list(normalized_annual_data.keys()),
-                    'count': len(normalized_annual_data)
-                }
-
-                logging.info(f"Exported {len(normalized_annual_data)} annual time series to annual_timeseries.parquet")
-            else:
-                logging.warning("No valid annual data found for export")
-
-        except Exception as e:
-            logging.error(f"Failed to export annual time series: {e}")
-            # Continue without annual export - better than crashing
-
-
 
     def _extract_essential_battery_health(self, time_series: Dict[str, List], valid_time_series: Dict[str, List]):
         """Extract COMPLETE essential battery health metrics (optimized)"""
@@ -1712,73 +1420,36 @@ class ResultsExporter:
             logging.warning(f"Battery health extraction error: {e}")
 
     def _export_cashflow_data(self, cf_data: Dict[str, List]):
-        """Export COMPLETE cashflow time series with array length validation"""
+        """Export COMPLETE cashflow time series including LREC and FCAS"""
         if not cf_data:
             return
 
-        # Determine expected length from analysis period
-        expected_length = self.analysis_period + 1  # Include Year 0
+        cf_length = len(next(iter(cf_data.values())))
+        df = pd.DataFrame({
+            'period': range(1, cf_length + 1),
+            **cf_data
+        })
+        df.to_parquet('cashflow_timeseries.parquet')
 
-        # Validate and normalize all cashflow arrays to the same length
-        normalized_cf_data = {}
+        self.exported_data['cashflow_series'] = {
+            'file': 'cashflow_timeseries.parquet',
+            'series': list(cf_data.keys()),
+            'count': len(cf_data)
+        }
 
-        for key, values in cf_data.items():
-            if not isinstance(values, list):
-                continue
+        # Log FCAS and LREC inclusion
+        fcas_cols = [k for k in cf_data.keys() if 'ancillary' in k]
+        lrec_cols = [k for k in cf_data.keys() if 'lrec' in k]
+        cumulative_cols = [k for k in cf_data.keys() if 'cumulative_payback' in k]
 
-            # Handle arrays that are too long (truncate)
-            if len(values) > expected_length:
-                logging.warning(f"Truncating {key} from {len(values)} to {expected_length} periods")
-                normalized_values = values[:expected_length]
-            # Handle arrays that are too short (pad with zeros)
-            elif len(values) < expected_length:
-                logging.warning(f"Padding {key} from {len(values)} to {expected_length} periods with zeros")
-                normalized_values = values + [0.0] * (expected_length - len(values))
-            else:
-                normalized_values = values
+        if fcas_cols:
+            logging.info(f"💰 Included {len(fcas_cols)} FCAS revenue streams")
+        if lrec_cols:
+            logging.info(f"🌿 Included {len(lrec_cols)} LREC revenue streams")
+        if cumulative_cols:
+            logging.info(f"📈 Included {len(cumulative_cols)} cumulative payback cashflows")
 
-            normalized_cf_data[key] = normalized_values
-
-        if not normalized_cf_data:
-            logging.warning("No valid cashflow data found for export")
-            return
-
-        # Create DataFrame with normalized data
-        try:
-            df = pd.DataFrame({
-                'period': range(1, expected_length + 1),
-                **normalized_cf_data
-            })
-            df.to_parquet('cashflow_timeseries.parquet')
-
-            self.exported_data['cashflow_series'] = {
-                'file': 'cashflow_timeseries.parquet',
-                'series': list(normalized_cf_data.keys()),
-                'count': len(normalized_cf_data),
-                'analysis_period': self.analysis_period
-            }
-
-            # Log validation results
-            fcas_cols = [k for k in normalized_cf_data.keys() if 'ancillary' in k]
-            lrec_cols = [k for k in normalized_cf_data.keys() if 'lrec' in k]
-            cumulative_cols = [k for k in normalized_cf_data.keys() if 'cumulative_payback' in k]
-
-            if fcas_cols:
-                logging.info(f"ðŸ’° Included {len(fcas_cols)} FCAS revenue streams ({self.analysis_period} years)")
-            if lrec_cols:
-                logging.info(f"ðŸŒ¿ Included {len(lrec_cols)} LREC revenue streams ({self.analysis_period} years)")
-            if cumulative_cols:
-                logging.info(
-                    f"ðŸ“ˆ Included {len(cumulative_cols)} cumulative payback cashflows ({self.analysis_period} years)")
-
-            logging.info(f"ðŸ’¸ Exported {len(normalized_cf_data)} cashflow series ({self.analysis_period} years)")
-
-        except Exception as e:
-            logging.error(f"Failed to create cashflow DataFrame: {e}")
-            # Log array lengths for debugging
-            lengths = {k: len(v) for k, v in normalized_cf_data.items()}
-            logging.error(f"Array lengths: {lengths}")
-            raise
+        logging.info(f"💸 Exported {len(cf_data)} cashflow series")
 
     def _export_time_series_group(self, group_data: Dict[str, List], group_name: str, length: int):
         """Export time series group"""
@@ -1795,7 +1466,7 @@ class ResultsExporter:
             'count': len(group_data)
         }
 
-        logging.info(f"ðŸ“ˆ Exported {len(group_data)} {group_name} series")
+        logging.info(f"📈 Exported {len(group_data)} {group_name} series")
 
     def _create_metadata(self, results: SimulationResults) -> Dict[str, Any]:
         """Create COMPLETE metadata with LREC information"""
@@ -1851,7 +1522,7 @@ def run_simulation_optimized(input_json: Optional[str] = None) -> 'SimulationRes
     """OPTIMIZED: Main simulation with cloud performance improvements"""
 
     start_time = time.time()
-    logging.info("Starting OPTIMIZED PySAM simulation...")
+    logging.info("🚀 Starting OPTIMIZED PySAM simulation...")
 
     try:
         # Load configuration (unchanged)
@@ -1862,7 +1533,7 @@ def run_simulation_optimized(input_json: Optional[str] = None) -> 'SimulationRes
         with open(input_path) as f:
             config_dict = json.load(f)
 
-        logging.info(f"Configuration loaded ({time.time() - start_time:.1f}s)")
+        logging.info(f"✅ Configuration loaded ({time.time() - start_time:.1f}s)")
 
         # OPTIMIZATION 1: Pre-validate configuration to fail fast
         module_validation_start = time.time()
@@ -1876,27 +1547,23 @@ def run_simulation_optimized(input_json: Optional[str] = None) -> 'SimulationRes
         if not module_order:
             raise ValueError("No compute modules found in configuration")
 
-        logging.info(f"Module validation ({time.time() - module_validation_start:.1f}s)")
+        logging.info(f"✅ Module validation ({time.time() - module_validation_start:.1f}s)")
 
-        # Create configuration objects with analysis period extraction
+        # Create configuration objects (unchanged)
         config_start = time.time()
-
-        # CRITICAL: Extract analysis period early for all processors
-        analysis_period = config_dict.get('analysis_period', 25)
-        logging.info(f"Analysis period: {analysis_period} years")
-
         financial_params = FinancialParameters.from_config(config_dict)
         battery_params = BatteryDetector.detect_battery_parameters(config_dict)
         lrec_config = LRECDetector.detect_lrec_parameters(config_dict, financial_params)
+        analysis_period = config_dict.get('analysis_period', 25)
 
-        logging.info(f"Configuration objects created ({time.time() - config_start:.1f}s)")
+        logging.info(f"✅ Configuration objects created ({time.time() - config_start:.1f}s)")
 
         # OPTIMIZATION 2: Initialize modules with memory pre-allocation
         modules_start = time.time()
         modules = {}
 
         # Pre-allocate module data structures
-        logging.info("Pre-initializing module data structures...")
+        logging.info("🔧 Pre-initializing module data structures...")
 
         for i, mod_name in enumerate(module_order):
             module_init_start = time.time()
@@ -1926,18 +1593,18 @@ def run_simulation_optimized(input_json: Optional[str] = None) -> 'SimulationRes
 
                 modules[mod_name] = module_instance
 
-                logging.info(f"{mod_name} initialized ({time.time() - module_init_start:.1f}s)")
+                logging.info(f"✅ {mod_name} initialized ({time.time() - module_init_start:.1f}s)")
 
                 # OPTIMIZATION: Force garbage collection after each module
                 if i % 2 == 0:  # Every other module
                     gc.collect()
 
             except Exception as e:
-                logging.error(f"Module {mod_name} initialization failed: {e}")
+                logging.error(f"❌ Module {mod_name} initialization failed: {e}")
                 raise
 
         total_module_time = time.time() - modules_start
-        logging.info(f"All modules initialized ({total_module_time:.1f}s)")
+        logging.info(f"🔧 All modules initialized ({total_module_time:.1f}s)")
 
         # OPTIMIZATION 3: Assign weather file early and efficiently
         weather_start = time.time()
@@ -1946,11 +1613,11 @@ def run_simulation_optimized(input_json: Optional[str] = None) -> 'SimulationRes
             first_module = modules[module_order[0]]
             if hasattr(first_module, "SolarResource"):
                 first_module.SolarResource.solar_resource_file = weather_file
-                logging.info(f"Weather file assigned ({time.time() - weather_start:.1f}s)")
+                logging.info(f"☀️ Weather file assigned ({time.time() - weather_start:.1f}s)")
 
         # OPTIMIZATION 4: Execute modules with performance monitoring
         execution_start = time.time()
-        logging.info("Starting optimized module execution...")
+        logging.info("⚡ Starting optimized module execution...")
 
         successful_executions = 0
         execution_times = {}
@@ -1967,11 +1634,11 @@ def run_simulation_optimized(input_json: Optional[str] = None) -> 'SimulationRes
 
                     # For PVSAMv1 (the slowest module), apply specific optimizations
                     if mod_name == 'pvsamv1':
-                        logging.info("Applying PVSAMv1 optimizations...")
+                        logging.info("🔋 Applying PVSAMv1 optimizations...")
 
                         # CRITICAL: Reduce computational precision for speed
                         if hasattr(module_instance, 'Lifetime'):
-                            # Check if we can reduce the analysis period for faster execution
+                            # Reduce lifetime simulation granularity if possible
                             try:
                                 # Check if we can reduce the analysis period for faster execution
                                 if hasattr(module_instance.Lifetime, 'analysis_period'):
@@ -1982,6 +1649,15 @@ def run_simulation_optimized(input_json: Optional[str] = None) -> 'SimulationRes
                             except:
                                 pass
 
+                        # Reduce weather data resolution if possible for testing
+                        if hasattr(module_instance, 'SolarResource'):
+                            try:
+                                # This is aggressive - only for speed testing
+                                # You might want to skip this in production
+                                pass
+                            except:
+                                pass
+
                     # Execute the module
                     modules[mod_name].execute()
 
@@ -1989,7 +1665,7 @@ def run_simulation_optimized(input_json: Optional[str] = None) -> 'SimulationRes
                     execution_times[mod_name] = mod_exec_time
                     successful_executions += 1
 
-                    logging.info(f"{mod_name} executed ({mod_exec_time:.1f}s)")
+                    logging.info(f"✅ {mod_name} executed ({mod_exec_time:.1f}s)")
 
                     # OPTIMIZATION: Immediate garbage collection after heavy modules
                     if mod_name in ['pvsamv1', 'battwatts', 'utilityrate5']:
@@ -1997,14 +1673,14 @@ def run_simulation_optimized(input_json: Optional[str] = None) -> 'SimulationRes
                         logging.info(f"   Memory cleaned after {mod_name}")
 
                 except Exception as e:
-                    logging.error(f"Module {mod_name} execution failed: {e}")
+                    logging.error(f"❌ Module {mod_name} execution failed: {e}")
                     raise
 
         total_execution_time = time.time() - execution_start
-        logging.info(f"Module execution completed ({total_execution_time:.1f}s)")
+        logging.info(f"⚡ Module execution completed ({total_execution_time:.1f}s)")
 
         # Log execution time breakdown
-        logging.info("Execution time breakdown:")
+        logging.info("📊 Execution time breakdown:")
         for mod_name, exec_time in execution_times.items():
             percentage = (exec_time / total_execution_time) * 100
             logging.info(f"   {mod_name}: {exec_time:.1f}s ({percentage:.1f}%)")
@@ -2014,15 +1690,15 @@ def run_simulation_optimized(input_json: Optional[str] = None) -> 'SimulationRes
 
         # OPTIMIZATION 5: Streamlined results collection
         results_start = time.time()
-        logging.info("Collecting results (optimized)...")
+        logging.info("📊 Collecting results (optimized)...")
 
-        # Initialize all processors with analysis_period
+        # Initialize all processors
         error_handler = ErrorHandler(strict_mode=False)
         results_processor = ResultsProcessor(financial_params, analysis_period)
 
         # Collect basic results
         scalar_results, time_series = results_processor.collect_module_outputs(modules)
-        logging.info(f"Basic results collected ({time.time() - results_start:.1f}s)")
+        logging.info(f"📊 Basic results collected ({time.time() - results_start:.1f}s)")
 
         # OPTIMIZATION 6: Parallel processing of FCAS and LREC (if possible)
         fcas_lrec_start = time.time()
@@ -2036,27 +1712,27 @@ def run_simulation_optimized(input_json: Optional[str] = None) -> 'SimulationRes
                 fcas_processor = FCASProcessor(config_dict, battery_params, error_handler)
                 fcas_results = fcas_processor.process_fcas(modules)
                 if fcas_results and 'total_ancillary_revenue' in fcas_results:
-                    logging.info(f"FCAS processed: ${fcas_results['total_ancillary_revenue']:,.0f}")
+                    logging.info(f"✅ FCAS processed: ${fcas_results['total_ancillary_revenue']:,.0f}")
             except Exception as e:
                 logging.warning(f"FCAS processing failed: {e}")
 
-        # Process LREC - FIXED: Pass analysis_period to constructor, not method call
+        # Process LREC
         try:
-            lrec_processor = LRECProcessor(lrec_config, error_handler, analysis_period)
+            lrec_processor = LRECProcessor(lrec_config, error_handler)
             lrec_results = lrec_processor.process_lrec(modules)
             if lrec_results and 'total_lrec_revenue' in lrec_results:
-                logging.info(f"LREC processed: ${lrec_results['total_lrec_revenue']:,.0f}")
+                logging.info(f"✅ LREC processed: ${lrec_results['total_lrec_revenue']:,.0f}")
         except Exception as e:
             logging.warning(f"LREC processing failed: {e}")
 
-        logging.info(f"FCAS/LREC processing completed ({time.time() - fcas_lrec_start:.1f}s)")
+        logging.info(f"🔗 FCAS/LREC processing completed ({time.time() - fcas_lrec_start:.1f}s)")
 
         # Integrate results
         integration_start = time.time()
         scalar_results, time_series = results_processor.integrate_all_results(
             scalar_results, time_series, fcas_results, lrec_results
         )
-        logging.info(f"Results integration completed ({time.time() - integration_start:.1f}s)")
+        logging.info(f"🔗 Results integration completed ({time.time() - integration_start:.1f}s)")
 
         # Create results object
         results = SimulationResults()
@@ -2072,16 +1748,16 @@ def run_simulation_optimized(input_json: Optional[str] = None) -> 'SimulationRes
         export_start = time.time()
         results_exporter = ResultsExporter(analysis_period)
         metadata = results_exporter.export_all_results(results)
-        logging.info(f"Results exported ({time.time() - export_start:.1f}s)")
+        logging.info(f"💾 Results exported ({time.time() - export_start:.1f}s)")
 
         # Final cleanup
         gc.collect()
 
         total_time = time.time() - start_time
-        logging.info(f"OPTIMIZED simulation completed in {total_time:.1f}s")
+        logging.info(f"✅ OPTIMIZED simulation completed in {total_time:.1f}s")
 
         # Performance breakdown
-        logging.info("Performance Breakdown:")
+        logging.info("🏁 Performance Breakdown:")
         logging.info(
             f"   Module Initialization: {total_module_time:.1f}s ({(total_module_time / total_time) * 100:.1f}%)")
         logging.info(
@@ -2092,7 +1768,7 @@ def run_simulation_optimized(input_json: Optional[str] = None) -> 'SimulationRes
 
     except Exception as e:
         total_time = time.time() - start_time
-        logging.error(f"Optimized simulation failed after {total_time:.1f}s: {e}")
+        logging.error(f"💥 Optimized simulation failed after {total_time:.1f}s: {e}")
         import traceback
         logging.error(f"Full traceback: {traceback.format_exc()}")
 
@@ -2129,11 +1805,11 @@ def setup_logging():
 
 if __name__ == "__main__":
     setup_logging()
-    logging.info("ðŸš€ Starting Optimized PySAM Simulation...")
+    logging.info("🚀 Starting Optimized PySAM Simulation...")
 
     results = run_simulation_optimized()
 
     if results.scalar_results:
-        logging.info("âœ… Optimized simulation completed successfully")
+        logging.info("✅ Optimized simulation completed successfully")
     else:
-        logging.warning("âš ï¸ Simulation completed with limited results")
+        logging.warning("⚠️ Simulation completed with limited results")

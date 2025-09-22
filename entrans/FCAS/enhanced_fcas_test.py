@@ -686,7 +686,7 @@ if __name__ == "__main__":
         # Add current directory to path for module import
         import sys
 
-        sys.path.append('../..')
+        sys.path.append('..')
 
         # Run the comprehensive test suite
         success = main()
